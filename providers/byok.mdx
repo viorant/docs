@@ -1,0 +1,41 @@
+---
+title: "Bring your own key (BYOK)"
+description: "Add a provider key and run models from your own account."
+---
+
+Viorant is **bring-your-own-key**. You add a provider's API key once, and the Hub
+runs that provider's models **directly from your machine** — your key, your account,
+your usage.
+
+<Note>
+  Your key is stored in your **macOS keychain** and is **never sent to Viorant's
+  servers**. The Hub calls the provider API itself; Viorant is not in the path.
+</Note>
+
+## Add a key
+
+<Steps>
+  <Step title="Open the Model Master">
+    Go to Model Master and add a **Provider**.
+  </Step>
+  <Step title="Choose the vendor and paste your key">
+    Pick the provider (e.g. OpenAI, Anthropic, Google) and paste your API key. The
+    Hub verifies the key before saving it.
+  </Step>
+  <Step title="Pick a model">
+    Add a **Model** that references the provider. It's now selectable anywhere you run
+    — the Prompt test panel, a skill test, or an agent.
+  </Step>
+</Steps>
+
+## Supported providers
+
+The Hub supports keys for the major providers and a range of additional
+OpenAI-compatible vendors — nine in total — so you can run agents against whichever
+account you already have.
+
+## Trial grant vs. your key
+
+New accounts get a small Viorant-funded trial grant to test against a managed model
+first. It's a trial that converts to BYOK — when it runs out, add your own key to
+keep going. BYOK is the steady state; the grant just removes first-run friction.

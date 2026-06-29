@@ -1,0 +1,31 @@
+---
+title: "Skill Master"
+description: "Create and edit the reusable tasks your agents can perform."
+---
+
+The **Skill Master** is where you author [Skills](/concepts/skills) — reusable tasks
+in the open [agentskills.io](https://agentskills.io) format.
+
+## What you get
+
+- A **skill library** and a file tree for each skill's folder.
+- A **`SKILL.md` editor** to write the skill's instructions and declare the tools it
+  uses (with `@tool` autocomplete).
+- **Example skills** to start from.
+- **Commit** support so each skill is versioned.
+
+## Tools a skill can use
+
+Reference tools by name in the skill. They resolve at run time to built-in tools
+(`web_fetch`, `web_search`, `current_time`) or to tools served by a
+[Connector](/connectors/remote-mcp-oauth) you've authorized.
+
+## Test a skill
+
+Run a skill against a model and watch its trace — including the tools it calls —
+stream back live.
+
+<Note>
+  Screenshots and a worked example (authoring a skill end to end) are being added to
+  this page.
+</Note>

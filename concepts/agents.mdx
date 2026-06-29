@@ -1,0 +1,26 @@
+---
+title: "Agents"
+description: "What an Agent is in Viorant, and how it's composed."
+---
+
+An **Agent** is the runnable unit you build in Viorant. It's not a single thing you
+write — it's a **composition** of smaller, reusable parts:
+
+- a **Prompt** — the reasoning and instructions,
+- a **Model** — the provider and model it runs on,
+- zero or more **Skills** — the tasks it can perform, and
+- the **Tools** those skills use (built-in, or served by a **Connector**).
+
+You author each part in its own **Master** (a dedicated editor), then bring them
+together in the **Agent Master** to produce one agent you can run and test.
+
+## Why composition
+
+Because the parts are separate and reusable, the same prompt, model config, or skill
+can back many agents — and each part is something you can read, version, and reason
+about on its own. The agent is the assembly; the Masters are where the real authoring
+happens.
+
+<Card title="The Masters" icon="layer-group" href="/concepts/masters">
+  How the five authoring surfaces fit together.
+</Card>
