@@ -26,11 +26,17 @@ mint broken-links  # validate links before pushing
 
 ## Custom domain (`docs.viorant.ai`)
 
-Set in the Mintlify dashboard → add the custom domain; Mintlify returns a CNAME
-target. **Vivien** adds that `CNAME` record on Cloudflare for `docs.viorant.ai`.
+1. In the Mintlify dashboard → **Settings → Custom Domain**, add `docs.viorant.ai`.
+   Mintlify shows the exact CNAME target to point at.
+2. On **Cloudflare** (`viorant.ai` zone) add the record directly:
+   - **Type** `CNAME` · **Name** `docs` · **Target** the value from step 1
+     (typically `cname.mintlify.app`)
+   - **Proxy status: DNS only** (grey cloud) — Mintlify terminates TLS and issues the
+     cert; proxying through Cloudflare's orange cloud blocks cert issuance.
 
-## Assets to swap in
+## Assets
 
-The `logo/` and `favicon.svg` are still Mintlify-starter placeholders — replace with
-the Viorant brand logo (light) and favicon. Screenshots referenced as "being added"
-in the Master pages are pending real Hub captures.
+Brand logo + favicon are exported from the Viorant Design System (Figma),
+background-stripped to transparent: `logo/light.svg` (orange+grey wordmark),
+`logo/dark.svg` (white wordmark), `favicon.svg` (flat glyph). Screenshots referenced
+as "being added" in the Master pages are pending real Hub captures.
