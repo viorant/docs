@@ -2,7 +2,7 @@
 
 User documentation for the **Viorant Hub**, built with [Mintlify](https://mintlify.com).
 Published from `main` to [viorant.mintlify.site](https://viorant.mintlify.site)
-(custom domain `docs.viorant.ai` — see below).
+(custom domain `help.viorant.ai` — see below).
 
 ## Structure
 
@@ -24,12 +24,12 @@ mint dev           # serves the docs locally with live reload
 mint broken-links  # validate links before pushing
 ```
 
-## Custom domain (`docs.viorant.ai`)
+## Custom domain (`help.viorant.ai`)
 
-1. In the Mintlify dashboard → **Settings → Custom Domain**, add `docs.viorant.ai`.
+1. In the Mintlify dashboard → **Settings → Custom Domain**, add `help.viorant.ai`.
    Mintlify shows the exact CNAME target to point at.
 2. On **Cloudflare** (`viorant.ai` zone) add the record directly:
-   - **Type** `CNAME` · **Name** `docs` · **Target** the value from step 1
+   - **Type** `CNAME` · **Name** `help` · **Target** the value from step 1
      (typically `cname.mintlify.app`)
    - **Proxy status: DNS only** (grey cloud) — Mintlify terminates TLS and issues the
      cert; proxying through Cloudflare's orange cloud blocks cert issuance.
