@@ -1,0 +1,35 @@
+---
+title: "Connect a remote MCP server"
+description: "Authorize a remote MCP server over OAuth and use its tools."
+---
+
+A [Connector](/concepts/connectors) links the Hub to a **remote MCP server** so your
+skills and agents can use that service's tools. Authorization uses the standard
+**OAuth** flow in your browser, and the Hub talks to the server **directly** —
+Viorant's servers are never in the path.
+
+## Connect a server
+
+<Steps>
+  <Step title="Add a connector">
+    Enter the remote MCP server's URL to add it as a connector.
+  </Step>
+  <Step title="Authorize in your browser">
+    The Hub opens your browser to the service's OAuth consent screen. Approve access.
+  </Step>
+  <Step title="Return to the Hub">
+    The browser hands you back; the Hub stores the access token securely in your
+    keychain and loads the server's available tools.
+  </Step>
+</Steps>
+
+## Use the tools
+
+Once connected, the server's tools are available by name to your
+[skills](/masters/skill) and agents. The Hub keeps the tool list in sync and lets you
+re-authorize, disable, or remove a connector at any time.
+
+<Note>
+  A worked example with a real connector (and screenshots) is being added to this
+  page.
+</Note>

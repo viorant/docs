@@ -1,97 +1,56 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Viorant Hub"
+description: "Build, test, and run AI agents on your own machine — with structure, provenance, and your own keys."
 ---
 
-## Setting up
+The **Viorant Hub** is a local-first desktop app for building AI agents. You author
+each part of an agent in a dedicated editor — a **Master** — compose them into a
+runnable agent, and run it **on your own machine against your own model keys**.
+Nothing is hidden, nothing is brokered: the Hub builds; your agent runs locally.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Install the Hub" icon="download" href="/getting-started/installation">
+    Download, install, and open Viorant on macOS.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Sign in" icon="right-to-bracket" href="/getting-started/sign-in">
+    Sign in with Google and get to your first agent.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Your first run" icon="play" href="/getting-started/first-run">
+    Test a prompt in minutes — with a free trial grant or your own key.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Core concepts" icon="lightbulb" href="/concepts/agents">
+    Agents, the Masters, Skills, Connectors, and Models.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## What you build with
 
-Everything you need to create world-class documentation.
+An **Agent** is composed from a small set of building blocks, each authored in its
+own Master:
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={2}>
+  <Card title="Prompt Master" icon="message" href="/masters/prompt">
+    The reasoning — system and user instructions, variables, single-shot or chat.
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Model Master" icon="microchip" href="/masters/model">
+    The provider and model your agent runs on. Bring your own key (BYOK).
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="Skill Master" icon="screwdriver-wrench" href="/masters/skill">
+    Reusable tasks an agent can perform, with the tools they need.
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="Agent Master" icon="robot" href="/masters/agent">
+    Compose a Prompt, a Model, and Skills into one runnable agent.
   </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Principles you can rely on
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+- **Local-first.** You author and run on your own machine. Your work doesn't leave it.
+- **Bring your own key.** Models run against your provider keys, stored in your OS
+  keychain — never on our servers. [Learn more](/providers/byok).
+- **Portable & inspectable.** What you build is yours to own, read, and move.
+
+<Note>
+  This documentation covers the current Viorant Hub. Sections for **Spaces**,
+  **Memory**, and **deploying to Viorant Cloud** arrive with the 1.1 release.
+</Note>

@@ -1,55 +1,36 @@
-# Mintlify Starter Kit
+# Viorant Docs
 
-Use the starter kit to get your docs deployed and ready to customize.
+User documentation for the **Viorant Hub**, built with [Mintlify](https://mintlify.com).
+Published from `main` to [viorant.mintlify.site](https://viorant.mintlify.site)
+(custom domain `docs.viorant.ai` — see below).
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Structure
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+- `docs.json` — site config: theme, brand colors (amber `#f59e0b`), and navigation.
+- Content lives in `.mdx` files, grouped by the navigation in `docs.json`:
+  - `getting-started/` — install, sign in, first run
+  - `concepts/` — agents, the Masters, skills, connectors, providers & models
+  - `masters/` — Prompt, Model, Skill, Agent
+  - `connectors/`, `providers/`, `run-agent-locally.mdx`, `troubleshooting.mdx`
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+The docs track **feature stability**: surfaces that survive the 1.1 release are
+documented first. **Spaces, Memory, and Deploy** sections land with 1.1.
 
-## AI-assisted writing
-
-Set up your AI coding tool to work with Mintlify:
+## Local preview
 
 ```bash
-npx skills add https://mintlify.com/docs
+npm i -g mint      # one-time
+mint dev           # serves the docs locally with live reload
+mint broken-links  # validate links before pushing
 ```
 
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
+## Custom domain (`docs.viorant.ai`)
 
-See the [AI tools guides](/ai-tools) for tool-specific setup.
+Set in the Mintlify dashboard → add the custom domain; Mintlify returns a CNAME
+target. **Vivien** adds that `CNAME` record on Cloudflare for `docs.viorant.ai`.
 
-## Development
+## Assets to swap in
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
-npm i -g mint
-```
-
-Run the following command at the root of your documentation, where your `docs.json` is located:
-
-```
-mint dev
-```
-
-View your local preview at `http://localhost:3000`.
-
-## Publishing changes
-
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
-
-## Need help?
-
-### Troubleshooting
-
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+The `logo/` and `favicon.svg` are still Mintlify-starter placeholders — replace with
+the Viorant brand logo (light) and favicon. Screenshots referenced as "being added"
+in the Master pages are pending real Hub captures.

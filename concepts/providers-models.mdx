@@ -1,0 +1,23 @@
+---
+title: "Providers & models"
+description: "The vendor accounts and models your agents run on."
+---
+
+Model Master has two related resources:
+
+- A **Provider** is an LLM vendor account — OpenAI, Anthropic, Google, and more —
+  holding your defaults and your **API key**.
+- A **Model** references a provider and adds per-model settings (and cost metadata).
+
+## Bring your own key
+
+Viorant runs models **directly from your machine** against **your** provider key.
+Keys live in your OS keychain and are **never sent to Viorant's servers** — the
+Hub calls the provider API itself.
+
+A brand-new account also gets a small managed-inference trial grant so you can test
+before adding a key; see [your first run](/getting-started/first-run).
+
+<Card title="Add a provider key" icon="key" href="/providers/byok">
+  Bring your own key and pick a model.
+</Card>

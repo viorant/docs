@@ -1,0 +1,19 @@
+---
+title: "Connectors"
+description: "How the Hub reaches the tools your agents use."
+---
+
+A **Connector** is how the Hub reaches an external service's **tools** — the
+callable actions a skill or agent can use (list a calendar, create an issue, search a
+workspace, and so on).
+
+Viorant connects to **remote MCP servers** ([Model Context Protocol](https://modelcontextprotocol.io))
+using the standard **OAuth** authorization flow. You authorize in your browser, and
+the Hub stores the resulting token securely in your OS keychain. The Hub talks
+**directly** to the service — Viorant's servers are never in the path.
+
+Once connected, a server's tools become available to your skills and agents by name.
+
+<Card title="Connect a remote MCP server" icon="plug" href="/connectors/remote-mcp-oauth">
+  Step-by-step: authorize and use a connector.
+</Card>

@@ -1,68 +1,71 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Viorant",
+  "appearance": {
+    "default": "light"
+  },
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#f59e0b",
+    "light": "#f8bb5b",
+    "dark": "#d97706"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "getting-started/installation",
+              "getting-started/sign-in",
+              "getting-started/first-run"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Concepts",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "concepts/agents",
+              "concepts/masters",
+              "concepts/skills",
+              "concepts/connectors",
+              "concepts/providers-models"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "The Masters",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "masters/prompt",
+              "masters/model",
+              "masters/skill",
+              "masters/agent"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Connectors & tools",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+              "connectors/remote-mcp-oauth"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Providers & models",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "providers/byok"
+            ]
+          },
+          {
+            "group": "Run an agent",
+            "pages": [
+              "run-agent-locally"
+            ]
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "troubleshooting"
             ]
           }
         ]
@@ -71,14 +74,14 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Website",
+          "href": "https://viorant.ai",
+          "icon": "globe"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Download the Hub",
+          "href": "https://dl.viorant.ai/mac",
+          "icon": "download"
         }
       ]
     }
@@ -90,33 +93,22 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Website",
+        "href": "https://viorant.ai"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Download the Hub",
+      "href": "https://dl.viorant.ai/mac"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   }
 }
