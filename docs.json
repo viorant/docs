@@ -3,7 +3,7 @@
   "theme": "mint",
   "name": "Viorant",
   "appearance": {
-    "default": "light"
+    "default": "dark"
   },
   "colors": {
     "primary": "#f59e0b",
@@ -110,5 +110,46 @@
       "chatgpt",
       "claude"
     ]
+  },
+  "description": "Viorant is the operating layer for AI: a local-first, vendor-neutral control plane, deployment engine, and Infrastructure-as-Code format for AI agents.",
+  "icons": {
+    "library": "lucide"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Bebas Neue",
+      "weight": 900
+    },
+    "body": {
+      "family": "Inter"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/viorant_ai",
+      "linkedin": "https://linkedin.com/company/viorant",
+      "website": "https://viorant.ai",
+      "threads": "https://www.threads.com/@viorant_ai"
+    }
+  },
+  "styling": {
+    "codeblocks": "dark"
+  },
+  "seo": {
+    "metatags": {
+      "og:type": "website",
+      "og:site_name": "Viorant Documentation",
+      "og:image": "https://docs.viorant.ai/images/og-cover.png",
+      "og:locale": "en_US",
+      "twitter:site": "@viorant_ai",
+      "author": "Viorant",
+      "theme-color": "#0B0B0F"
+    },
+    "indexing": "all"
+  },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-F61X92GQ8T"
+    }
   }
 }
