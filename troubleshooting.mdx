@@ -17,6 +17,13 @@ description: "Fixes for common issues with the Viorant Hub."
     Re-authorize the connector — its access may have expired. You can re-authorize,
     disable, or remove a connector from the Connectors surface.
   </Accordion>
+  <Accordion title="Web search isn't working / web_search is disabled">
+    `web_search` needs a **Tavily API key**. Open **Viorant Tools** on the Connectors
+    surface and save your key in the **Tool keys** panel — the `web_search` toggle stays
+    disabled until a valid key is saved. See
+    [Built-in tools](/connectors/built-in-tools). Also confirm `web_search` is in the
+    skill or agent's allowed tools.
+  </Accordion>
   <Accordion title="An agent run failed to start">
     Make sure the agent has a [model](/masters/model) selected and a valid key (or
     trial credits). Re-run and check the streamed trace for the first error.

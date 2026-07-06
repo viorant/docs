@@ -47,6 +47,7 @@
           {
             "group": "Connectors & tools",
             "pages": [
+              "connectors/built-in-tools",
               "connectors/remote-mcp-oauth",
               "connectors/oauth-apps",
               "connectors/github",
