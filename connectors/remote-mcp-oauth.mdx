@@ -4,9 +4,23 @@ description: "Authorize a remote MCP server over OAuth and use its tools."
 ---
 
 A [Connector](/concepts/connectors) links the Hub to a **remote MCP server** so your
-skills and agents can use that service's tools. Authorization uses the standard
-**OAuth** flow in your browser, and the Hub talks to the server **directly** —
-Viorant's servers are never in the path.
+skills and agents can use that service's tools. You can add **any** remote HTTP MCP
+server by its URL. Authorization uses the standard **OAuth** flow in your browser, and
+the Hub talks to the server **directly** — Viorant's servers are never in the path.
+
+## Find a server
+
+Browse remote MCP servers at [mcpservers.org](https://mcpservers.org/remote-mcp-servers),
+a directory of authenticated remote HTTP MCP servers. Add any of them — or any server
+with a similar URL — to the Hub by pasting its URL.
+
+## How a connection works
+
+- **Most servers connect automatically** — you add the URL, approve access in your
+  browser, and you're done.
+- **Some need your own OAuth app** — the service requires you to register an app and
+  supply a **Client ID** and **Client Secret** first. If a server won't connect on its
+  own, that's usually why. See [Bring your own OAuth app](/connectors/oauth-apps).
 
 ## Connect a server
 
@@ -22,13 +36,6 @@ Viorant's servers are never in the path.
     keychain and loads the server's available tools.
   </Step>
 </Steps>
-
-## Servers that need your own OAuth app
-
-Most servers authorize automatically with the steps above. Some services — **Slack**,
-**HubSpot**, **GitHub**, **Asana**, and **Google Workspace** — require you to register
-your own OAuth app and add its Client ID and Secret first. See
-[Bring your own OAuth app](/connectors/oauth-apps).
 
 ## Use the tools
 
