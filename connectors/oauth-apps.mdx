@@ -28,9 +28,11 @@ When you add a connector, the Hub detects how the service handles authorization:
 Services that currently need your own app include **Slack**, **HubSpot**,
 **GitHub**, **Asana**, and **Google Workspace**.
 
-You can add **any** remote MCP server by its URL. These guides cover the most common
-services; for anything else, add the server's URL and — if it asks for one — supply
-your own Client ID and Secret from that service's developer settings.
+You can add **any** remote MCP server by its URL — browse the directory at
+[mcpservers.org](https://mcpservers.org/remote-mcp-servers). The [examples](#examples)
+below cover common services that need their own app. If yours isn't listed, search that
+service's developer docs for how to **create an OAuth app** to get a Client ID and
+Secret, then add them here.
 
 ## Why your own app?
 
@@ -63,7 +65,11 @@ scopes, and you can revoke access at any time from the service.
   credentials, the Hub tells you what's missing and links back to the guide.
 </Tip>
 
-## Provider guides
+## Examples
+
+Worked guides for services that need their own OAuth app. We keep adding more — if
+yours isn't here, the steps are similar: create an OAuth app in the service, copy its
+Client ID and Secret, and add them to the connector.
 
 <CardGroup cols={2}>
   <Card title="GitHub" icon="github" href="/connectors/github">
