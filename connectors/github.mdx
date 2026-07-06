@@ -1,0 +1,48 @@
+---
+title: "GitHub"
+description: "Connect the GitHub MCP server with your own OAuth app."
+---
+
+The GitHub remote MCP server lets your skills and agents work with repositories,
+issues, and pull requests. Connect it with your own GitHub OAuth app.
+
+Connector URL: `https://api.githubcopilot.com/mcp`
+
+<Note>
+  Your Client Secret is stored in your **macOS keychain** and is **never sent to
+  Viorant's servers**. See [Bring your own OAuth app](/connectors/oauth-apps) for the
+  general flow.
+</Note>
+
+## Create the OAuth app
+
+<Steps>
+  <Step title="Open your OAuth apps">
+    In GitHub, go to **Settings → Developer settings → OAuth Apps** and click **New
+    OAuth App**.
+  </Step>
+  <Step title="Set the callback URL">
+    Give the app a name and a homepage URL. For **Authorization callback URL**, paste
+    the **redirect URI** the Hub shows you in the connector setup.
+  </Step>
+  <Step title="Get the credentials">
+    Register the app, then copy the **Client ID** and generate a **Client Secret**.
+  </Step>
+</Steps>
+
+<Note>
+  GitHub OAuth apps don't set scopes up front — you approve the access the connector
+  requests when you sign in.
+</Note>
+
+## Connect in the Hub
+
+<Steps>
+  <Step title="Add the connector">
+    Add a connector with the URL `https://api.githubcopilot.com/mcp`.
+  </Step>
+  <Step title="Paste your credentials and connect">
+    Enter your **Client ID** and **Client Secret**, click **Connect**, and approve
+    access in your browser.
+  </Step>
+</Steps>

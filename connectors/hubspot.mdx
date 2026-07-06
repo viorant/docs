@@ -1,0 +1,49 @@
+---
+title: "HubSpot"
+description: "Connect the HubSpot MCP server with your own MCP auth app."
+---
+
+The HubSpot remote MCP server lets your skills and agents work with CRM records —
+contacts, companies, deals, tickets, and more. Connect it with your own HubSpot MCP
+auth app.
+
+Connector URL: `https://mcp.hubspot.com`
+
+<Note>
+  Your Client Secret is stored in your **macOS keychain** and is **never sent to
+  Viorant's servers**. See [Bring your own OAuth app](/connectors/oauth-apps) for the
+  general flow.
+</Note>
+
+## Create the MCP auth app
+
+<Steps>
+  <Step title="Open MCP auth apps">
+    In your HubSpot account, go to **Development → MCP Auth Apps** and click **Create
+    MCP auth app**.
+  </Step>
+  <Step title="Name the app and add the redirect URL">
+    Enter an app name and, for the redirect URL, paste the **redirect URI** the Hub
+    shows you in the connector setup.
+  </Step>
+  <Step title="Get the credentials">
+    HubSpot generates a **Client ID** and **Client Secret** for you — copy both.
+  </Step>
+</Steps>
+
+<Note>
+  You don't set scopes for an MCP auth app. Available scopes are determined by the
+  tools the server exposes and what you approve when you connect.
+</Note>
+
+## Connect in the Hub
+
+<Steps>
+  <Step title="Add the connector">
+    Add a connector with the URL `https://mcp.hubspot.com`.
+  </Step>
+  <Step title="Paste your credentials and connect">
+    Enter your **Client ID** and **Client Secret**, click **Connect**, and approve
+    the access you want to grant in your browser.
+  </Step>
+</Steps>

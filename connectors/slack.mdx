@@ -1,0 +1,52 @@
+---
+title: "Slack"
+description: "Connect the Slack MCP server with your own Slack app."
+---
+
+The Slack remote MCP server lets your skills and agents read channels, search, and
+work with your workspace. Connect it with your own Slack app.
+
+Connector URL: `https://mcp.slack.com/mcp`
+
+<Note>
+  Your Client Secret is stored in your **macOS keychain** and is **never sent to
+  Viorant's servers**. See [Bring your own OAuth app](/connectors/oauth-apps) for the
+  general flow.
+</Note>
+
+## Create the Slack app
+
+<Steps>
+  <Step title="Create an app">
+    Go to [api.slack.com/apps](https://api.slack.com/apps), click **Create New App →
+    From scratch**, name it, and pick your workspace.
+  </Step>
+  <Step title="Get the credentials">
+    Under **Basic Information → App Credentials**, copy the **Client ID** and **Client
+    Secret**.
+  </Step>
+  <Step title="Add the redirect URL">
+    Under **OAuth & Permissions → Redirect URLs**, add the **redirect URI** the Hub
+    shows you. Match it exactly, with no trailing slash.
+  </Step>
+  <Step title="Add scopes">
+    Under **OAuth & Permissions**, add the bot and user token scopes for the tools you
+    need — for example `channels:read`, `channels:history`, `users:read`, and
+    `search:read`.
+  </Step>
+  <Step title="Enable MCP">
+    Under **Agents & AI Apps**, find **Model Context Protocol** and turn it on.
+  </Step>
+</Steps>
+
+## Connect in the Hub
+
+<Steps>
+  <Step title="Add the connector">
+    Add a connector with the URL `https://mcp.slack.com/mcp`.
+  </Step>
+  <Step title="Paste your credentials and connect">
+    Enter your **Client ID** and **Client Secret**, click **Connect**, and approve
+    access in your browser.
+  </Step>
+</Steps>

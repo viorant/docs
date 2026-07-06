@@ -1,0 +1,73 @@
+---
+title: "Google Workspace"
+description: "Connect Gmail, Drive, and Calendar with your own Google OAuth app."
+---
+
+Google hosts official remote MCP servers for Workspace. **Gmail**, **Drive**, and
+**Calendar** are each a separate connector, and you connect them with your own Google
+OAuth app so the Hub talks to Google directly under your account.
+
+<Note>
+  This guide is for **Google Workspace** accounts (your organization's Google). Set
+  your OAuth app's user type to **Internal** — an internal app only your organization
+  can use, which skips Google's app-verification review entirely.
+</Note>
+
+## Connector URLs
+
+Add each service you want as its own connector, using these URLs:
+
+| Service  | Connector URL                             |
+| -------- | ----------------------------------------- |
+| Gmail    | `https://gmailmcp.googleapis.com/mcp/v1`  |
+| Drive    | `https://drivemcp.googleapis.com/mcp/v1`  |
+| Calendar | `https://calendarmcp.googleapis.com/mcp/v1` |
+
+You can use the **same** Client ID and Secret for all three.
+
+## Create the OAuth app
+
+<Steps>
+  <Step title="Create a Google Cloud project">
+    In the [Google Cloud console](https://console.cloud.google.com), create a project
+    (or reuse one) inside your Workspace organization.
+  </Step>
+  <Step title="Enable the Workspace MCP APIs">
+    Under **APIs & Services → Library**, enable the APIs for the services you want:
+    `gmailmcp.googleapis.com`, `drivemcp.googleapis.com`, and
+    `calendarmcp.googleapis.com`.
+  </Step>
+  <Step title="Configure the consent screen as Internal">
+    Under **APIs & Services → OAuth consent screen**, choose **Internal** as the user
+    type and fill in the basic app details.
+  </Step>
+  <Step title="Create an OAuth client">
+    Under **APIs & Services → Credentials**, create an **OAuth client ID**. Add the
+    **redirect URI** the Hub shows you in the connector setup to the client's
+    authorized redirect URIs. Save, then copy the **Client ID** and **Client Secret**.
+  </Step>
+</Steps>
+
+## Connect in the Hub
+
+<Steps>
+  <Step title="Add the connector">
+    Add a connector using the URL for the service you want (Gmail, Drive, or Calendar).
+  </Step>
+  <Step title="Paste your credentials">
+    Enter your **Client ID** and **Client Secret** in the connector's settings, then
+    click **Connect**.
+  </Step>
+  <Step title="Approve access">
+    Your browser opens Google's consent screen. Approve it, and the connector's tools
+    load. Repeat for each service you added.
+  </Step>
+</Steps>
+
+<Tip>
+  Add Gmail, Drive, and Calendar as separate connectors, reusing the same Client ID
+  and Secret. Each shows up with its own tools.
+</Tip>
+
+For the general flow and where your Client Secret is stored, see
+[Bring your own OAuth app](/connectors/oauth-apps).

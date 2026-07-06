@@ -47,7 +47,13 @@
           {
             "group": "Connectors & tools",
             "pages": [
-              "connectors/remote-mcp-oauth"
+              "connectors/remote-mcp-oauth",
+              "connectors/oauth-apps",
+              "connectors/github",
+              "connectors/slack",
+              "connectors/hubspot",
+              "connectors/asana",
+              "connectors/google-workspace"
             ]
           },
           {

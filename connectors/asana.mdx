@@ -1,0 +1,49 @@
+---
+title: "Asana"
+description: "Connect the Asana MCP server with your own Asana app."
+---
+
+The Asana remote MCP server lets your skills and agents work with tasks, projects, and
+portfolios. Connect it with your own Asana app.
+
+Connector URL: `https://mcp.asana.com/v2/mcp`
+
+<Note>
+  Your Client Secret is stored in your **macOS keychain** and is **never sent to
+  Viorant's servers**. See [Bring your own OAuth app](/connectors/oauth-apps) for the
+  general flow.
+</Note>
+
+## Create the Asana app
+
+<Steps>
+  <Step title="Open the developer console">
+    Go to the [Asana developer console](https://app.asana.com/0/my-apps) and create a
+    new app.
+  </Step>
+  <Step title="Add the redirect URL">
+    Under the app's OAuth settings, add the **redirect URI** the Hub shows you in the
+    connector setup to the app's redirect URLs.
+  </Step>
+  <Step title="Get the credentials">
+    Copy the app's **Client ID** and **Client Secret**.
+  </Step>
+</Steps>
+
+<Note>
+  Asana's V2 MCP server (`https://mcp.asana.com/v2/mcp`) requires your own registered
+  app — it doesn't register clients automatically. The older `/sse` endpoint is
+  retired.
+</Note>
+
+## Connect in the Hub
+
+<Steps>
+  <Step title="Add the connector">
+    Add a connector with the URL `https://mcp.asana.com/v2/mcp`.
+  </Step>
+  <Step title="Paste your credentials and connect">
+    Enter your **Client ID** and **Client Secret**, click **Connect**, and approve
+    access in your browser.
+  </Step>
+</Steps>
