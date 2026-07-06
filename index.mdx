@@ -1,12 +1,56 @@
 ---
-title: "Viorant Hub"
-description: "Build, test, and run AI agents on your own machine — with structure, provenance, and your own keys."
+title: "Introduction"
+description: "Welcome to Viorant, the operating layer for AI."
 ---
 
-The **Viorant Hub** is a local-first desktop app for building AI agents. You author
-each part of an agent in a dedicated editor — a **Master** — compose them into a
-runnable agent, and run it **on your own machine against your own model keys**.
-Nothing is hidden, nothing is brokered: the Hub builds; your agent runs locally.
+<Frame>
+  <img src="/images/viorant-hero-doc.jpg" alt="Viorant — the operating layer for AI assets" />
+</Frame>
+
+## Welcome to Viorant
+
+Viorant is the operating layer for AI: a local-first, vendor-neutral control plane for
+the prompts, skills, memory, models, and agents you ship to production. Author them in
+one place, capture the whole system as a single declarative file, and deploy it
+anywhere, reproducibly.
+
+It is built for the team shipping AI that has to work when it matters, and cannot afford
+to guess what is actually running in production.
+
+<CardGroup cols={2}>
+  <Card title="Local-First" icon="laptop">
+    Author and sign your AI assets on your own machine, on your own keys. Nothing leaves
+    your environment unless you ship it.
+  </Card>
+
+  <Card title="Vendor-Neutral" icon="arrows-left-right">
+    Portable across frameworks and clouds. One artifact runs the same everywhere, with no
+    lock-in to a single provider.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={3}>
+  <Card title="Version Everything" icon="code-branch">
+    Prompts, skills, memory, models, and agents captured as one file you can diff and roll
+    back.
+  </Card>
+
+  <Card title="Review Like Code" icon="code-compare">
+    A real diff and a real approval before any change reaches a user.
+  </Card>
+
+  <Card title="Prove What Shipped" icon="fingerprint">
+    Signed provenance on every asset: what shipped, who authored it, and that it was not
+    altered.
+  </Card>
+</CardGroup>
+
+***
+
+## Start with the Hub
+
+The **Viorant Hub** is the local-first desktop app where you author, run, and version
+your agents today — free, on your own machine, against your own model keys.
 
 <CardGroup cols={2}>
   <Card title="Install the Hub" icon="download" href="/getting-started/installation">
@@ -23,34 +67,133 @@ Nothing is hidden, nothing is brokered: the Hub builds; your agent runs locally.
   </Card>
 </CardGroup>
 
-## What you build with
+***
 
-An **Agent** is composed from a small set of building blocks, each authored in its
-own Master:
+## The Vio File
 
-<CardGroup cols={2}>
-  <Card title="Prompt Master" icon="message" href="/masters/prompt">
-    The reasoning — system and user instructions, variables, single-shot or chat.
+The direction Viorant is building toward is the `.vio` file: your whole AI system as one
+signed, declarative artifact you can version, diff, and rebuild anywhere. Terraform, but
+for AI.
+
+```yaml support-agent.vio
+name: support-agent
+version: 4.2.0
+signed_by: alex@acme.com   # verified
+model: claude-sonnet-4.5
+prompt: ./prompts/triage.vio
+skills:
+  - refund.vio
+  - order-lookup.vio
+memory: ./memory/store.vio
+```
+
+One file is the system — no guessing which version is live, no reverse-engineering a
+broken deploy, no rebuild that depends on someone's memory.
+
+<Note>
+  Today's documentation covers the current Viorant Hub. The `.vio` format, signing, and
+  deployment arrive with upcoming releases.
+</Note>
+
+***
+
+## Quick Start
+
+New to Viorant? These steps take you from install to a running agent.
+
+<Steps>
+  <Step title="Install Viorant Hub" icon="download">
+    Download [Viorant Hub](/getting-started/installation) for macOS (Windows and Linux are
+    on the way). It is free, and it runs locally on your own keys.
+  </Step>
+
+  <Step title="Author Your Assets" icon="pen-to-square">
+    Build your prompts, skills, models, and agents in the Hub, in one place.
+  </Step>
+
+  <Step title="Run and Iterate" icon="play">
+    Run your agent locally against your own keys, inspect the full trace, and refine.
+  </Step>
+
+  <Step title="Version and Ship" icon="paper-plane">
+    Commit each change, review it like code, and keep a traceable history of what shipped.
+  </Step>
+</Steps>
+
+***
+
+## Core Concepts
+
+Viorant organizes every AI system around a small set of building blocks.
+
+<CardGroup cols={3}>
+  <Card title="Prompts" icon="message" href="/masters/prompt">
+    The instructions that drive behavior, versioned and reviewable like code.
   </Card>
-  <Card title="Model Master" icon="microchip" href="/masters/model">
-    The provider and model your agent runs on. Bring your own key (BYOK).
+
+  <Card title="Skills" icon="puzzle-piece" href="/concepts/skills">
+    Reusable capabilities defined once, with a single source of truth across projects.
   </Card>
-  <Card title="Skill Master" icon="screwdriver-wrench" href="/masters/skill">
-    Reusable tasks an agent can perform, with the tools they need.
+
+  <Card title="Models" icon="microchip" href="/masters/model">
+    Model selection and routing, pinned to the version you actually shipped.
   </Card>
-  <Card title="Agent Master" icon="robot" href="/masters/agent">
-    Compose a Prompt, a Model, and Skills into one runnable agent.
+
+  <Card title="Agents" icon="robot" href="/concepts/agents">
+    Composed systems that bring prompts, skills, and models together.
+  </Card>
+
+  <Card title="Connectors" icon="plug" href="/concepts/connectors">
+    How the Hub reaches the external tools your skills and agents use.
+  </Card>
+
+  <Card title="Memory" icon="brain">
+    Persistent context your agents rely on, captured as part of the system. Arrives with a
+    later release.
   </Card>
 </CardGroup>
 
-## Principles you can rely on
+***
 
-- **Local-first.** You author and run on your own machine. Your work doesn't leave it.
-- **Bring your own key.** Models run against your provider keys, stored in your OS
-  keychain — never on our servers. [Learn more](/providers/byok).
-- **Portable & inspectable.** What you build is yours to own, read, and move.
+## The Platform
 
-<Note>
-  This documentation covers the current Viorant Hub. Sections for **Spaces**,
-  **Memory**, and **deploying to Viorant Cloud** arrive with the 1.1 release.
-</Note>
+Where each part of Viorant stands today.
+
+<CardGroup cols={2}>
+  <Card title="Viorant Hub" icon="cube">
+    Build, author, and run your AI assets in one local-first environment. **Live now, free.**
+  </Card>
+
+  <Card title="The Vio File" icon="file-code">
+    Your whole AI system as one signed, declarative artifact. **In active development.**
+  </Card>
+
+  <Card title="Viorant Sign" icon="fingerprint">
+    Immutable history and provenance on every asset. **Coming soon.**
+  </Card>
+
+  <Card title="Viorant Helix" icon="rocket">
+    Deployment engine that ships your signed artifact anywhere. **In private preview.**
+  </Card>
+</CardGroup>
+
+***
+
+## Community & Support
+
+<AccordionGroup>
+  <Accordion title="Join the Founding Builder Program" icon="users">
+    Get early access to Helix and Sign, plus a direct line to the founding team.
+
+    * [Try Viorant Hub free](https://viorant.ai)
+    * [Join the program](https://viorant.ai)
+  </Accordion>
+
+  <Accordion title="Get Help" icon="life-ring">
+    Questions, issues, or feedback are welcome.
+
+    * Start with [installing the Hub](/getting-started/installation)
+    * Browse the [core concepts](/concepts/agents)
+    * Check [troubleshooting](/troubleshooting) for common issues
+  </Accordion>
+</AccordionGroup>
