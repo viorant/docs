@@ -1,0 +1,84 @@
+---
+title: "Bring your own OAuth app"
+description: "Some connectors need your own OAuth app — add its client ID and secret to connect."
+---
+
+Most remote MCP servers authorize automatically — you add the server and approve
+access in your browser (see [Connect a remote MCP server](/connectors/remote-mcp-oauth)).
+Some services, though, require you to **register your own OAuth app** and give the Hub
+its **Client ID** and **Client Secret**. This page explains when that happens and how
+to set it up.
+
+<Note>
+  Your Client Secret is stored in your **macOS keychain** and is **never sent to
+  Viorant's servers**. The Hub runs the OAuth flow directly with the service —
+  Viorant is not in the path.
+</Note>
+
+## When you need your own app
+
+When you add a connector, the Hub detects how the service handles authorization:
+
+- **Automatic** — the service registers the Hub for you. You approve access in your
+  browser and you're done.
+- **Bring your own app** — the service requires a pre-registered OAuth app. The Hub
+  asks for a **Client ID** and **Client Secret** that you create in that service's
+  developer settings.
+
+Services that currently need your own app include **Slack**, **HubSpot**,
+**GitHub**, **Asana**, and **Google Workspace**.
+
+You can add **any** remote MCP server by its URL. These guides cover the most common
+services; for anything else, add the server's URL and — if it asks for one — supply
+your own Client ID and Secret from that service's developer settings.
+
+## Why your own app?
+
+These services don't let an application register itself on the fly — they require an
+OAuth app that you own. Bringing your own app means the connection runs under **your**
+account and **your** permissions, not a shared Viorant identity. You control the
+scopes, and you can revoke access at any time from the service.
+
+## Add your credentials
+
+<Steps>
+  <Step title="Create an OAuth app in the service">
+    Follow the guide for your service below. Each one gives you a **Client ID** and a
+    **Client Secret**.
+  </Step>
+  <Step title="Register the redirect URI">
+    In the Hub's connector setup, copy the **redirect URI** it shows you and paste it
+    into your OAuth app's list of allowed redirect (callback) URLs. This is what lets
+    the service hand authorization back to the Hub. Copy it exactly.
+  </Step>
+  <Step title="Paste the Client ID and Secret, then connect">
+    Enter them in the connector's settings in the Hub and click **Connect**. Your
+    browser opens the service's consent screen — approve it, and the connector's tools
+    load.
+  </Step>
+</Steps>
+
+<Tip>
+  If you click **Connect** for a service that needs its own app before adding
+  credentials, the Hub tells you what's missing and links back to the guide.
+</Tip>
+
+## Provider guides
+
+<CardGroup cols={2}>
+  <Card title="GitHub" icon="github" href="/connectors/github">
+    Repositories, issues, and pull requests.
+  </Card>
+  <Card title="Slack" icon="slack" href="/connectors/slack">
+    Channels, search, and workspace tools.
+  </Card>
+  <Card title="HubSpot" icon="hubspot" href="/connectors/hubspot">
+    CRM records — contacts, companies, deals.
+  </Card>
+  <Card title="Asana" icon="asana" href="/connectors/asana">
+    Tasks, projects, and portfolios.
+  </Card>
+  <Card title="Google Workspace" icon="google" href="/connectors/google-workspace">
+    Gmail, Drive, and Calendar.
+  </Card>
+</CardGroup>
