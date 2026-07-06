@@ -1,0 +1,76 @@
+---
+title: "Built-in tools"
+description: "web_search, web_fetch, and current_time — the tools every agent can use without a connector."
+---
+
+**Built-in tools** ship with the Hub. Unlike [connector](/concepts/connectors) tools,
+they need no external service — any skill or agent can use them by name, once you grant
+them.
+
+| Tool           | What it does                                            | Setup                     |
+| -------------- | ------------------------------------------------------- | ------------------------- |
+| `web_search`   | Searches the web and returns ranked results.            | Needs a **Tavily API key** |
+| `web_fetch`    | Fetches a URL and returns its main content as markdown. | None                      |
+| `current_time` | Returns the current date and time.                      | None                      |
+
+## Grant a tool to a skill or agent
+
+A tool is only callable if it's in the skill or agent's **allowed tools**. Add the tool
+by name (`web_search`, `web_fetch`, `current_time`) in the [Skill Master](/masters/skill)
+or on the agent — that's the only permission a built-in tool needs.
+
+## Web search
+
+`web_search` is powered by [Tavily](https://tavily.com). It returns ranked results
+(title, URL, snippet) — **5** by default, up to **20**. It's the one built-in tool that
+needs a key: the Hub calls Tavily **directly** with your key, so you must add one before
+`web_search` will run.
+
+### Get a Tavily API key
+
+<Steps>
+  <Step title="Create a Tavily account">
+    Go to [tavily.com](https://tavily.com) and sign up. The free tier is enough to get
+    started.
+  </Step>
+  <Step title="Copy your API key">
+    From the Tavily dashboard, copy your API key — it starts with `tvly-`.
+  </Step>
+</Steps>
+
+### Add the key in the Hub
+
+<Steps>
+  <Step title="Open Viorant Tools">
+    In the Hub, open the **Connectors** surface and select **Viorant Tools** — the
+    built-in tools entry, always pinned to the top of the list.
+  </Step>
+  <Step title="Paste your Tavily key">
+    In the **Tool keys** panel, paste your key into **Tavily API key** and click **Save
+    key**. The Hub verifies the key against Tavily before saving.
+  </Step>
+  <Step title="Enable web search">
+    Turn on `web_search` for the skills or agents that should use it. The toggle stays
+    disabled until a valid key is saved.
+  </Step>
+</Steps>
+
+<Note>
+  Your Tavily key is stored in your **OS keychain** and is **never sent to Viorant's
+  servers** — and it's never shown again after saving. To rotate it, save a new key; to
+  turn off web search, remove the key with **Remove key**.
+</Note>
+
+## Web fetch
+
+`web_fetch` takes a URL, downloads the page, and returns its **main content as
+markdown** (readability extraction, up to ~100 KB by default). Use it to read a specific
+page — often a result from `web_search`.
+
+It needs **no key and no account**. The only requirement is that `web_fetch` is in the
+skill or agent's allowed tools.
+
+## Current time
+
+`current_time` returns the current date and time (ISO 8601 + Unix milliseconds), with an
+optional IANA timezone. No setup.

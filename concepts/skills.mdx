@@ -14,9 +14,14 @@ beyond Viorant — and the folder on disk is the source of truth.
 
 A skill lists the **tools** it needs by name. At run time those names resolve to:
 
-- **built-in tools** — `web_fetch`, `web_search`, `current_time` (no setup, no auth), and
+- **built-in tools** — `current_time`, `web_fetch`, and `web_search` (`web_search` needs
+  a [Tavily key](/connectors/built-in-tools); the other two need no setup), and
 - **connector-served tools** — actions from an external service you've connected via a
   [Connector](/concepts/connectors).
+
+<Card title="Built-in tools" icon="toolbox" href="/connectors/built-in-tools">
+  Web search, web fetch, and current time — and how to add a Tavily key.
+</Card>
 
 <Card title="Author a skill" icon="screwdriver-wrench" href="/masters/skill">
   Create and edit skills in the Skill Master.
