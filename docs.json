@@ -172,6 +172,10 @@
   "integrations": {
     "ga4": {
       "measurementId": "G-F61X92GQ8T"
+    },
+    "posthog": {
+      "apiKey": "phc_vWGRJCZvrrQQwSDYJY5TBhF2YGxQcU96frADBTt8b8QL",
+      "apiHost": "https://us.i.posthog.com"
     }
   }
 }
