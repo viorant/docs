@@ -31,11 +31,21 @@
           {
             "group": "Concepts",
             "pages": [
+              "concepts/spaces",
               "concepts/agents",
               "concepts/masters",
               "concepts/skills",
               "concepts/connectors",
-              "concepts/providers-models"
+              "concepts/providers-models",
+              "concepts/tabs-and-editors"
+            ]
+          },
+          {
+            "group": "Spaces",
+            "pages": [
+              "spaces/create-a-space",
+              "spaces/import-connectors-models",
+              "spaces/add-an-asset"
             ]
           },
           {
@@ -44,7 +54,8 @@
               "masters/prompt",
               "masters/model",
               "masters/skill",
-              "masters/agent"
+              "masters/agent",
+              "masters/memory"
             ]
           },
           {

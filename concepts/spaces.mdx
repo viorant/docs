@@ -1,0 +1,42 @@
+---
+title: "Spaces"
+description: "An independent project where your prompts, skills, agents, models, and connectors work together as one runnable system."
+---
+
+A **Space** is an independent project. Your prompts, skills, agents, models,
+connectors, and memory live together inside it as **real files** and work as one
+system — you compose them into something that runs and ships.
+
+Everything in a Space is on disk, in formats you can read, version, and move. The
+Space is the container; the [Masters](/concepts/masters) are where you author each
+part.
+
+## What lives in a Space
+
+- **Assets** — the things you author: prompts, skills, agents, and (soon) memory,
+  each stored as its own file.
+- **Pools** — the models and connectors this Space can draw on, imported from your
+  [Model](/masters/model) and [Connector](/connectors/remote-mcp-oauth) setup.
+- **A manifest** (`project.vpj`) — the Space's name, description, and default
+  framework.
+
+## Composition
+
+The point of a Space is **composition**: separate, reusable parts assembled into a
+working whole. The same prompt or model can back many agents, and each part stays
+something you can reason about on its own. An [Agent](/concepts/agents) is the
+assembly; the files are the source of truth.
+
+## Portable by design
+
+Each Space is versioned on its own and **compiles to a portable bundle you can run
+locally now and deploy later** — so what you build stays yours and stays runnable.
+
+<CardGroup cols={2}>
+  <Card title="Create a Space" icon="folder-plus" href="/spaces/create-a-space">
+    Start fresh or open an existing folder.
+  </Card>
+  <Card title="Add your first asset" icon="file-plus" href="/spaces/add-an-asset">
+    Create a prompt, skill, or agent inside a Space.
+  </Card>
+</CardGroup>

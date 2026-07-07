@@ -1,0 +1,32 @@
+---
+title: "Import connectors & models"
+description: "Bring models and connectors into a Space's pools so its agents can use them."
+---
+
+A [Space](/concepts/spaces) draws on two pools: the **models** it can run against and
+the **connectors** whose tools its agents can call. Importing adds a reference to
+something you've already set up — your keys and credentials stay where they are.
+
+## Models
+
+Import any model you've activated in the [Model Master](/masters/model). The Space
+records a reference (in `models.json`) to the model; the provider key stays in your
+keychain and is never copied into the Space.
+
+<Note>
+  The model list is empty until you've added a provider and activated at least one
+  model. See [Bring your own key](/providers/byok).
+</Note>
+
+## Connectors
+
+Import any connector you've added in the
+[Connectors](/connectors/remote-mcp-oauth) surface. The Space records a reference (in
+`connectors.json`); OAuth tokens stay in your keychain. Built-in tools are always
+available without importing anything.
+
+## When to import
+
+You can import during the [create-a-space](/spaces/create-a-space) wizard or any time
+afterward from the Space's model and connector pools. It's **skippable** — add slots
+as your agents need them.

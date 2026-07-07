@@ -1,0 +1,51 @@
+---
+title: "Create a Space"
+description: "Start a new Space fresh or from an existing folder, then name it and pick a framework."
+---
+
+Creating a [Space](/concepts/spaces) walks through a short wizard. The same wizard
+opens automatically the first time you launch the Hub.
+
+## Choose an origin
+
+<CardGroup cols={2}>
+  <Card title="Start fresh" icon="sparkles">
+    Viorant creates a new project folder for you — no files to pick. Best for a
+    brand-new project.
+  </Card>
+  <Card title="Open a folder" icon="folder-open">
+    Point Viorant at an existing folder and adopt it as a Space. The name is
+    prefilled from the folder.
+  </Card>
+</CardGroup>
+
+## Fill in the details
+
+<Steps>
+  <Step title="Name">
+    A required name for the Space. Adopting a folder prefills this.
+  </Step>
+  <Step title="Description">
+    An optional one-line description of what the Space is for.
+  </Step>
+  <Step title="Framework">
+    The default agent framework. **CrewAI** is selected today; other frameworks
+    are coming soon.
+  </Step>
+</Steps>
+
+These are written to the Space's `project.vpj` manifest.
+
+## Import and first file
+
+The wizard then offers two optional steps you can skip and return to later:
+
+- **[Import connectors & models](/spaces/import-connectors-models)** — bring
+  existing models and connectors into this Space's pools.
+- **[Create your first file](/spaces/add-an-asset)** — jump straight into creating a
+  prompt, skill, or agent.
+
+<Tip>
+  Both steps are skippable. Skip "Create your first file" and you land on the
+  Space's empty-state, where the same create actions are always one click away.
+</Tip>
