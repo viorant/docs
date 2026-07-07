@@ -10,7 +10,10 @@
     "light": "#f8bb5b",
     "dark": "#d97706"
   },
-  "favicon": "/favicon.svg",
+  "favicon": {
+    "light": "/images/022326_Viorant_logos_MARK_BG-WH-LG-FLAT.png",
+    "dark": "/images/022326_Viorant_logos_MARK_BG-WH-LG-FLAT.png"
+  },
   "navigation": {
     "tabs": [
       {
@@ -95,7 +98,8 @@
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "dark": "/images/022326_Viorant_logos_HORIZ_BG-WH-LG-FLAT.svg",
+    "href": "https://viorant.ai"
   },
   "navbar": {
     "links": [
