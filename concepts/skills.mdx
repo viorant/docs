@@ -19,6 +19,12 @@ A skill lists the **tools** it needs by name. At run time those names resolve to
 - **connector-served tools** — actions from an external service you've connected via a
   [Connector](/concepts/connectors).
 
+<Warning>
+  List only the tools the skill actually needs — not every tool available.
+  A tight tool list keeps the agent focused and runs cheaper and faster;
+  add a tool when the skill reaches for it, not up front.
+</Warning>
+
 <Card title="Built-in tools" icon="toolbox" href="/connectors/built-in-tools">
   Web search, web fetch, and current time — and how to add a Tavily key.
 </Card>

@@ -21,10 +21,22 @@ The Test panel runs your prompt against any [model](/masters/model) — the mana
 trial model or one of your own keys — and streams the response back live. Switch
 modes to see single-shot vs. chat behavior.
 
-## Versioning
+## Comparing versions
 
-Prompts are versioned: **commit** a snapshot when you're happy with it, and the
-version history lets you compare and restore.
+Prompts are versioned. When a prompt is in a good state, **commit** a snapshot —
+the **Version History** panel then lists every commit, newest first, with its
+message and time. From that list you can:
+
+- **See what changed** — open a past commit to bring up its **diff view**. The
+  diff isn't a file you edit; it's a read-only view comparing that snapshot to
+  the current prompt, with additions and removals highlighted line by line.
+- **Restore a commit** — select a version and click **Restore Version**. The Hub
+  sets the prompt back to that snapshot and records the restore as a new commit,
+  so nothing in the history is lost.
+
+The **current-version** badge marks the latest commit — you can't diff or restore
+it against itself. If you have uncommitted edits, they show as a pending change
+you can diff against the last commit before deciding to commit or restore.
 
 <Note>
   Screenshots and a full field-by-field walkthrough are being added to this page.

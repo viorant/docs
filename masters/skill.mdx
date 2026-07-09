@@ -3,29 +3,57 @@ title: "Skill Master"
 description: "Create and edit the reusable tasks your agents can perform."
 ---
 
-The **Skill Master** is where you author [Skills](/concepts/skills) — reusable tasks
-in the open [agentskills.io](https://agentskills.io) format.
+The **Skill Master** is where you author [Skills](/concepts/skills) — reusable
+tasks in the open [agentskills.io](https://agentskills.io) format.
 
-## What you get
+## What a skill is on disk
 
-- A **skill library** and a file tree for each skill's folder.
-- A **`SKILL.md` editor** to write the skill's instructions and declare the tools it
-  uses (with `@tool` autocomplete).
-- **Example skills** to start from.
-- **Commit** support so each skill is versioned.
-
-## Tools a skill can use
-
-Reference tools by name in the skill. They resolve at run time to built-in tools
-(`web_fetch`, `web_search`, `current_time`) or to tools served by a
-[Connector](/connectors/remote-mcp-oauth) you've authorized.
-
-## Test a skill
-
-Run a skill against a model and watch its trace — including the tools it calls —
-stream back live.
+Creating a skill makes a **folder with a single `SKILL.md`** inside it. That file
+*is* the skill: YAML frontmatter (name, description, and the tools the skill is
+allowed to use) followed by the instructions the agent reads at run time. The
+folder on disk is the source of truth — everything else is layered on top of it.
 
 <Note>
-  Screenshots and a worked example (authoring a skill end to end) are being added to
-  this page.
+  The working surface today is deliberately small: **create a skill and edit its
+  `SKILL.md`**. Importing skills, testing, and version history build on that core
+  (below) and are still stabilizing.
+</Note>
+
+## Create or import
+
+- **Create** — give the skill a name and description; the Hub scaffolds the
+  folder and a starter `SKILL.md`.
+- **Import** — point at an existing skill folder. Bundled `scripts/`, `data/`,
+  and `references/` are preserved as read-only assets (scripts are not executed
+  in V1).
+- **Example skills** — start from a worked example instead of a blank file.
+
+## Choose only the tools the skill needs
+
+In the `SKILL.md` frontmatter you list the tools the skill may call, referencing
+each by name with `@` autocomplete. Those names resolve at run time to:
+
+- **built-in tools** — `current_time`, `web_fetch`, and `web_search`
+  (`web_search` needs a [Tavily key](/connectors/built-in-tools); the other two
+  need no setup), and
+- **connector-served tools** — actions from a
+  [Connector](/connectors/remote-mcp-oauth) you've authorized.
+
+<Warning>
+  **Don't add every available tool.** Declare only the tools the skill actually
+  uses. A tight tool list keeps the agent focused, makes runs cheaper and
+  faster, and stops the model from reaching for an unrelated action. Add a tool
+  when the skill needs it — not up front "just in case."
+</Warning>
+
+## Test and version
+
+You can run a skill against a model to see what it does, and **commit** a
+snapshot of the `SKILL.md` to keep a version history. Skills use the same
+diff-and-restore model as prompts — a commit tracks the `SKILL.md` only — so see
+[Comparing versions](/masters/prompt#comparing-versions) for how it works.
+
+<Note>
+  Screenshots and a worked example (authoring a skill end to end) are being added
+  to this page.
 </Note>
