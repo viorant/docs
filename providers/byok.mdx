@@ -1,16 +1,33 @@
 ---
 title: "Bring your own key (BYOK)"
-description: "Add a provider key and run models from your own account."
+description: "Add a provider key and run models from your own account, with no metering."
 ---
 
-Viorant is **bring-your-own-key**. You add a provider's API key once, and the Hub
+Viorant supports **bring-your-own-key**. You add a provider's API key once, and the Hub
 runs that provider's models **directly from your machine** — your key, your account,
-your usage.
+your usage, and no credit cost.
 
 <Note>
-  Your key is stored in your **macOS keychain** and is **never sent to Viorant's
-  servers**. The Hub calls the provider API itself; Viorant is not in the path.
+  Your key is stored in your operating system's credential store — the **Keychain** on
+  macOS, **Credential Manager** on Windows — and is **never sent to Viorant's servers**.
+  The Hub calls the provider API itself; Viorant is not in the path.
 </Note>
+
+## Credits or your own key?
+
+Both work, and you can mix them freely — different models in the same space can use
+different providers.
+
+| | Viorant provider | Your own key |
+| --- | --- | --- |
+| Setup | None — works on first sign-in | Add a key per vendor |
+| Cost | Spends [credits](/providers/credits) | Billed by your vendor |
+| Model choice | Three managed tiers | Anything the vendor offers |
+| Request path | Via Viorant's control plane (metered) | Machine → vendor, direct |
+
+Use the [credit wallet](/providers/credits) to get started with no setup. Bring a key
+when you want a specific model, your own rate limits and billing, or a request path
+that doesn't involve Viorant at all.
 
 ## Add a key
 
@@ -32,10 +49,9 @@ your usage.
 
 The Hub supports keys for the major providers and a range of additional
 OpenAI-compatible vendors — nine in total — so you can run agents against whichever
-account you already have.
+account you already have. Local OpenAI-compatible runtimes such as Ollama and
+LM Studio can be added by base URL.
 
-## Trial grant vs. your key
-
-New accounts get a small Viorant-funded trial grant to test against a managed model
-first. It's a trial that converts to BYOK — when it runs out, add your own key to
-keep going. BYOK is the steady state; the grant just removes first-run friction.
+<Card title="Credits & the Viorant provider" icon="coins" href="/providers/credits">
+  Prefer not to manage a key? Run on managed tiers from your credit wallet.
+</Card>

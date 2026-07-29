@@ -1,19 +1,21 @@
 ---
 title: "Your first run"
-description: "Write a prompt and run it — with a free trial grant or your own key."
+description: "Write a prompt and run it — no API key required."
 ---
 
-Once you're signed in, you can test a prompt right away. You have two ways to run:
+Once you're signed in, you can test a prompt right away. **You don't need an API key
+to start** — your account comes with a credit wallet and access to Viorant's managed
+models.
 
 <CardGroup cols={2}>
-  <Card title="Try the free grant" icon="gift">
-    New accounts get a small, Viorant-funded credit grant so you can test a prompt
-    against a managed model **before bringing a key**. It's a trial, not a
-    subscription — no card, no markup.
+  <Card title="Start with credits" icon="coins" href="/providers/credits">
+    Every account gets **2,500 credits**, once. Pick a Viorant tier and run — no card,
+    no key, no setup.
   </Card>
-  <Card title="Bring your own key" icon="key" href="/providers/byok">
+  <Card title="Or bring your own key" icon="key" href="/providers/byok">
     Add your OpenAI, Anthropic, Google, or other provider key in the Model Master.
-    Keys live in your OS keychain and never leave your machine.
+    Keys live in your OS credential store and never leave your machine — and cost no
+    credits.
   </Card>
 </CardGroup>
 
@@ -25,8 +27,9 @@ Once you're signed in, you can test a prompt right away. You have two ways to ru
     assistant. Answer in one sentence."*
   </Step>
   <Step title="Pick a model">
-    In the Test panel, choose a model. Use the managed trial model, or
-    [add your own provider key](/providers/byok) and pick one of yours.
+    In the Test panel, choose a model. Use a **Viorant** tier — Low, Mid, or High — to
+    run on credits, or [add your own provider key](/providers/byok) and pick one of
+    yours.
   </Step>
   <Step title="Test it">
     Send a message and watch the response stream back live. Switch between
@@ -35,10 +38,19 @@ Once you're signed in, you can test a prompt right away. You have two ways to ru
 </Steps>
 
 <Tip>
-  When your trial grant runs out, the managed model greys out with an
-  "add your key" prompt. Add a provider key to keep going — that's the BYOK steady
-  state.
+  Start on **Low** while you're iterating on wording — it's the cheapest tier and
+  usually enough to tell whether a prompt is heading the right way. Move up to Mid or
+  High for the runs that matter.
 </Tip>
+
+## Keeping an eye on credits
+
+Your balance sits next to your profile. For the breakdown, open the profile menu and
+choose **Usage** — you'll see a day-by-day history and can expand any date to see the
+individual runs behind it.
+
+If the balance reaches zero, managed models stop and the Hub prompts you to
+[add your own key](/providers/byok), which has no credit cost.
 
 ## Where to go next
 

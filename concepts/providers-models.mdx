@@ -9,15 +9,26 @@ Model Master has two related resources:
   holding your defaults and your **API key**.
 - A **Model** references a provider and adds per-model settings (and cost metadata).
 
-## Bring your own key
+## Two ways to run
 
-Viorant runs models **directly from your machine** against **your** provider key.
-Keys live in your OS keychain and are **never sent to Viorant's servers** — the
-Hub calls the provider API itself.
+**Viorant** is a built-in managed provider that needs no key. It offers three tiers —
+Low, Mid, and High — and each call draws from your account's
+[credit wallet](/providers/credits). This is what makes a brand-new account usable
+immediately.
 
-A brand-new account also gets a small managed-inference trial grant so you can test
-before adding a key; see [your first run](/getting-started/first-run).
+**Your own provider** runs models **directly from your machine** against **your** key.
+Keys live in your OS credential store — Keychain on macOS, Credential Manager on
+Windows — and are **never sent to Viorant's servers**. The Hub calls the provider API
+itself, and these runs cost no credits.
 
-<Card title="Add a provider key" icon="key" href="/providers/byok">
-  Bring your own key and pick a model.
-</Card>
+You can mix them: different models in the same space can sit on different providers,
+so it's normal to iterate on a Viorant tier and run production work on your own key.
+
+<CardGroup cols={2}>
+  <Card title="Credits & the Viorant provider" icon="coins" href="/providers/credits">
+    Run on managed tiers with no setup.
+  </Card>
+  <Card title="Add a provider key" icon="key" href="/providers/byok">
+    Bring your own key and pick a model.
+  </Card>
+</CardGroup>

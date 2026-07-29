@@ -1,0 +1,91 @@
+---
+title: "Credits & the Viorant provider"
+description: "Run models without bringing a key — how the credit wallet works and what spends it."
+---
+
+You don't need an API key to start using Viorant. Every signed-in account gets a
+**credit wallet** and access to the **Viorant managed provider**, so you can write a
+prompt, run an agent, and see real output on your first session.
+
+<Note>
+  Credits are the zero-setup path. [Bringing your own key](/providers/byok) is still
+  fully supported and has no credit cost — use it when you want your own account,
+  your own rate limits, or a model Viorant doesn't manage.
+</Note>
+
+## Your wallet
+
+New accounts are granted **2,500 credits**, once. There's no card, no subscription,
+and no monthly reset.
+
+The wallet is a single balance. Everything you do that calls a managed model draws
+from the same pool — there's no separate allowance per feature.
+
+## What spends credits
+
+Two things in the Hub spend credits, and only when you use the **Viorant** provider:
+
+<CardGroup cols={2}>
+  <Card title="The AI prompt builder" icon="wand-magic-sparkles">
+    Generating a prompt, and improving an existing one.
+  </Card>
+  <Card title="Test runs" icon="play">
+    Running a prompt, skill, or agent against a Viorant tier from a test panel.
+  </Card>
+</CardGroup>
+
+Anything running on **your own provider key costs no credits** — that traffic goes
+from your machine straight to the vendor and never touches Viorant's metering.
+
+## Tiers
+
+The Viorant provider offers three tiers. They differ in capability and in what they
+cost you per call:
+
+| Tier | Use it for | Relative cost |
+| --- | --- | --- |
+| **Low** | Fast, cheap iteration and simple prompts | Lowest |
+| **Mid** | Everyday work — the sensible default | Moderate |
+| **High** | Hard reasoning, long context, final passes | Highest |
+
+Pick a tier in the Model Master, or in the prompt builder when you generate. A
+single prompt generation typically costs a **handful of credits on Low** and
+**under ten on High** — so the starting grant covers a lot of ordinary iteration.
+
+<Tip>
+  Cost scales with how much text goes in and comes out, not just the tier. A long
+  document in the context window costs more than a one-line question at the same
+  tier.
+</Tip>
+
+## Watching your balance
+
+Your balance is visible in the Hub next to your profile, and the prompt builder shows
+what a generation will draw before you run it.
+
+For the detail, open the profile menu and choose **Usage**. You'll get your current
+balance plus a day-by-day history — each date shows the balance you ended that day on,
+and expands to the individual entries behind it, so you can see exactly what a
+particular session cost.
+
+## When you run out
+
+At zero, calls to the Viorant provider stop rather than silently failing or billing
+you. The Hub tells you the balance is exhausted and points you at
+[adding your own key](/providers/byok).
+
+Adding a key restores full functionality immediately — your own models have no credit
+cost and no cap beyond whatever your provider account allows.
+
+## Where your data goes
+
+Managed-model calls are **metered server-side**, which means the request passes through
+Viorant's control plane to reach the model. That's what makes zero-key usage possible.
+
+If you would rather no prompt content passed through Viorant at all,
+[use your own key](/providers/byok) — that path calls the provider directly from your
+machine, and Viorant is not in the request path.
+
+<Card title="Bring your own key" icon="key" href="/providers/byok">
+  Use your own provider account instead — no credit cost, no metering.
+</Card>
