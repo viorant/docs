@@ -1,20 +1,24 @@
 ---
 title: "Installation"
-description: "Download and install the Viorant Hub on macOS."
+description: "Download and install the Viorant Hub on macOS or Windows."
 ---
 
-The Viorant Hub is a native macOS desktop app, signed and notarized by Apple.
+The Viorant Hub is a native desktop app, available for **macOS** and **Windows**. Both
+builds are code-signed.
 
 <Note>
-  macOS is the supported platform today. Windows and Linux builds are planned.
+  macOS and Windows are supported today. Linux is not yet available.
 </Note>
 
-## Download
+## macOS
+
+The macOS build is signed and notarized by Apple, and ships as a universal binary
+(Apple Silicon and Intel).
 
 <Steps>
   <Step title="Get the latest build">
-    Download the Hub from [**dl.viorant.ai/mac**](https://dl.viorant.ai/mac). The link
-    always resolves to the current release — `Viorant Hub.dmg`.
+    Download from [**dl.viorant.ai/mac**](https://dl.viorant.ai/mac). The link always
+    resolves to the current release — `Viorant Hub.dmg`.
   </Step>
   <Step title="Open the disk image">
     Double-click the downloaded `.dmg`, then drag **Viorant Hub** into your
@@ -26,10 +30,39 @@ The Viorant Hub is a native macOS desktop app, signed and notarized by Apple.
   </Step>
 </Steps>
 
+## Windows
+
+The Windows build is an Authenticode-signed NSIS installer.
+
+<Steps>
+  <Step title="Get the latest build">
+    Download from [**dl.viorant.ai/windows**](https://dl.viorant.ai/windows). The link
+    always resolves to the current release installer.
+  </Step>
+  <Step title="Run the installer">
+    Double-click the downloaded `.exe` and follow the prompts.
+  </Step>
+  <Step title="Launch">
+    Open **Viorant Hub** from the Start menu or the desktop shortcut.
+  </Step>
+</Steps>
+
+<Tip>
+  Windows SmartScreen may still show a warning on a newly published version, even for
+  a signed installer — reputation builds up over time per release. If you see one,
+  check the publisher reads **Viorant Inc.**, then choose **More info → Run anyway**.
+</Tip>
+
 ## Staying up to date
 
-The Hub updates itself. When a new version is available it downloads in the
-background and prompts you to relaunch — you don't need to revisit the download page.
+The Hub updates itself on both platforms. When a new version is available it downloads
+in the background and prompts you to relaunch — you don't need to revisit the download
+page.
+
+<Note>
+  A new release can take up to an hour to appear to an already-installed Hub. If you
+  want it immediately, download it from the links above.
+</Note>
 
 ## Next
 

@@ -74,6 +74,7 @@
           {
             "group": "Providers & models",
             "pages": [
+              "providers/credits",
               "providers/byok"
             ]
           },
@@ -101,7 +102,7 @@
         },
         {
           "anchor": "Download the Hub",
-          "href": "https://dl.viorant.ai/mac",
+          "href": "https://docs.viorant.ai/getting-started/installation",
           "icon": "download"
         }
       ]
@@ -122,7 +123,7 @@
     "primary": {
       "type": "button",
       "label": "Download the Hub",
-      "href": "https://dl.viorant.ai/mac"
+      "href": "https://docs.viorant.ai/getting-started/installation"
     }
   },
   "contextual": {
