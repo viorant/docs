@@ -1,46 +1,69 @@
 ---
 title: "Connect a remote MCP server"
-description: "Authorize a remote MCP server over OAuth and use its tools."
+description: "Add a connector, bring it into a Space, and authorize it there."
 ---
 
 A [Connector](/concepts/connectors) links the Hub to a **remote MCP server** so your
-skills and agents can use that service's tools. You can add **any** remote HTTP MCP
-server by its URL. Authorization uses the standard **OAuth** flow in your browser, and
-the Hub talks to the server **directly** — Viorant's servers are never in the path.
+skills and agents can use that service's tools. Authorization uses the standard
+**OAuth** flow in your browser, and the Hub calls the server directly from your machine.
 
-## Find a server
+<Warning>
+  **If you used connectors before this release, you'll sign in again.** Connectors are
+  now authorized per [Space](/concepts/spaces) rather than once globally. Existing
+  connections are not carried over — your connectors are still listed, but each Space
+  needs its own authorization. This is a one-time step per Space.
+</Warning>
 
-Browse remote MCP servers at [mcpservers.org](https://mcpservers.org/remote-mcp-servers),
-a directory of authenticated remote HTTP MCP servers. Add any of them — or any server
-with a similar URL — to the Hub by pasting its URL.
+## Find a connector
 
-## How a connection works
+Two ways in:
 
-- **Most servers connect automatically** — you add the URL, approve access in your
-  browser, and you're done.
-- **Some need your own OAuth app** — the service requires you to register an app and
-  supply a **Client ID** and **Client Secret** first. If a server won't connect on its
-  own, that's usually why. See [Bring your own OAuth app](/connectors/oauth-apps).
+- **The Connector Directory** — a curated, in-app list of services that are known to
+  work. Browse it, and add what you need to your connector list.
+- **Any remote MCP server, by URL** — paste an HTTP MCP server's URL, or its JSON
+  config, to add something the directory doesn't carry.
+  [mcpservers.org](https://mcpservers.org/remote-mcp-servers) is a good index of
+  what's out there.
 
-## Connect a server
+Adding a connector here only makes it *available*. It doesn't sign you in.
+
+## Connect it in a Space
 
 <Steps>
-  <Step title="Add a connector">
-    Enter the remote MCP server's URL to add it as a connector.
+  <Step title="Add the connector to your list">
+    From the Connector Directory, or by URL for a custom server.
   </Step>
-  <Step title="Authorize in your browser">
-    The Hub opens your browser to the service's OAuth consent screen. Approve access.
+  <Step title="Add it to a Space">
+    Open the Space's connectors and add it from your list. It lands **added but not
+    authorized** — present, with no tools loaded yet.
   </Step>
-  <Step title="Return to the Hub">
-    The browser hands you back; the Hub stores the access token securely in your
-    keychain and loads the server's available tools.
+  <Step title="Authorize">
+    Choose **Authenticate**. Your browser opens the service's consent screen; approve
+    it. Some services need an OAuth app you register yourself first — see
+    [Bring your own OAuth app](/connectors/oauth-apps).
+  </Step>
+  <Step title="Choose the tools">
+    Once authorized, the connector's tools load with descriptions. Enable them
+    individually, or all at once. Only enabled tools are offered to agent runs.
   </Step>
 </Steps>
 
+Repeat step 2 onward for each Space that needs it. Each Space holds its own
+authorization, so different Spaces can sign into different accounts on the same
+service.
+
+## Turning a connector off
+
+Disabling a connector in a Space keeps it authorized and configured but takes it out of
+agent runs — useful when you want it available but not in play.
+
+**Removing** it from the Space deletes that Space's credentials for it. Other Spaces
+keep theirs.
+
 ## Use the tools
 
-Once connected, the server's tools are available by name to your
-[skills](/masters/skill) and agents. The Hub keeps the tool list in sync and lets you
+Once authorized and enabled, the server's tools are available by name to that Space's
+[skills](/masters/skill) and agents. The Hub keeps the tool list in sync, and you can
 re-authorize, disable, or remove a connector at any time.
 
 <Note>

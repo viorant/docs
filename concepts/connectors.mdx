@@ -1,6 +1,6 @@
 ---
 title: "Connectors"
-description: "How the Hub reaches the tools your agents use."
+description: "How the Hub reaches the tools your agents use — and why they're set up per Space."
 ---
 
 A **Connector** is how the Hub reaches an external service's **tools** — the
@@ -8,12 +8,69 @@ callable actions a skill or agent can use (list a calendar, create an issue, sea
 workspace, and so on).
 
 Viorant connects to **remote MCP servers** ([Model Context Protocol](https://modelcontextprotocol.io))
-using the standard **OAuth** authorization flow. You authorize in your browser, and
-the Hub stores the resulting token securely in your OS keychain. The Hub talks
-**directly** to the service — Viorant's servers are never in the path.
+using the standard **OAuth** authorization flow. You authorize in your browser, and the
+Hub stores the resulting token in your OS keychain — Keychain on macOS, Credential
+Manager on Windows.
 
-Once connected, a server's tools become available to your skills and agents by name.
+## Two levels: your list, and each Space
 
-<Card title="Connect a remote MCP server" icon="plug" href="/connectors/remote-mcp-oauth">
-  Step-by-step: authorize and use a connector.
-</Card>
+Connectors work at two levels, and the distinction is the thing worth understanding
+first.
+
+| | What it is | What you do there |
+| --- | --- | --- |
+| **Your connector list** | The connectors you've made available to yourself, browsed from the built-in **Connector Directory** or added by URL | Add and remove. Nothing else. |
+| **A Space's connectors** | The connectors a particular Space can actually use | Authorize, enable, choose which tools are exposed, configure |
+
+**Nothing is authorized at the list level.** Adding a connector to your list makes it
+*available*; it does not sign you in anywhere. All of that happens inside a
+[Space](/concepts/spaces), which means the same connector can be signed into a
+different account in two different Spaces, and a Space you share the shape of carries
+no credentials with it.
+
+## The states a connector can be in
+
+Two independent things are true of a connector in a Space: whether it's **authorized**,
+and whether it's **enabled**.
+
+- **Not authorized** — it's in the Space, but you haven't signed in yet. Its tools
+  aren't loaded.
+- **Authorized** — you've signed in and the Hub has loaded its tool list.
+- **Needs re-authorization** — the connection expired or was revoked at the service.
+  Reconnect from the Space's connector pool.
+- **Enabled / disabled** — independent of sign-in. A disabled connector stays
+  authorized and configured but is not offered to agent runs, which is how you keep a
+  connector around without letting it be used.
+
+Within an authorized connector you can also enable or disable **individual tools**, so
+an agent is only ever offered the actions you intend.
+
+## Removing a connector
+
+Removing a connector **from a Space** deletes that Space's credentials for it — its
+OAuth tokens, any client registration, and any client secret you supplied. Other
+Spaces are untouched.
+
+Removing it from **your list** removes it everywhere and takes each Space's
+credentials with it.
+
+## Where Viorant sits
+
+The Hub calls the MCP server **directly** from your machine. Your tokens, your prompts,
+and the tool results never pass through Viorant's servers.
+
+The one exception is the **OAuth redirect**. Services hand authorization back to a
+registered HTTPS address, so the return leg routes through a fixed Viorant callback
+that immediately relays it to your Hub. Viorant sees the redirect go past; it never
+performs the token exchange and never holds a token. The exchange happens on your
+machine, protected by [PKCE](https://oauth.net/2/pkce/), and the token goes straight
+into your OS keychain.
+
+<CardGroup cols={2}>
+  <Card title="Add a connector to a Space" icon="plug" href="/connectors/remote-mcp-oauth">
+    Browse the directory, add it to a Space, and authorize.
+  </Card>
+  <Card title="Bring your own OAuth app" icon="key" href="/connectors/oauth-apps">
+    For services that require an app you register yourself.
+  </Card>
+</CardGroup>

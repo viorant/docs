@@ -11,8 +11,10 @@ to set it up.
 
 <Note>
   Your Client Secret is stored in your **OS credential store** — Keychain on macOS,
-  Credential Manager on Windows — and is **never sent to Viorant's servers**. The Hub
-  runs the OAuth flow directly with the service — Viorant is not in the path.
+  Credential Manager on Windows — and is **never sent to Viorant's servers**. The token
+  exchange runs on your machine, so Viorant never holds an access token either. The one
+  part that does route through Viorant is the **redirect** back from the service; see
+  [where Viorant sits](/concepts/connectors#where-viorant-sits).
 </Note>
 
 ## When you need your own app
@@ -48,17 +50,26 @@ scopes, and you can revoke access at any time from the service.
     Follow the guide for your service below. Each one gives you a **Client ID** and a
     **Client Secret**.
   </Step>
-  <Step title="Register the redirect URI">
-    In the Hub's connector setup, copy the **redirect URI** it shows you and paste it
-    into your OAuth app's list of allowed redirect (callback) URLs. This is what lets
-    the service hand authorization back to the Hub. Copy it exactly.
+  <Step title="Register the callback URL">
+    In the Space's connector settings, use **Copy callback URL** and paste it into your
+    OAuth app's list of allowed redirect (callback) URLs. Copy it exactly.
+
+    It's a fixed `https://` address and it's the **same for every connector and every
+    Space**, so you only ever register one — and because it's a normal HTTPS URL,
+    services that reject custom schemes or `localhost` accept it without complaint.
   </Step>
-  <Step title="Paste the Client ID and Secret, then connect">
-    Enter them in the connector's settings in the Hub and click **Connect**. Your
-    browser opens the service's consent screen — approve it, and the connector's tools
-    load.
+  <Step title="Paste the Client ID and Secret, then authorize">
+    Enter them in the connector's settings **in the Space you want to use it in**, then
+    choose **Authenticate**. Your browser opens the service's consent screen — approve
+    it, and the connector's tools load.
   </Step>
 </Steps>
+
+<Note>
+  Client ID and Secret are held per Space, alongside that Space's tokens. If you use the
+  same service in two Spaces, enter them in each — or register two apps, if you want the
+  two Spaces to appear as separate applications to the service.
+</Note>
 
 <Tip>
   If you click **Connect** for a service that needs its own app before adding
