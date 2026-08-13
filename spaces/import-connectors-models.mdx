@@ -20,10 +20,16 @@ keychain and is never copied into the Space.
 
 ## Connectors
 
-Import any connector you've added in the
-[Connectors](/connectors/remote-mcp-oauth) surface. The Space records a reference (in
-`connectors.json`); OAuth tokens stay in your keychain. Built-in tools are always
-available without importing anything.
+Add any connector from your connector list. The Space records it in `connectors.json`
+as **added but not authorized** — importing brings the connector in, it doesn't sign
+you in.
+
+You authorize it **in the Space**, and that Space keeps its own tokens in your keychain.
+So importing the same connector into two Spaces gives you two independent connections,
+which can point at two different accounts. See
+[Connect a remote MCP server](/connectors/remote-mcp-oauth) for the full flow.
+
+Built-in tools are always available without importing anything.
 
 ## When to import
 

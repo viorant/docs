@@ -1,0 +1,81 @@
+---
+title: "The Assistant"
+description: "A chat copilot beside your editor that builds, explains, and fixes the Space you're in."
+---
+
+The **Assistant** is a chat panel alongside your editor that can build and change the
+[Space](/concepts/spaces) you're working in. Describe what you want; it proposes a plan,
+shows you each asset before it's written, and creates the files once you approve.
+
+It runs on the **Viorant** managed provider and spends
+[credits](/providers/credits) from the same wallet as everything else.
+
+## Where it lives
+
+The Assistant is a collapsible panel on the right-hand side of the Hub. It works on the
+**Space you currently have open** — open a Space and it's ready; without one it has
+nothing to act on.
+
+Everything it does is scoped to that active Space. It won't read from or write to any
+other Space.
+
+## How a build goes
+
+<Steps>
+  <Step title="Describe the goal">
+    Say what you want in plain language — *"a skill that summarises my unread Slack
+    mentions each morning"*. You can also start from the goal box when you create a new
+    Space.
+  </Step>
+  <Step title="Read the plan">
+    The Assistant proposes a plan before it changes anything. It's shown as steps you
+    can read, and it will ask about anything genuinely under-specified rather than
+    guessing.
+  </Step>
+  <Step title="Approve each piece">
+    Each step arrives as a card showing the **actual thing being made** — the prompt
+    text, the skill body and the connectors it needs, the model and tier, and how the
+    agent gets wired together. You approve them one at a time, or let it build the rest
+    without asking.
+  </Step>
+  <Step title="Watch the files land">
+    Approved assets appear in the Space's file tree as they're created. They're ordinary
+    files — the same ones you'd have authored by hand. From there you can run and test
+    the agent as you would any other.
+  </Step>
+</Steps>
+
+## Fixing and improving
+
+Once a Space has assets in it, the Assistant can also work on what's already there —
+describe what's wrong or what you want changed and it proposes edits the same way, as
+reviewable steps.
+
+<Note>
+  The **AI prompt builder** in the prompt editor is still there and unchanged. Use the
+  Assistant when you're working across a Space — several assets, or wiring them
+  together. Use the prompt builder when you want to generate or improve one prompt
+  in place.
+</Note>
+
+## Connectors and models
+
+If a skill needs a connector, the Assistant brings it in from the connectors already
+available to you, or tells you to add one — it can't sign you into a service on your
+behalf. See [Connectors](/concepts/connectors) for how authorization works.
+
+For models it defaults to the Viorant managed provider on the **Medium**
+[tier](/providers/credits#tiers), and shows you that choice before wiring it in.
+
+## What it costs
+
+Every turn spends credits, including turns that only plan or explain. The
+[tier picker](/providers/credits#tiers) in the panel controls how much — **Low** is
+cheaper and usually fine while you're still shaping the idea.
+
+If your balance reaches zero the Assistant stops rather than failing quietly. See
+[Credits](/providers/credits).
+
+<Card title="Credits & the Viorant provider" icon="coins" href="/providers/credits">
+  What spends credits, and what the starting grant covers.
+</Card>

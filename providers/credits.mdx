@@ -23,9 +23,12 @@ from the same pool — there's no separate allowance per feature.
 
 ## What spends credits
 
-Two things in the Hub spend credits, and only when you use the **Viorant** provider:
+Three things in the Hub spend credits, and only when you use the **Viorant** provider:
 
 <CardGroup cols={2}>
+  <Card title="The Assistant" icon="sparkles" href="/concepts/assistant">
+    Every turn you take with the Assistant, including the ones that plan rather than build.
+  </Card>
   <Card title="The AI prompt builder" icon="wand-magic-sparkles">
     Generating a prompt, and improving an existing one.
   </Card>
@@ -39,18 +42,19 @@ from your machine straight to the vendor and never touches Viorant's metering.
 
 ## Tiers
 
-The Viorant provider offers three tiers. They differ in capability and in what they
+The Viorant provider offers two tiers. They differ in capability and in what they
 cost you per call:
 
 | Tier | Use it for | Relative cost |
 | --- | --- | --- |
+| **Medium** | Everyday work — the default, and the right starting point | Moderate |
 | **Low** | Fast, cheap iteration and simple prompts | Lowest |
-| **Mid** | Everyday work — the sensible default | Moderate |
-| **High** | Hard reasoning, long context, final passes | Highest |
 
-Pick a tier in the Model Master, or in the prompt builder when you generate. A
-single prompt generation typically costs a **handful of credits on Low** and
-**under ten on High** — so the starting grant covers a lot of ordinary iteration.
+Pick a tier wherever you choose a Viorant model — when you add one to a Space's model
+pool, in the prompt builder when you generate, or in the
+[Assistant](/concepts/assistant). A single prompt generation typically costs **a credit
+or two on Low** and **under ten on Medium**, so the starting grant covers a lot of
+ordinary iteration.
 
 <Tip>
   Cost scales with how much text goes in and comes out, not just the tier. A long
