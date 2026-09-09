@@ -86,6 +86,19 @@
             ]
           },
           {
+            "group": "Deploy",
+            "pages": [
+              "deploy/deploy-an-agent",
+              "deploy/manage-deployments"
+            ]
+          },
+          {
+            "group": "Evals",
+            "pages": [
+              "evals/compare-variants"
+            ]
+          },
+          {
             "group": "Help",
             "pages": [
               "troubleshooting"

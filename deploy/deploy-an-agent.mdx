@@ -1,0 +1,75 @@
+---
+title: "Deploy an agent"
+description: "Take an agent off your machine and give it a URL."
+---
+
+Running an agent [locally](/run-agent-locally) needs the Hub open. **Deploying** it puts
+the agent on Viorant Cloud, where it keeps running whether the Hub is open or not, and
+answers on its own URL.
+
+## Before you deploy
+
+Two things have to be true.
+
+**The agent needs a `.vio` bundle.** That's the portable file describing the whole agent —
+prompt, model, skills, connectors and memory — as one thing. Use **Create `.vio`** on the
+agent, or **Update `.vio`** if you've changed the agent since the last one.
+
+**The agent must run on your own provider key.** Deployed agents can't spend Viorant
+credits, so an agent set to the Viorant provider is refused before anything is created.
+Point it at a provider you've added a key for — see [Bring your own key](/providers/byok).
+
+<Note>
+  `.vio` is built from your **committed** agent, not your working edits. If **Update
+  `.vio`** is unavailable, commit the agent first.
+</Note>
+
+## Deploying
+
+<Steps>
+  <Step title="Open the agent and choose Deploy">
+    **Deploy** sits beside **Create `.vio`** on the agent editor.
+  </Step>
+  <Step title="Name it and pick where it runs">
+    The name is how you'll recognise it later. Deploying the same agent twice under
+    different names is a normal thing to do — that's how you keep a stable one and a
+    test one side by side.
+  </Step>
+  <Step title="Confirm the credentials it needs">
+    The wizard lists the provider keys and connector accounts the agent depends on.
+    These are encrypted on your machine and uploaded directly to the deployment —
+    Viorant never sees them in the clear.
+  </Step>
+  <Step title="Copy the run key">
+    Shown **once**, at the end. It cannot be retrieved later from the create screen.
+    Store it somewhere safe before closing.
+  </Step>
+</Steps>
+
+## Calling it
+
+Each deployment gets a URL and a run key. The key goes in the `Authorization` header:
+
+```bash
+curl -X POST https://<your-deployment-url>/run \
+  -H "Authorization: Bearer <run-key>" \
+  -H "Content-Type: application/json" \
+  -d '{"inputs": {"topic": "quarterly summary"}}'
+```
+
+The wizard shows a ready-made `curl` for your specific deployment, with its own input
+names filled in.
+
+## What you can deploy
+
+Each plan allows a number of running agents at once. If you're at the limit, stop one
+before deploying another — see [Manage deployments](/deploy/manage-deployments).
+
+<Warning>
+  An abandoned deployment still counts against your limit until it's stopped. If a deploy
+  fails partway and you close the wizard, cancel it rather than leaving it.
+</Warning>
+
+<Card title="Manage deployments" icon="sliders" href="/deploy/manage-deployments">
+  See runs, check status, and stop an agent.
+</Card>

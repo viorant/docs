@@ -1,17 +1,71 @@
 ---
 title: "Memory"
-description: "Persistent memory for agents — not yet available."
+description: "Give an agent persistent recall that carries across runs."
 ---
 
-**Memory** will let you give agents persistent recall that carries across runs —
-authored as a first-class asset inside a [Space](/concepts/spaces), just like prompts,
-skills, and agents.
+**Memory** lets an agent remember things between runs. It's a first-class asset inside a
+[Space](/concepts/spaces), authored as a Markdown file just like a prompt or a skill —
+so you can read it, edit it, and commit it alongside everything else.
+
+Memory files end in `.memory.md` and live in the Space's `memory/` folder.
+
+## What a memory file looks like
+
+A memory file is plain Markdown with a small frontmatter block. You write the starting
+content; the agent appends to it as it runs.
+
+```markdown
+---
+name: customer-preferences
+description: What we've learned about how this customer likes to be contacted
+---
+
+- Prefers email over calls.
+- Reports go out on Mondays.
+```
+
+Everything below the frontmatter is yours to shape. There's no schema to satisfy — the
+agent reads it as text.
+
+## Attaching memory to an agent
+
+On the [Agent](/masters/agent) canvas, bind memory files to the agent through its
+read and write sets:
+
+- **Read set** — one or more memory files the agent can see. Their contents are injected
+  into the run before the agent starts thinking.
+- **Write set** — at most **one** memory file the agent can add to, using the built-in
+  `remember` tool.
+
+An agent can read several memories and write to one. That asymmetry is deliberate: it
+keeps it obvious where a new fact came from.
 
 <Note>
-  **Memory is not available yet.** It's designed and planned, but nothing in the Hub
-  ships it today — there's no memory asset to create and no memory surface to open.
-  This page is here so the shape is documented ahead of the release that adds it.
+  An agent with no write set can still read. Memory that only ever gets read is a
+  perfectly good way to hand an agent standing context — house style, account history,
+  naming conventions — without letting it edit that context.
 </Note>
 
-The four asset types you can author today are [Prompt](/masters/prompt),
-[Model](/masters/model), [Skill](/masters/skill), and [Agent](/masters/agent).
+## Seed memory and runtime memory
+
+There are two kinds, and the difference matters when you
+[deploy](/deploy/deploy-an-agent).
+
+**Seed memory** is what you author. It ships with the agent, and every deployment starts
+from it.
+
+**Runtime memory** is what the agent writes while running. It stays with the instance
+that wrote it and never travels back into your Space.
+
+So a deployed agent begins with the memory you curated, accumulates its own on top, and
+your authored file stays exactly as you left it.
+
+## Watching an agent use its memory
+
+When an agent runs, the trace shows memory being read at the start and each `remember`
+call as it happens, so you can see what it chose to keep. If a memory file can't be read,
+the run says so rather than continuing silently without it.
+
+<Card title="Compose an agent" icon="bot" href="/masters/agent">
+  Bind read and write sets on the agent canvas.
+</Card>

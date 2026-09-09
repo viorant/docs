@@ -1,0 +1,67 @@
+---
+title: "Compare variants"
+description: "Try it three ways — run variants side by side on the same input."
+---
+
+**Evals** answer a question you otherwise answer by guessing: *is this version actually
+better than that one?*
+
+Pick a prompt, skill or agent, pin up to three variants of it, run them all on the same
+input, and read the results next to each other.
+
+## Opening evals
+
+The top bar carries an **Editor / Evaluation** toggle. Switching to **Evaluation** opens
+a drawer beneath the editor area. It follows whatever you're looking at, so switching tabs
+re-targets the eval.
+
+## Setting one up
+
+<Steps>
+  <Step title="Pick a target type">
+    **Prompt**, **Skill** or **Agent** — one type per eval. You compare a thing against
+    itself, not a prompt against an agent.
+  </Step>
+  <Step title="Add variants">
+    Each variant is a **version** and a **model**. Up to three. Any model active in the
+    Space is available.
+  </Step>
+  <Step title="Fill in the input">
+    Prompt variables come from the prompt's own values. A required variable left blank is
+    an error rather than an empty run.
+  </Step>
+  <Step title="Run">
+    All variants run in parallel against the same input.
+  </Step>
+</Steps>
+
+## Reading the results
+
+Outputs sit side by side, with tokens and cost per variant.
+
+**They're shown as outputs, not as a diff.** Diffing three model outputs is noise — nearly
+every token differs even when the substance is identical. Read them; the interesting
+differences are rarely textual.
+
+A variant that fails doesn't take the others down. It reports its own error and the rest
+keep going.
+
+## Cost
+
+Before running, you see an estimate. Three variants means three real runs charged the
+normal way, so a three-variant eval costs roughly three times a single run.
+
+<Note>
+  Skill versions can't be pinned. Skills are filesystem-canonical — the file on disk is the
+  skill — so there's no version history to select from. Compare skills across models
+  instead.
+</Note>
+
+## History
+
+Every eval is kept and can be reopened. Results are written as files in the Space, so they
+travel with it and can be committed like anything else. Delete one when you don't need it.
+
+<Card title="Run an agent locally" icon="play" href="/run-agent-locally">
+  Single runs, for when you're not comparing.
+</Card>
