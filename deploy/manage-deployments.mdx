@@ -1,0 +1,64 @@
+---
+title: "Manage deployments"
+description: "See what's running, what it's been doing, and stop it."
+---
+
+Deployments are account-wide, not per-Space. Open them from the profile menu →
+**Deployments**.
+
+## The list
+
+Every deployment you've created, with its current state and how many of your allowed
+running agents are in use.
+
+Deploying from inside a Space takes you here too — the surface is the same one.
+
+## A single deployment
+
+Opening one shows:
+
+- **Recent runs** — what it's been asked to do and how each ended.
+- **Last reported** — when the agent last checked in.
+- **Its run URL** and the run key, masked.
+- **Health** — whether its model and connector credentials are still good.
+
+### "Last reported" is not a heartbeat
+
+The time shown is when the agent last **told us** it was healthy. Nothing pings its URL
+to check. A recent timestamp means it was working then; it is not a live liveness probe,
+and the page says so rather than showing a green dot that implies more than it knows.
+
+## Re-reading the run key
+
+The key shown once at create can be read again from the deployment detail screen. It is
+masked by default.
+
+## Redeploying
+
+Changed the agent? Update its `.vio`, then redeploy onto the **same** deployment. The URL
+and the run key survive, so anything already calling it keeps working.
+
+## Stopping
+
+**Stop** tears the agent down and frees its slot against your limit.
+
+<Warning>
+  Stopping is destructive and not a pause. The running service is removed and its
+  encryption key is scheduled for destruction. Starting again means deploying afresh, with
+  a new URL and a new run key.
+</Warning>
+
+## When something's wrong
+
+**Runs fail with an authorisation error** — a connector's access expired or was revoked.
+Use **Reconnect** on the deployment to re-authorise; the agent picks it up without
+redeploying.
+
+**Runs fail immediately on a tool** — an API key the agent's tools need wasn't supplied at
+deploy time. The deployment reports which one.
+
+**Stuck not-yet-running** — a deploy that never finished. Cancel it to release the slot.
+
+<Card title="Deploy an agent" icon="rocket" href="/deploy/deploy-an-agent">
+  Build a `.vio` and put an agent on its own URL.
+</Card>
