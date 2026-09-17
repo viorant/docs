@@ -89,7 +89,8 @@
             "group": "Deploy",
             "pages": [
               "deploy/deploy-an-agent",
-              "deploy/manage-deployments"
+              "deploy/manage-deployments",
+              "deploy/deployment-logs"
             ]
           },
           {

@@ -1,0 +1,93 @@
+---
+title: "Deployment logs"
+description: "Read what a deployed agent printed — and handle it as the sensitive data it can be."
+---
+
+A deployed agent's logs are everything it printed while running on Viorant Cloud: startup
+lines, each run's progress, errors and stack traces. They are the fastest way to answer
+"why did that run fail?"
+
+## Reading them
+
+**From a terminal**, with the `vio` CLI:
+
+```bash
+vio logs <deployment id>
+```
+
+- Newest lines come first, from the **last day** unless you pass `--since`
+  (`--since 2h`, `--since 15m`, or an ISO-8601 time).
+- `--limit` sets how many lines to fetch (default 50, at most 200).
+- When there are more, the last line is the exact command for the next page. Run it as
+  printed — it carries the same start time, which is what keeps the pages consistent.
+- `--json` prints the response as JSON, for scripts.
+
+Only the deployment's **owner** can read its logs. Asking for a deployment you don't own
+looks exactly like asking for one that doesn't exist.
+
+Viorant doesn't keep a copy: logs are read through from Cloud Run each time you ask.
+
+## What logs can contain
+
+<Warning>
+  Treat deployment logs as sensitive. They hold whatever your agent printed, which can
+  include the data it was working with.
+</Warning>
+
+Depending on how your agent is built, its logs can contain:
+
+- **Run inputs and outputs** — the task it was given and what it produced.
+- **Connector data** — text it read from email, tickets, documents or chat while working.
+- **Errors and stack traces** — which can quote request bodies or configuration.
+- **Secrets** — if the agent, a library or a provider error message prints a key or token.
+
+Your logs are yours; nobody else can read them. The risk is where the text goes **after**
+you read it.
+
+## What `vio logs` does before printing
+
+Log text is written by your agent, and your agent reads content from the outside world. An
+email or web page it processed can plant text that ends up in its logs. So before
+anything is printed — including `--json` — the CLI:
+
+**Strips terminal control sequences.** Escape sequences in log text could otherwise
+rewrite what's on your screen, plant a clickable link that points somewhere else, or on
+some terminals write to your clipboard. Colour codes, cursor movement, hyperlinks,
+clipboard writes, invisible control characters and text-direction overrides are removed.
+Ordinary text, tabs and line breaks are kept.
+
+**Redacts common credential shapes** to `[REDACTED]`:
+
+- AI provider API keys (for example `sk-…`, `AIza…`)
+- GitHub, Slack, Stripe and AWS keys
+- JWTs and `Bearer` tokens
+- Private key blocks
+- Values of `password`, `secret`, `token`, `api_key` and `authorization` fields
+
+<Note>
+  Redaction is **best-effort**. It recognises well-known formats, not every secret. A key
+  in an unusual format, or a password printed on its own, will still appear. The fix for a
+  secret in your logs is to stop the agent printing it — and rotate the secret.
+</Note>
+
+## Handling log output safely
+
+- **Before sharing** — in an issue, a chat message or a support request — read the output
+  first. Share only the lines you need.
+- **In CI**, avoid printing `vio logs` into build logs that other people or systems can
+  read. Write it to a file you control, or don't capture it at all.
+- **With AI coding agents** (Claude Code, Codex, Cursor and similar): when an agent runs
+  `vio logs` or `vio logs --json`, the output becomes part of its conversation and is sent
+  to that agent's model provider. Only let an agent read logs you would be comfortable
+  sending there.
+- **Don't log secrets in the first place.** Keys belong in the deployment's credentials,
+  not in anything the agent prints.
+
+## When logs aren't available
+
+`vio logs` says what went wrong in one sentence:
+
+- **"No logs yet."** — the agent hasn't printed anything in the window. Widen it with
+  `--since`.
+- **Temporarily unavailable** — try again shortly.
+- **Not enabled for this deployment's environment** or **no permission** — contact support.
