@@ -1,0 +1,88 @@
+---
+title: "Install the CLI"
+description: "Install vio, the Viorant command-line tool, on macOS, Linux or Windows."
+---
+
+`vio` deploys and operates Viorant agents from a terminal. It validates a `.vio` file,
+stands the agent up on Viorant Cloud and hands you a URL — the same deploy pipeline as
+the Hub, without opening it.
+
+`vio` ships as one self-contained JavaScript file. It needs **Node 22**:
+
+```bash
+node --version   # v22.x
+```
+
+## macOS and Linux
+
+```bash
+curl -fsSL https://dl.viorant.ai/cli/install.sh | sh
+```
+
+The installer puts `vio` in `~/.viorant/bin/vio` without `sudo`. If that folder isn't on
+your `PATH`, it prints the line to add:
+
+```bash
+export PATH="$HOME/.viorant/bin:$PATH"
+```
+
+Open a new shell, then check:
+
+```bash
+vio --version
+```
+
+## Windows
+
+There is no installer script for Windows yet. Download the file and check its checksum
+in PowerShell:
+
+```powershell
+$v = (Invoke-RestMethod https://dl.viorant.ai/cli/latest.json).version
+Invoke-WebRequest "https://dl.viorant.ai/cli/vio-$v.js" -OutFile vio.js
+Invoke-WebRequest "https://dl.viorant.ai/cli/vio-$v.js.sha256" -OutFile vio.js.sha256
+(Get-FileHash vio.js -Algorithm SHA256).Hash.ToLower()   # must equal the first field of vio.js.sha256
+node vio.js --version
+```
+
+Run commands as `node vio.js <command>`.
+
+## Upgrade
+
+Run the install command again. It replaces `vio` in place. To install a specific version:
+
+```bash
+curl -fsSL https://dl.viorant.ai/cli/install.sh | VIO_VERSION=0.1.2 sh
+```
+
+## How releases are verified
+
+Every release is built and signed by Viorant's GitHub release workflow, using keyless
+[Sigstore](https://www.sigstore.dev/) signing recorded in the public Rekor transparency
+log.
+
+- The installer **always** checks the sha256 checksum before writing anything.
+- If [`cosign`](https://docs.sigstore.dev/cosign/system_config/installation/) is installed,
+  the installer also verifies the signature and refuses a bad one.
+- Without `cosign`, it prints `signature NOT verified` and the command to check by hand:
+
+```bash
+cosign verify-blob --bundle vio-<version>.js.sigstore.json \
+  --certificate-identity https://github.com/viorant/viorant-cli/.github/workflows/release.yml@refs/tags/v<version> \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  vio-<version>.js
+```
+
+A checksum proves the file arrived intact. The signature proves it came from Viorant's
+release workflow.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Sign in" icon="right-to-bracket" href="/cli/sign-in">
+    Connect `vio` to your Viorant account.
+  </Card>
+  <Card title="Deploy an agent" icon="rocket" href="/cli/deploy">
+    Validate a `.vio` file and put it on Viorant Cloud.
+  </Card>
+</CardGroup>

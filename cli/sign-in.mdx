@@ -1,0 +1,48 @@
+---
+title: "Sign in"
+description: "Connect vio to your Viorant account, check your plan and sign out."
+---
+
+Validating a `.vio` file works offline with no account. Everything that talks to Viorant
+Cloud — deploying, listing, logs — needs you to sign in.
+
+## Sign in
+
+```bash
+vio login
+```
+
+`vio` opens Google sign-in in your browser and waits for it on your own machine. It also
+prints the sign-in URL straight away, in case the browser doesn't open.
+
+<Note>
+  Sign in on the same machine that runs `vio`. The sign-in hands back to a local address
+  on that machine, so a browser on another computer can't complete it.
+</Note>
+
+On a machine without a browser launcher, print the URL instead:
+
+```bash
+vio login --no-browser
+```
+
+## Check who you are
+
+```bash
+vio whoami    # your account and credit balance
+vio status    # plan, credits, usage and how many agents you can still deploy
+```
+
+## Where credentials live
+
+`vio` keeps one file, `~/.viorant/auth.json`, readable only by you (`0600`). It stores your
+session and refreshes it automatically. Provider keys and connector tokens are never
+written there.
+
+## Sign out
+
+```bash
+vio logout
+```
+
+This clears the credentials on **this machine** only, and works offline.

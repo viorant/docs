@@ -1,0 +1,69 @@
+---
+title: "Validate a .vio file"
+description: "Check a .vio file offline and print its digest before you deploy."
+---
+
+A `.vio` file is a portable definition of a whole agent — prompt, model, skills,
+connectors and memory — in one YAML file. Everything the agent is made of is inside the
+file, so you can deploy a `.vio` someone sent you without any other assets.
+
+## Validate
+
+```bash
+vio validate agent.vio
+```
+
+Validation is local: no sign-in and no network. A valid file prints a summary of what it
+contains. An invalid one exits `1` and names each field that's wrong.
+
+Point `vio` at a folder and it looks for the `.vio` inside it (one level deep, not
+subfolders):
+
+```bash
+vio validate .
+```
+
+One match is used. Several is an error that lists them; none is a distinct
+"no .vio bundle found" error.
+
+For scripts and CI, print one JSON result:
+
+```bash
+vio validate agent.vio --json
+```
+
+## Digest
+
+```bash
+vio digest agent.vio
+```
+
+Prints the **deployment digest** — the value a deployment records, and the one `vio show`
+and the Hub compare against. `--content` prints the whole-file content digest instead, and
+`--json` prints both.
+
+<Warning>
+  Each part of a `.vio` carries its own digest in the manifest. `vio validate` checks the
+  structure of the file, not those per-part digests. A file that was hand-edited after it
+  was exported can pass validation and still be refused at deploy. Re-export it from the
+  Hub rather than editing it by hand.
+</Warning>
+
+## Deploying a `.vio` you were given
+
+<Steps>
+  <Step title="Put it in a folder">
+    ```bash
+    mkdir my-agent && mv agent.vio my-agent/ && cd my-agent
+    ```
+  </Step>
+  <Step title="Validate it">
+    ```bash
+    vio validate .
+    ```
+  </Step>
+  <Step title="Deploy it">
+    Follow [Deploy an agent](/cli/deploy). You provide the model provider key; the file
+    never contains one.
+  </Step>
+</Steps>

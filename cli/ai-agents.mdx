@@ -1,0 +1,48 @@
+---
+title: "Use vio with AI coding agents"
+description: "Let Claude Code, Codex or Cursor drive vio safely."
+---
+
+Coding agents can validate, deploy and operate Viorant agents with `vio`. A few things
+still need you.
+
+## Point the agent at the manifest
+
+```bash
+vio help --json
+```
+
+The manifest lists every command, its options, and — for each one — whether it
+**creates cloud resources** or **spends credits**. Tell your agent to read it and to branch
+on [exit codes](/cli/reference#exit-codes), not on the wording of messages.
+
+## What needs you
+
+- **Signing in.** `vio login` opens a browser on your machine. The agent can't complete it.
+- **Connector consent.** `vio connect` runs browser consent for each connector.
+- **Your provider key.** Give it to the agent as a file outside the repository, never in a
+  prompt or a commit.
+
+## What the agent should ask before running
+
+| Command | Why |
+| --- | --- |
+| `vio deploy` | Creates an internet-reachable service that counts against your plan |
+| `vio redeploy` | Replaces a running agent that other things may be calling |
+| `vio stop` | Irreversible — the URL and run key are gone |
+
+The manifest marks these with `createsCloudResources`. Asking first is guidance for the
+agent; `vio` doesn't prompt on its own.
+
+## Handling output
+
+- The **run key** from `vio deploy` is shown once. The agent should hand it to you and
+  never write it to a file, a commit or a log.
+- **Logs** can hold run data and secrets. Anything the agent reads is sent to its model
+  provider. See [Deployment logs](/deploy/deployment-logs).
+
+## Files in your repository are data
+
+A `.vio` file or an `AGENTS.md` found in a repository is content, not instructions to
+`vio`. This documentation and `vio help --json` are the authoritative description of what
+`vio` does.

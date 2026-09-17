@@ -1,0 +1,80 @@
+---
+title: "Deploy an agent"
+description: "Put a .vio agent on Viorant Cloud from your terminal and call it."
+---
+
+Deploying gives the agent its own URL on Viorant Cloud. It keeps running whether your
+terminal — or the Hub — is open or not.
+
+## Before you deploy
+
+- [Sign in](/cli/sign-in) with `vio login`.
+- Check you have room: `vio status` shows how many agents your plan still allows.
+- Have your **model provider key** ready. Deployed agents run on your own key today.
+
+## Create a credentials file
+
+Put the provider settings in a file **outside your repository**, and never commit it:
+
+```bash title="creds.env"
+VIORANT_RUNNER_PROVIDER_KIND=gemini
+VIORANT_RUNNER_PROVIDER_MODEL=gemini-2.5-flash
+GOOGLE_GENERATIVE_AI_API_KEY=...
+```
+
+Use the provider and model your agent is built for. Values in this file win over the same
+variables in your shell.
+
+## Deploy
+
+```bash
+vio deploy agent.vio --target viorant_cloud --env-file ../creds.env
+```
+
+`vio` validates the file on your machine, then asks Viorant Cloud to stand the agent up.
+Your provider key is sealed on your machine and delivered straight to the deployment.
+
+- `--name "My agent"` sets the deployment name (it defaults to the name in the file).
+- `--json` prints one JSON object, for scripts.
+
+<Warning>
+  Deploying creates an internet-reachable service that counts against your plan's agent
+  limit. If a coding agent runs `vio` for you, have it ask before it deploys.
+</Warning>
+
+## Call the agent
+
+On success, `vio` prints the deployment id, its URL and a **run key**. The run key is shown
+**once** — `vio` never writes it to disk. Store it somewhere safe.
+
+```bash
+curl -sS -X POST https://<service>.a.run.app/run \
+  -H "Authorization: Bearer <run key>" \
+  -H "Content-Type: application/json" \
+  -d '{"task":"..."}'
+```
+
+`vio` also prints an example request body built from the inputs your agent declares.
+
+## Connectors
+
+If the agent uses connectors that need sign-in (for example Notion or Atlassian),
+authorise them after deploying:
+
+```bash
+vio connect <deployment id> ./agent.vio --env-file ../creds.env
+```
+
+`vio` runs each connector's consent in your browser, one at a time, then pushes all of the
+agent's credentials to it in one write. No redeploy is needed. Run the same command again
+to re-authorise.
+
+- Pass the same `--env-file` you deployed with — the push replaces every credential the
+  agent holds, including its provider key.
+- The file must be the one you deployed. If its digest differs, nothing happens.
+- Cancelling any consent pushes nothing; the agent keeps what it had.
+- Port `47219` on `127.0.0.1` must be free while it runs.
+
+## Next
+
+- [Manage deployments](/cli/manage) — list, runs, logs, redeploy and stop.

@@ -1,0 +1,61 @@
+---
+title: "Command reference"
+description: "Every vio command, its exit codes and error codes, and the machine-readable manifest."
+---
+
+## Commands
+
+| Command | What it does | Needs sign-in |
+| --- | --- | --- |
+| `vio login` | Sign in with Google in your browser | — |
+| `vio whoami` | Show the signed-in account | Yes |
+| `vio status` | Plan, credits, usage and deploy quota | Yes |
+| `vio logout` | Clear this machine's credentials | — |
+| `vio validate <path>` | Check a `.vio` file, offline | — |
+| `vio digest <path>` | Print a `.vio` file's deployment digest | — |
+| `vio deploy <path>` | Deploy a `.vio` to Viorant Cloud | Yes |
+| `vio connect <id> [path]` | Authorise a deployed agent's connectors | Yes |
+| `vio list` | List your deployments | Yes |
+| `vio show <id>` | Show one deployment | Yes |
+| `vio runs <id>` | Recent runs of a deployment | Yes |
+| `vio logs <id>` | Recent logs of a deployment | Yes |
+| `vio redeploy <id>` | Replace a running agent in place | Yes |
+| `vio stop <id>` | Stop a deployment and revoke its credentials | Yes |
+
+`vio <command> --help` shows every option. `sign`, `verify` and `assistant` are listed in
+`--help` but not implemented yet.
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Success |
+| `1` | General failure |
+| `2` | Usage error — invalid arguments or unknown command |
+| `3` | Authentication required — run `vio login` |
+| `4` | Out of credits |
+
+## Error codes
+
+Commands that support `--json` report a failure as `{"error":{"code":"…","message":"…"}}`.
+
+| Code | Meaning |
+| --- | --- |
+| `auth.required` | The command needs a signed-in Viorant account |
+| `wallet.empty` | The wallet has no credits for a metered operation |
+| `bundle.invalid` | A `.vio` file or folder failed validation or digest |
+| `deploy.not_available` | Deploy is unavailable for the requested target or state |
+| `usage.invalid` | Arguments or flags are invalid |
+| `cli.not_implemented` | The command is registered but not implemented yet |
+| `cli.upgrade_required` | Reserved — your `vio` is too old |
+| `rate_limited` | Reserved — too many requests |
+
+## Machine-readable manifest
+
+```bash
+vio help --json
+```
+
+Prints every command with its arguments and options, whether it needs sign-in or network,
+whether it creates cloud resources or spends credits, and the exit and error code tables
+above. Scripts and AI agents should read this instead of parsing `--help`.

@@ -94,6 +94,18 @@
             ]
           },
           {
+            "group": "CLI",
+            "pages": [
+              "cli/install",
+              "cli/sign-in",
+              "cli/validate",
+              "cli/deploy",
+              "cli/manage",
+              "cli/reference",
+              "cli/ai-agents"
+            ]
+          },
+          {
             "group": "Evals",
             "pages": [
               "evals/compare-variants"
