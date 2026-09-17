@@ -1,0 +1,57 @@
+---
+title: "Manage deployments"
+description: "List, inspect, read logs, redeploy and stop agents from your terminal."
+---
+
+## See what's running
+
+```bash
+vio list          # every deployment you own, with its state and URL
+vio show <id>     # one deployment
+```
+
+## Runs
+
+```bash
+vio runs <id>              # recent runs: what it was asked and how each ended
+vio runs <id> --limit 100  # up to 200
+```
+
+## Logs
+
+```bash
+vio logs <id>
+```
+
+Prints the agent's recent logs, newest first, from the last day. When there are more, the
+last line is the exact command for the next page.
+
+| Option | What it does |
+| --- | --- |
+| `--since 2h` | Start further back: `15m`, `2h`, `1d`, or an ISO-8601 time |
+| `--limit 100` | Lines per page (default 50, at most 200) |
+| `--json` | One JSON object, for scripts |
+
+Logs can contain sensitive data. Before printing, `vio` strips terminal control sequences
+and redacts common credential shapes. Read [Deployment logs](/deploy/deployment-logs)
+before you share log output or hand it to an AI agent.
+
+## Redeploy
+
+Changed the agent? Deploy the new file onto the **same** deployment:
+
+```bash
+vio redeploy <id>
+```
+
+Run it from the folder that holds the updated `.vio`. The URL and run key stay the same,
+so anything already calling the agent keeps working.
+
+## Stop
+
+```bash
+vio stop <id>
+```
+
+Stops the agent and revokes its credentials. **A stopped agent can't be restarted** — the
+URL and run key are gone. Deploy again to get a new one.
