@@ -9,26 +9,47 @@ terminal — or the Hub — is open or not.
 ## Before you deploy
 
 - [Sign in](/cli/sign-in) with `vio login`.
+- Make sure `vio validate agent.vio` passes. A stale digest is refused at deploy —
+  see [Validate a .vio file](/cli/validate).
 - Check you have room: `vio status` shows how many agents your plan still allows.
 - Have your **model provider key** ready. Deployed agents run on your own key today.
 
-## Create a credentials file
+## Where your provider key comes from
 
-Put the provider settings in a file **outside your repository**, and never commit it:
+Inside a [Space](/cli/init), it is already sorted: `vio init` creates
+`.vio/.env.provider`, you fill it in, and `vio deploy` reads it. `.vio/` is git-ignored,
+so the key never reaches a commit.
 
-```bash title="creds.env"
+```bash title=".vio/.env.provider"
 VIORANT_RUNNER_PROVIDER_KIND=gemini
 VIORANT_RUNNER_PROVIDER_MODEL=gemini-2.5-flash
 GOOGLE_GENERATIVE_AI_API_KEY=...
 ```
 
-Use the provider and model your agent is built for. Values in this file win over the same
-variables in your shell.
+Use the provider and model your agent is built for.
+
+Outside a Space — a loose `.vio` someone sent you — pass a file explicitly with
+`--env-file`, kept outside the repository and never committed. An `--env-file` always wins
+over the Space's own credentials.
+
+<Note>
+  Credentials are read from the Space that holds **the bundle you are deploying**, not
+  from the folder you happen to be standing in. `vio deploy ../other-agent/agent.vio`
+  uses `../other-agent`'s key, not this one's.
+</Note>
 
 ## Deploy
 
+From the [shell](/cli/shell):
+
+```
+> /deploy agent.vio --target viorant_cloud
+```
+
+Or as a subcommand, which is what scripts, CI and AI agents use:
+
 ```bash
-vio deploy agent.vio --target viorant_cloud --env-file ../creds.env
+vio deploy agent.vio --target viorant_cloud
 ```
 
 `vio` validates the file on your machine, then asks Viorant Cloud to stand the agent up.
@@ -39,7 +60,9 @@ Your provider key is sealed on your machine and delivered straight to the deploy
 
 <Warning>
   Deploying creates an internet-reachable service that counts against your plan's agent
-  limit. If a coding agent runs `vio` for you, have it ask before it deploys.
+  limit, and sends your provider key to it. `vio` itself never prompts — if a coding agent
+  runs it for you, whether it asks first is your agent's permission setting, not `vio`'s.
+  See [Use `vio` with AI coding agents](/cli/ai-agents).
 </Warning>
 
 ## Call the agent

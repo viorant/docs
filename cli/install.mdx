@@ -3,9 +3,9 @@ title: "Install the CLI"
 description: "Install vio, the Viorant command-line tool, on macOS, Linux or Windows."
 ---
 
-`vio` deploys and operates Viorant agents from a terminal. It validates a `.vio` file,
-stands the agent up on Viorant Cloud and hands you a URL — the same deploy pipeline as
-the Hub, without opening it.
+`vio` builds, deploys and operates Viorant agents from a terminal. It turns a folder into
+a Space, validates a `.vio` file, stands the agent up on Viorant Cloud and hands you a
+URL — the same deploy pipeline as the Hub, without opening it.
 
 `vio` ships as one self-contained JavaScript file. It needs **Node 22**:
 
@@ -86,3 +86,15 @@ release workflow.
     Validate a `.vio` file and put it on Viorant Cloud.
   </Card>
 </CardGroup>
+
+## Then
+
+```bash
+vio            # the interactive shell
+vio --help     # every subcommand
+```
+
+Running `vio` with no arguments opens the [interactive shell](/cli/shell). In a script or
+a CI job, use the subcommands — they are the automation surface.
+
+Next: [turn a folder into a Space](/cli/init), or [sign in](/cli/sign-in).

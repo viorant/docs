@@ -9,6 +9,14 @@ file, so you can deploy a `.vio` someone sent you without any other assets.
 
 ## Validate
 
+From the [shell](/cli/shell):
+
+```
+> /validate agent.vio
+```
+
+Or as a subcommand, which is what scripts, CI and AI agents use:
+
 ```bash
 vio validate agent.vio
 ```
@@ -42,12 +50,45 @@ Prints the **deployment digest** — the value a deployment records, and the one
 and the Hub compare against. `--content` prints the whole-file content digest instead, and
 `--json` prints both.
 
-<Warning>
-  Each part of a `.vio` carries its own digest in the manifest. `vio validate` checks the
-  structure of the file, not those per-part digests. A file that was hand-edited after it
-  was exported can pass validation and still be refused at deploy. Re-export it from the
-  Hub rather than editing it by hand.
-</Warning>
+## Editing a bundle: fix the digests
+
+Each artifact inside a `.vio` — every prompt, agent, skill and memory — carries its own
+digest in the manifest. **Edit a body and its recorded digest no longer matches**, and the
+deploy is refused. The file is still valid YAML and still passes the schema, so this is
+not something you can spot by eye.
+
+`vio validate` checks these, and `vio digest --fix` repairs them:
+
+```bash
+vio digest agent.vio --fix
+```
+
+It prints each artifact it changed, old digest to new, and rewrites **only** those lines —
+your comments, key order and formatting survive. On a file that is already correct it
+changes nothing and exits `0`. If it cannot rewrite the manifest it says so and writes
+nothing, rather than reporting a fix it did not make.
+
+So the loop for editing a bundle by hand, or with an AI coding agent, is:
+
+```bash
+# edit agent.vio
+vio digest agent.vio --fix     # recompute the digests you invalidated
+vio validate agent.vio         # schema and digests; exit 0 means deployable
+vio deploy agent.vio --target viorant_cloud
+```
+
+<Note>
+  Needs `vio` **0.1.4** or newer. Earlier versions validate the schema only, and have no
+  `--fix`.
+</Note>
+
+`--json` tells the two failures apart, which is what an AI agent should branch on:
+
+| Code | Meaning |
+| --- | --- |
+| `bundle.invalid` | Schema, YAML, I/O or discovery problem. Fix it by editing |
+| `bundle.digest_mismatch` | A body was edited. Run `vio digest --fix` |
+| `bundle.fix_failed` | `--fix` could not rewrite the manifest; nothing was written |
 
 ## Deploying a `.vio` you were given
 

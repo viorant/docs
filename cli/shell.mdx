@@ -1,0 +1,77 @@
+---
+title: "The interactive shell"
+description: "Run vio with no arguments to get a shell with slash commands."
+---
+
+Running `vio` with no arguments opens an interactive shell:
+
+```bash
+vio
+```
+
+This is the CLI's front door. Everything you can do as a subcommand you can also do here,
+as a slash command, without retyping `vio` each time.
+
+<Note>
+  The shell needs a real terminal. If `vio` is started with its input piped or redirected —
+  from a script, a CI job, or another program — it exits with
+  `vio needs an interactive terminal`. Use the subcommands there instead; that is what
+  they are for.
+</Note>
+
+## What you can type
+
+```
+/deploy agent.vio --target viorant_cloud
+```
+
+The same flags work as on the subcommand. `/help` lists everything available in the
+current build:
+
+| | |
+| --- | --- |
+| `/help` · `/clear` · `/exit` · `/quit` | The shell itself |
+| `/session` · `/tier <low\|mid\|high>` | This session's id, working directory and model tier |
+| `/login` · `/whoami` · `/logout` · `/status` | Your account |
+| `/validate <path>` · `/digest <path>` | Check a bundle |
+| `/deploy <path>` · `/redeploy <id>` · `/stop <id>` | Deployments |
+| `/list` · `/show <id>` · `/runs <id>` · `/logs <id>` | What's running |
+| `/create space "<name>"` | A local Space the Hub can open |
+
+Some commands are subcommand-only, because they need a terminal of their own or belong to
+setting a machine up: `vio init`, `vio connect`, `vio docs`, `vio providers`,
+`vio connectors` and `vio upgrade`.
+
+## What it does not do yet
+
+**Typing a question does nothing useful.** Anything that is not a slash command answers:
+
+```
+No model connected yet. The metered client lands in PLAN.md T1.6.
+```
+
+The shell today is a slash-command surface over the same subcommands — not a
+conversational assistant. The model client, the read-only tools and headless runs are all
+still to come, and this page will change when they land.
+
+If you want an AI agent to drive `vio` now, that works, and it works through the
+subcommands rather than through this shell: see [Use `vio` with AI coding
+agents](/cli/ai-agents).
+
+## Sessions
+
+Each shell run gets a session, written to `~/.viorant/sessions/`. `/session` prints its id
+and `vio --resume <session-id>` reopens it.
+
+## Scripts and CI
+
+The shell is for people. In a script, a CI job, or anything without a terminal, call the
+subcommands directly:
+
+```bash
+vio validate agent.vio
+vio deploy agent.vio --target viorant_cloud
+```
+
+They are the automation surface, they are not going away, and they exit with
+[stable codes](/cli/reference#exit-codes) you can branch on.

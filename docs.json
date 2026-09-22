@@ -98,6 +98,8 @@
             "group": "CLI",
             "pages": [
               "cli/install",
+              "cli/shell",
+              "cli/init",
               "cli/sign-in",
               "cli/validate",
               "cli/deploy",
