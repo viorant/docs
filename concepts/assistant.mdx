@@ -1,81 +1,176 @@
 ---
 title: "The Assistant"
-description: "A chat copilot beside your editor that builds, explains, and fixes the Space you're in."
+description: "Describe a goal, approve one plan, and the Assistant builds it into your Space — setting up models and connectors inline, through to a local test."
 ---
 
-The **Assistant** is a chat panel alongside your editor that can build and change the
-[Space](/concepts/spaces) you're working in. Describe what you want; it proposes a plan,
-shows you each asset before it's written, and creates the files once you approve.
+The **Assistant** is a chat panel beside your editor that builds and changes the
+[Space](/concepts/spaces) you have open. You describe what you want, approve a plan once,
+and it writes the assets as ordinary files — stopping to let you pick a model, add a
+connector, or grant tools whenever a step needs you.
 
 It runs on the **Viorant** managed provider and spends
 [credits](/providers/credits) from the same wallet as everything else.
 
+{/* TODO(screenshot): the Assistant panel open beside an editor, mid-build with a plan card visible — Hub 1.6.1 prod build, run 36102328138 */}
+
 ## Where it lives
 
-The Assistant is a collapsible panel on the right-hand side of the Hub. It works on the
-**Space you currently have open** — open a Space and it's ready; without one it has
-nothing to act on.
+The Assistant is a panel on the right-hand side of the Hub. Open or close it with the
+**Assistant** toggle at the end of the tab strip, or **Hide** in the panel's header.
 
-Everything it does is scoped to that active Space. It won't read from or write to any
-other Space.
+It works on the **Space you currently have open**, and everything it does is scoped to
+that Space — it won't read from or write to any other. With no Space open, the panel
+asks you to open one.
+
+**New chat** in the header starts a fresh conversation. If you have a draft or queued
+messages, the Hub asks before clearing them.
 
 ## How a build goes
 
 <Steps>
   <Step title="Describe the goal">
-    Say what you want in plain language — *"a skill that summarises my unread Slack
-    mentions each morning"*. You can also start from the goal box when you create a new
-    Space.
+    Type what you want in plain language — *"a skill that summarises my unread Slack
+    mentions each morning"*. You can also start from the goal box when you
+    [create a new Space](/spaces/create-a-space): the Hub names the Space from your goal
+    and opens the Assistant with it already sent.
+
+    If an open question would change the plan, the Assistant asks it first rather than
+    guessing. See [Answering questions](#answering-questions).
   </Step>
-  <Step title="Read the plan">
-    The Assistant proposes a plan before it changes anything. It's shown as steps you
-    can read, and it will ask about anything genuinely under-specified rather than
-    guessing.
+  <Step title="Review the plan">
+    The Assistant proposes **one plan card**: a numbered list of the steps it will take,
+    each naming the asset it will create or change. Nothing is written yet.
+
+    - **Approve plan** — the Assistant runs every step in order. You don't approve each
+      step again.
+    - **Request changes** — say what should change; it proposes a revised plan.
+    - **Decline** — nothing is built.
+
+    Once approved, the card shows progress as *n of m* steps complete.
+
+    {/* TODO(screenshot): a plan card in the request state, showing numbered steps and the Decline / Request changes / Approve plan buttons — Hub 1.6.1 prod build, run 36102328138 */}
   </Step>
-  <Step title="Approve each piece">
-    Each step arrives as a card showing the **actual thing being made** — the prompt
-    text, the skill body and the connectors it needs, the model and tier, and how the
-    agent gets wired together. You approve them one at a time, or let it build the rest
-    without asking.
+  <Step title="Resolve setup inline">
+    When a step needs something only you can provide, the Assistant pauses on a card in
+    the chat instead of failing. You finish it there, and the plan carries on.
+
+    - **Pick a model.** Choose a **Provider** and **Model** from the models available to
+      you, then **Use model**. The Hub adds it to the Space's model pool. If the Space
+      already has a runnable model, the step completes without asking.
+    - **Add a connector.** The card asks *"Add … to this Space?"*. **Add to Space**
+      creates the connector's entry in the Space — it doesn't sign you in or turn on any
+      tools yet. If the name matches more than one catalog entry, pick the one you meant.
+    - **Authenticate it.** Choose **Connect** and finish signing in in your browser. For
+      connectors that use your own OAuth app, enter the **Client ID** and **Client secret**
+      and choose **Save** first. A **Set it up** link appears when the connector has a
+      setup guide.
+
+    {/* TODO(screenshot): the "Add <connector> to this Space?" card, then the Connect card for the same connector — Hub 1.6.1 prod build, run 36102328138 */}
+    {/* TODO(screenshot): the model pick card with Provider and Model selects and the Use model button — Hub 1.6.1 prod build, run 36102328138 */}
+  </Step>
+  <Step title="Grant the connector's tools">
+    Signing in to a connector **does not enable its tools**. That's a separate step.
+
+    After a connector is added, the Assistant lists the connector's **live tools by
+    name** — the ones the plan actually needs — and asks you to grant them. Choose
+    **This session** or **Always** to enable exactly those tools, or **Deny** to leave
+    them off. It never enables every tool a connector offers.
+
+    {/* TODO(screenshot): the tool grant card listing named connector tools with Deny / This session / Always — Hub 1.6.1 prod build, run 36102328138 */}
   </Step>
   <Step title="Watch the files land">
-    Approved assets appear in the Space's file tree as they're created. They're ordinary
-    files — the same ones you'd have authored by hand. From there you can run and test
-    the agent as you would any other.
+    Each step appears in the chat as it runs, and the assets it creates appear in the
+    Space's file tree. They're ordinary files — the same ones you'd have authored by hand.
+  </Step>
+  <Step title="Test it locally">
+    When the agent is wired, the Assistant offers a local test. Edit the test input if you
+    like (it starts as *"Run a local smoke test"*), then choose **Authorize Test**. The
+    Hub runs the agent on your machine and opens its test tab. **Skip** leaves the test
+    for later.
+
+    {/* TODO(screenshot): the test card with the input box and Skip / Authorize Test, and the agent test tab it opens — Hub 1.6.1 prod build, run 36102328138 */}
   </Step>
 </Steps>
 
+Nothing is deployed from the Assistant. When you're happy with the local test,
+[deploy the agent](/deploy/deploy-an-agent) yourself.
+
+## Answering questions
+
+When the Assistant needs you to choose between options, it asks in the chat and may
+offer up to **three suggestion chips** under the question. Selecting a chip sends that
+answer for you.
+
+Chips only appear when the Assistant is actually asking you to choose — never as
+generic starters, and never in place of a plan, model, connector or tool card. You can
+always ignore them and **type your own answer** instead.
+
+{/* TODO(screenshot): a clarifying question with two or three suggestion chips above the composer — Hub 1.6.1 prod build, run 36102328138 */}
+
+If you send a message while the Assistant is still working, it's queued and sent when
+the current step finishes.
+
+## When a step gets stuck
+
+A build shouldn't leave you with no way forward. Depending on where it stopped, you'll
+see some of these:
+
+| Where | Action | What it does |
+| --- | --- | --- |
+| A failed step | **Retry** | Runs the step again, up to three attempts. |
+| A failed step | **Skip** | Skips that step and carries on with the rest of the plan. |
+| A step that failed on a connector or its tools | **Create files only — wire connectors later** | Writes the files without the connector's tools and skips the connector steps. The tools stay off until you connect and enable them yourself. |
+| A setup card | **Continue plan** | Leaves this setup step unfinished and moves on to the rest of the plan. |
+| A setup card | **Re-check** | Looks again — use it after you've fixed something outside the chat. |
+| A setup card | **Open Connectors** | Opens the Connectors view so you can add or sign in to a connector directly. |
+| A setup card | **Skip** | Dismisses the setup card. |
+| A reply that didn't finish | **Retry** | Sends the turn again. |
+
+Setup cards show these actions whenever they're waiting on you, and also when a step
+has stopped making progress.
+
+{/* TODO(screenshot): a failed connector step showing Skip, Retry and "Create files only — wire connectors later" — Hub 1.6.1 prod build, run 36102328138 */}
+
 ## Fixing and improving
 
-Once a Space has assets in it, the Assistant can also work on what's already there —
-describe what's wrong or what you want changed and it proposes edits the same way, as
-reviewable steps.
+Once a Space has assets in it, the Assistant works on what's already there — describe
+what's wrong or what you want changed and it proposes the edits the same way, as a plan
+you approve. It reads the Space's current files on every turn, and it tells you if the
+Space has a broken reference rather than building on top of it.
 
 <Note>
-  The **AI prompt builder** in the prompt editor is still there and unchanged. Use the
+  The **AI prompt builder** in the prompt editor is separate from the Assistant. Use the
   Assistant when you're working across a Space — several assets, or wiring them
-  together. Use the prompt builder when you want to generate or improve one prompt
-  in place.
+  together. Use the prompt builder when you want to generate or improve one prompt in
+  place.
 </Note>
 
-## Connectors and models
+## What it remembers
 
-If a skill needs a connector, the Assistant brings it in from the connectors already
-available to you, or tells you to add one — it can't sign you into a service on your
-behalf. See [Connectors](/concepts/connectors) for how authorization works.
+The Assistant sees your Space's files each turn, and when you reopen a Space the Hub
+restores the conversation and any build that was in progress.
 
-For models it defaults to the Viorant managed provider on the **Medium**
-[tier](/providers/credits#tiers), and shows you that choice before wiring it in.
+It does **not** yet keep a Space brief — a set of facts you've confirmed about a Space
+that carries into every new chat. There's no way today to view, confirm, edit or remove
+saved facts, and **New chat** starts without anything said in earlier conversations.
+If something matters across chats, put it in the Space's files.
 
 ## What it costs
 
-Every turn spends credits, including turns that only plan or explain. The
-[tier picker](/providers/credits#tiers) in the panel controls how much — **Low** is
-cheaper and usually fine while you're still shaping the idea.
+Every turn spends credits, including turns that only ask a question or plan. The tier
+picker in the composer controls how much — **Low** is cheapest and usually fine while
+you're still shaping the idea, **Mid** is the default, and **High** is for harder
+builds. See [Tiers](/providers/credits#tiers) and [Plans](/providers/plans) for which
+tiers your plan includes.
 
-If your balance reaches zero the Assistant stops rather than failing quietly. See
-[Credits](/providers/credits).
+If your balance reaches zero, the Assistant stops and tells you — *"Credits exhausted.
+Your draft is still here."* — with a link to top up.
 
-<Card title="Credits & the Viorant provider" icon="coins" href="/providers/credits">
-  What spends credits, and what the starting grant covers.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Credits & the Viorant provider" icon="coins" href="/providers/credits">
+    What spends credits, tiers, and topping up.
+  </Card>
+  <Card title="Connectors" icon="plug" href="/concepts/connectors">
+    How connectors are added, authorized and given tools.
+  </Card>
+</CardGroup>
