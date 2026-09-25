@@ -15,8 +15,17 @@ prompt, run an agent, and see real output on your first session.
 
 ## Your wallet
 
-New accounts are granted **2,500 credits**, once. There's no card, no subscription,
-and no monthly reset.
+New accounts start on the **Free** plan and are granted **2,500 credits**, once — no
+card required. Paid [plans](/providers/plans) add a monthly credit allowance and unlock
+the **High** tier:
+
+| Plan | Price | Credits |
+| --- | --- | --- |
+| Free | $0 | 2,500, once |
+| Starter | $15 / month | 10,000 every month |
+| Pro | $50 / month | 60,000 every month |
+
+See [Plans](/providers/plans) for what else each includes and how to subscribe.
 
 The wallet is a single balance. Everything you do that calls a managed model draws
 from the same pool — there's no separate allowance per feature.
@@ -42,13 +51,16 @@ from your machine straight to the vendor and never touches Viorant's metering.
 
 ## Tiers
 
-The Viorant provider offers two tiers. They differ in capability and in what they
+The Viorant provider offers three tiers. They differ in capability and in what they
 cost you per call:
 
-| Tier | Use it for | Relative cost |
-| --- | --- | --- |
-| **Medium** | Everyday work — the default, and the right starting point | Moderate |
-| **Low** | Fast, cheap iteration and simple prompts | Lowest |
+| Tier | Use it for | Relative cost | Plans |
+| --- | --- | --- | --- |
+| **Medium** | Everyday work — the default, and the right starting point | Moderate | All |
+| **Low** | Fast, cheap iteration and simple prompts | Lowest | All |
+| **High** | Harder builds that need a stronger model | Highest | Pro |
+
+Medium is shown as **Mid** in the Assistant's tier picker.
 
 Pick a tier wherever you choose a Viorant model — when you add one to a Space's model
 pool, in the prompt builder when you generate, or in the
@@ -86,7 +98,8 @@ credit surfaces link straight there.
 | Agent Fleet | $500 | 575,000 |
 
 **Purchased credits never expire**, and they add to whatever you already have rather than
-replacing it. There's no subscription and no monthly reset.
+replacing it. Packs are one-off purchases, available on every plan — for a monthly
+allowance instead, see [Plans](/providers/plans).
 
 <Note>
   The $10 pack is exactly 10,000 credits — the published rate, with no bonus. The larger
@@ -99,8 +112,9 @@ Past purchases are listed under Billing, alongside your day-by-day usage.
 ## When you run out
 
 At zero, calls to the Viorant provider stop rather than silently failing or billing
-you. The Hub tells you the balance is exhausted, and you can either
-[top up](https://sentinel.viorant.io) or [add your own key](/providers/byok).
+you. The Hub tells you the balance is exhausted, and you can
+[top up](https://sentinel.viorant.io), move to a [paid plan](/providers/plans), or
+[add your own key](/providers/byok).
 
 Adding a key restores full functionality immediately — your own models have no credit
 cost and no cap beyond whatever your provider account allows.
@@ -114,6 +128,11 @@ If you would rather no prompt content passed through Viorant at all,
 [use your own key](/providers/byok) — that path calls the provider directly from your
 machine, and Viorant is not in the request path.
 
-<Card title="Bring your own key" icon="key" href="/providers/byok">
-  Use your own provider account instead — no credit cost, no metering.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Plans" icon="layers" href="/providers/plans">
+    Free, Starter and Pro — monthly credits, tiers and deployed-agent limits.
+  </Card>
+  <Card title="Bring your own key" icon="key" href="/providers/byok">
+    Use your own provider account instead — no credit cost, no metering.
+  </Card>
+</CardGroup>
