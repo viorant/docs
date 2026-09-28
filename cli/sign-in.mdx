@@ -4,7 +4,7 @@ description: "Connect vio to your Viorant account, check your plan and sign out.
 ---
 
 Validating a `.vio` file works offline with no account. Everything that talks to Viorant
-Cloud — deploying, listing, logs — needs you to sign in.
+Cloud — deploying, listing, logs, schedules — needs you to sign in.
 
 ## Sign in
 
@@ -36,10 +36,40 @@ vio login --no-browser
 
 ## Check who you are
 
+In the shell, `/whoami` and `/status`. As subcommands:
+
 ```bash
 vio whoami    # your account and credit balance
 vio status    # plan, credits, usage and how many agents you can still deploy
 ```
+
+Both take `--json` for scripts. Signed out, they exit with code `3`.
+
+## Your plan
+
+In the shell:
+
+```
+> /upgrade
+```
+
+Or as a subcommand:
+
+```bash
+vio upgrade
+```
+
+`vio upgrade` shows the plan you are on and the link to
+[sentinel.viorant.io/plans](https://sentinel.viorant.io/plans), where you change it — and
+at an interactive terminal it opens that page for you. The purchase happens there, never
+in the terminal. Signed out, it still prints the link.
+
+`vio upgrade --json` prints `{"plan": …, "url": …}` and never opens a browser.
+
+<Note>
+  `vio upgrade` changes your **plan**, not the app. To update `vio` itself, run
+  `vio update` — see [Install the CLI](/cli/install#update).
+</Note>
 
 ## Where credentials live
 
@@ -48,6 +78,8 @@ session and refreshes it automatically. Provider keys and connector tokens are n
 written there.
 
 ## Sign out
+
+From the shell, `/logout`. As a subcommand:
 
 ```bash
 vio logout

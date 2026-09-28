@@ -1,11 +1,16 @@
 ---
 title: "Install the CLI"
-description: "Install vio, the Viorant command-line tool, on macOS, Linux or Windows."
+description: "Install vio, the Viorant command-line tool, on macOS, Linux or Windows, and keep it up to date."
 ---
 
 `vio` builds, deploys and operates Viorant agents from a terminal. It turns a folder into
 a Space, validates a `.vio` file, stands the agent up on Viorant Cloud and hands you a
 URL — the same deploy pipeline as the Hub, without opening it.
+
+<Note>
+  These pages describe `vio` **1.0.0 or later**. Check with `vio --version`, and run
+  `vio update` if you are behind.
+</Note>
 
 `vio` ships as one self-contained JavaScript file. It needs **Node 22**:
 
@@ -19,17 +24,46 @@ node --version   # v22.x
 curl -fsSL https://dl.viorant.ai/cli/install.sh | sh
 ```
 
-The installer puts `vio` in `~/.viorant/bin/vio` without `sudo`. If that folder isn't on
-your `PATH`, it prints the line to add:
+The installer puts `vio` in `~/.viorant/bin/vio` without `sudo`, then adds that folder to
+your `PATH` in your shell's startup file:
 
-```bash
-export PATH="$HOME/.viorant/bin:$PATH"
-```
+| Shell | File it adds the `PATH` line to |
+| --- | --- |
+| zsh | `~/.zshenv` (or `$ZDOTDIR/.zshenv`) |
+| bash | `~/.bashrc`, and your login file (`~/.bash_profile`, `~/.bash_login` or `~/.profile`) |
+| fish | `~/.config/fish/conf.d/vio.fish` |
+| anything else | `~/.profile` |
+
+It prints each file it changed. The block it adds is marked `# added by vio installer`,
+and it is never added twice: a file that already mentions `.viorant/bin` is left alone.
 
 Open a new shell, then check:
 
 ```bash
 vio --version
+```
+
+### Keep your startup files untouched
+
+To install without the installer editing any file, set `VIO_NO_MODIFY_PATH`:
+
+```bash
+curl -fsSL https://dl.viorant.ai/cli/install.sh | VIO_NO_MODIFY_PATH=1 sh
+```
+
+It writes nothing outside `~/.viorant/bin`. If that folder isn't on your `PATH` yet, it
+prints the line to add yourself:
+
+```bash
+export PATH="$HOME/.viorant/bin:$PATH"
+```
+
+If a startup file can't be written — for example one managed read-only by Nix
+home-manager — the install still succeeds, and the installer warns with the exact line to
+add by hand:
+
+```
+vio install: could not write /Users/you/.zshenv; add this line yourself: export PATH="$HOME/.viorant/bin:$PATH"
 ```
 
 ## Windows
@@ -45,15 +79,44 @@ Invoke-WebRequest "https://dl.viorant.ai/cli/vio-$v.js.sha256" -OutFile vio.js.s
 node vio.js --version
 ```
 
-Run commands as `node vio.js <command>`.
+Run commands as `node vio.js <command>`. To update on Windows, repeat these steps:
+`vio update` runs the shell installer, which Windows does not have.
 
-## Upgrade
-
-Run the install command again. It replaces `vio` in place. To install a specific version:
+## Update
 
 ```bash
-curl -fsSL https://dl.viorant.ai/cli/install.sh | VIO_VERSION=0.1.2 sh
+vio update
 ```
+
+`vio update` installs the current release in place. It runs the same installer as above,
+so the same checksum and signature checks apply. When you are already current it says so
+and changes nothing. It is subcommand-only — there is no `/update` in the
+[shell](/cli/shell).
+
+To install a specific version, including an older one:
+
+```bash
+vio update --version 1.0.0
+```
+
+Running the install command again does the same thing, and `VIO_VERSION` pins a version
+there:
+
+```bash
+curl -fsSL https://dl.viorant.ai/cli/install.sh | VIO_VERSION=1.0.0 sh
+```
+
+About once a day `vio` checks for a newer release and, if there is one, prints a one-line
+notice to stderr naming `vio update`. The notice never installs anything, never touches
+stdout, and is skipped entirely on a `--json` run, so it cannot break a script.
+
+If your build is too old for Viorant Cloud, commands that talk to it refuse with a message
+that says to run `vio update`.
+
+<Note>
+  `vio update` updates the app. **`vio upgrade` is your Viorant plan**, not the CLI — see
+  [Your plan](/cli/sign-in#your-plan).
+</Note>
 
 ## How releases are verified
 
@@ -76,17 +139,6 @@ cosign verify-blob --bundle vio-<version>.js.sigstore.json \
 A checksum proves the file arrived intact. The signature proves it came from Viorant's
 release workflow.
 
-## Next
-
-<CardGroup cols={2}>
-  <Card title="Sign in" icon="right-to-bracket" href="/cli/sign-in">
-    Connect `vio` to your Viorant account.
-  </Card>
-  <Card title="Deploy an agent" icon="rocket" href="/cli/deploy">
-    Validate a `.vio` file and put it on Viorant Cloud.
-  </Card>
-</CardGroup>
-
 ## Then
 
 ```bash
@@ -97,4 +149,11 @@ vio --help     # every subcommand
 Running `vio` with no arguments opens the [interactive shell](/cli/shell). In a script or
 a CI job, use the subcommands — they are the automation surface.
 
-Next: [turn a folder into a Space](/cli/init), or [sign in](/cli/sign-in).
+<CardGroup cols={2}>
+  <Card title="Turn a folder into a Space" icon="folder-plus" href="/cli/init">
+    Scaffold an agent you can edit and deploy.
+  </Card>
+  <Card title="Sign in" icon="right-to-bracket" href="/cli/sign-in">
+    Connect `vio` to your Viorant account.
+  </Card>
+</CardGroup>
