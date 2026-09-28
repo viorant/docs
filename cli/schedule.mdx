@@ -22,8 +22,8 @@ Or as a subcommand, which is what scripts and AI agents use:
 vio schedule <id> --every 1h --at :15
 ```
 
-`vio schedule` takes the deployment's **full id** — not a prefix or a name. `vio show <id>`
-prints it.
+Like the other deployment commands, `vio schedule` takes the short id `vio list` prints,
+the full id, a unique prefix of at least six characters, or the deployment's exact name.
 
 ## Set a schedule
 
@@ -44,6 +44,24 @@ vio schedule <id> --every 1d --at 09:30 --tz Europe/London
 
 Setting a schedule turns it on. A deployment has one schedule; setting it again replaces
 it. Leave out `--input` when you re-time a schedule and its saved input is kept.
+
+### Run inputs
+
+A scheduled run gets no caller to fill in the agent's inputs, so an agent that declares
+required inputs needs them in `--input`. Pass inline JSON, or keep the payload in a file:
+
+```bash
+vio schedule <id> --every 1d --at 07:00 --input '{"topic": "release notes"}'
+vio schedule <id> --every 1d --at 07:00 --input @input.json
+```
+
+If the agent's run contract rejects the input, `vio` names the inputs it requires and shows
+both forms — for example
+`This agent requires run inputs: topic. Pass them with --input '{"topic": …}' or --input @file.json.`
+
+In the [shell](/cli/shell), use `--input @input.json`. `/schedule` splits its arguments on
+spaces and does not handle quotes, so inline JSON works there only when it has no spaces:
+`--input {"topic":"notes"}`.
 
 ## See, pause, resume and clear
 
@@ -104,6 +122,6 @@ With `--json`, a failure is `{"error":{"code":"…","message":"…"}}`:
 | `schedule.not_found` | The deployment has no schedule. Set one with `--every` |
 | `schedule.interval_below_plan` | More frequent than your plan allows |
 | `schedule.invalid_spec` | The interval, `--at` or time zone was rejected |
-| `schedule.invalid_input` | The `--input` payload was rejected |
+| `schedule.invalid_input` | The `--input` payload was rejected; the message names the inputs the agent requires |
 | `schedule.deployment_not_schedulable` | Not a running deployment on Viorant Cloud |
 | `usage.invalid` | A malformed option, such as `--every 90m` |

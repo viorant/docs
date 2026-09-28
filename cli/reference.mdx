@@ -38,8 +38,7 @@ description: "Every vio command, its exit codes and error codes, and the machine
 Running `vio` with no arguments opens the [interactive shell](/cli/shell). A dash in the
 shell column means the command is subcommand-only.
 
-`vio <command> --help` shows every option. `sign` and `verify` are listed in `--help` but
-not implemented yet.
+`vio <command> --help` shows every option.
 
 ## Exit codes
 
@@ -53,14 +52,25 @@ not implemented yet.
 
 ## Error codes
 
-Commands that take `--json` report most failures as one JSON object:
+With `--json`, every failure is reported the same way:
 
-```json
-{"error":{"code":"bundle.unreadable","message":"Cannot read agent.vio: no such file."}}
-```
+- **stdout is empty**, and the **last line on stderr** is one JSON object:
 
-Branch on the exit code first — it is always set. A signed-out call exits `3` with a
-one-line message telling you to run `vio login`.
+  ```json
+  {"error":{"code":"auth.required","message":"Not signed in. Run vio login."}}
+  ```
+
+  `code` is one of the codes below. Some commands add fields inside `error` — a failed
+  `vio deploy` or `vio connect` adds the `stage` it stopped at, and `vio connect` adds what
+  happened to the running `agent` — but `code` and `message` are always there.
+- **`vio validate` and `vio digest` are the exceptions**: they print the error object on
+  stdout, because a validation result is their output.
+- The **exit code** always matches: a sign-in failure exits `3` from every command,
+  including `vio deploy` and `vio connect`; an invalid argument exits `2`; out of credits
+  exits `4`.
+
+A command line `vio` cannot parse at all — a missing required argument, an unknown option —
+is rejected before any command runs, as one plain-text line (`error: …`) with exit `2`.
 
 | Code | Meaning |
 | --- | --- |

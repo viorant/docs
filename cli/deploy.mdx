@@ -201,6 +201,9 @@ stops. Add the two lines to `.vio/.env.connectors`, then run it again.
 - For a BYOK agent, have the same provider key you deployed with — in the Space, or the
   same `--env-file`. The push replaces every credential the agent holds, including its
   provider key, and a key of the wrong kind is refused before any consent.
+- A [credits](#viorant-credits) agent needs no provider key for `vio connect` either, and
+  `vio connect` never pushes one to it — even if a key is set in the Space or the
+  `--env-file`.
 - The bundle must be the one you deployed. If its digest differs, nothing happens.
 - Cancelling any consent pushes nothing; the agent keeps what it had.
 - Port `47219` on `127.0.0.1` must be free while it runs.
