@@ -7,6 +7,10 @@ A `.vio` file is a portable definition of a whole agent — prompt, model, skill
 connectors and memory — in one YAML file. Everything the agent is made of is inside the
 file, so you can deploy a `.vio` someone sent you without any other assets.
 
+<Note>
+  Needs `vio` **1.0.0** or later for every check on this page. Check with `vio --version`.
+</Note>
+
 ## Validate
 
 From the [shell](/cli/shell):
@@ -40,7 +44,45 @@ For scripts and CI, print one JSON result:
 vio validate agent.vio --json
 ```
 
+## What it checks
+
+A bundle can be valid YAML, match the schema, and still fail the first time the deployed
+agent runs. `vio validate` catches those cases here, where they are one edit to fix, and
+`vio deploy` runs the same checks before it sends anything.
+
+- **The schema** — every field the `.vio` format requires.
+- **Artifact digests** — see [Editing a bundle](#editing-a-bundle-fix-the-digests) below.
+- **Memory files the runtime can parse.** Each memory artifact needs the frontmatter the
+  runtime reads, including a `meta` block:
+
+  ```yaml
+  ---
+  meta:
+    id: 01M3BF1F6D28KFF919GDB2PAYJ   # must equal the memory artifact's id
+    schemaVersion: "1"               # a quoted string; unquoted 1 fails
+  name: release-notes-run-log
+  description: what this memory holds
+  tags: [run-log]                    # optional; no other keys allowed
+  ---
+  ```
+
+  A missing `meta` block, an unquoted `schemaVersion`, or a `meta.id` that differs from the
+  artifact's id is refused, with the reason.
+- **Template variables the agent never receives.** When an agent declares inputs, every
+  `{name}` in the text it runs with — its first prompt, the skills it references, and the
+  memory it reads or writes — must be one of them. Otherwise validation refuses the bundle
+  and names the placeholder:
+
+  ```
+  artifacts[0].content.user: {date} is not an agent input — declare it in inputs, or remove the placeholder
+  ```
+
+  Declare the input, or remove the placeholder. Literal braces such as a JSON example
+  (`{"a": 1}`) are fine.
+
 ## Digest
+
+In the shell, `/digest agent.vio`. As a subcommand:
 
 ```bash
 vio digest agent.vio
@@ -66,27 +108,24 @@ vio digest agent.vio --fix
 It prints each artifact it changed, old digest to new, and rewrites **only** those lines —
 your comments, key order and formatting survive. On a file that is already correct it
 changes nothing and exits `0`. If it cannot rewrite the manifest it says so and writes
-nothing, rather than reporting a fix it did not make.
+nothing, rather than reporting a fix it did not make. It only runs on a bundle that is
+otherwise valid, so fix a schema, memory or placeholder problem first.
 
 So the loop for editing a bundle by hand, or with an AI coding agent, is:
 
 ```bash
 # edit agent.vio
 vio digest agent.vio --fix     # recompute the digests you invalidated
-vio validate agent.vio         # schema and digests; exit 0 means deployable
+vio validate agent.vio         # every check above; exit 0 means deployable
 vio deploy agent.vio --target viorant_cloud
 ```
 
-<Note>
-  Needs `vio` **0.1.4** or newer. Earlier versions validate the schema only, and have no
-  `--fix`.
-</Note>
-
-`--json` tells the two failures apart, which is what an AI agent should branch on:
+`--json` tells the failures apart, which is what an AI agent should branch on:
 
 | Code | Meaning |
 | --- | --- |
-| `bundle.invalid` | Schema, YAML, I/O or discovery problem. Fix it by editing |
+| `bundle.invalid` | Schema, YAML, memory, placeholder or discovery problem. Fix it by editing |
+| `bundle.unreadable` | The file is missing or cannot be read. Check the path, not the bundle |
 | `bundle.digest_mismatch` | A body was edited. Run `vio digest --fix` |
 | `bundle.fix_failed` | `--fix` could not rewrite the manifest; nothing was written |
 
@@ -104,7 +143,7 @@ vio deploy agent.vio --target viorant_cloud
     ```
   </Step>
   <Step title="Deploy it">
-    Follow [Deploy an agent](/cli/deploy). You provide the model provider key; the file
-    never contains one.
+    Follow [Deploy an agent](/cli/deploy). The file never contains a provider key: either
+    it runs on Viorant credits, or you provide the key.
   </Step>
 </Steps>
