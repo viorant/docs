@@ -7,18 +7,26 @@ A **Space** is a folder Viorant understands. It holds the agent you are building
 credentials used to deploy it, and enough context for the Hub — or an AI coding agent — to
 pick the folder up and work in it.
 
+<Note>
+  Needs `vio` **1.0.0** or later. Check with `vio --version`, and run `vio update` if you
+  are behind.
+</Note>
+
+From the [shell](/cli/shell), in the folder you want to turn into a Space:
+
+```
+> /init
+```
+
+Or as a subcommand, which is what scripts and AI agents use:
+
 ```bash
 mkdir my-agent && cd my-agent
 vio init
 ```
 
-<Note>
-  Needs `vio` **0.1.4** or newer. Check with `vio --version`, and run `vio upgrade` if
-  you are behind.
-</Note>
-
-`vio init` is a subcommand only — there is no `/init` in the [interactive
-shell](/cli/shell), because it is how a folder becomes something to work in.
+`/init` works on the shell's working directory, and takes the same directory argument and
+options as the subcommand.
 
 ## What it writes
 
@@ -32,8 +40,8 @@ my-agent/
   CLAUDE.md        the same pointer
   .gitignore       ignores .vio/
   .vio/
-    .env.provider    your provider key
-    .env.connectors  connector API keys
+    .env.provider    your model provider key
+    .env.connectors  connector API keys, and OAuth app credentials
     config.json      project preferences
 ```
 
@@ -45,36 +53,50 @@ Everything is created from templates built into the binary, so `vio init` works 
 | --- | --- |
 | `--name <name>` | Space name. Defaults to the folder's name |
 | `--template <name>` | `minimal-prompt-agent` (default), `oauth-connector-agent`, `skill-agent` |
-| `--force` | Refresh an existing Space |
+| `--force` | Re-scaffold an existing Space — see below |
 | `--json` | One JSON object, for scripts |
 
 ## `.vio/` holds your secrets, and is git-ignored
 
 The `.vio/` **directory** is where your provider key and connector secrets live. `vio init`
-adds it to `.gitignore` for that reason, and **`--force` never overwrites the two `.env`
-files** — a flag called `--force` is not consent to delete a credential, so a re-init
-reports them kept and leaves them alone.
+adds it to `.gitignore` for that reason.
 
 Nothing in `.vio/` travels inside the bundle. It is the source credentials are pushed
 *from* at deploy time, not configuration that ships with the agent.
 
+- `.vio/.env.provider` — the model provider key a [BYOK](/cli/deploy#credits-or-your-own-key)
+  agent runs on.
+- `.vio/.env.connectors` — connector credentials that are plain API keys, and the OAuth app
+  credentials `vio connect` asks for once and offers to save
+  (see [Connectors](/cli/deploy#connectors)).
+
 <Note>
   The `.vio` **file** — `agent.vio` — is a different thing entirely. That is the bundle,
-  it is the thing you edit, and it carries no secrets.
+  it is the thing you edit, and it carries no secrets. Never put a key, a token or an OAuth
+  client secret in it.
 </Note>
 
 ## Put your provider key in
 
-```bash
-# .vio/.env.provider
+The starter bundle runs on your own provider key. `.vio/.env.provider` is written with
+every line commented out — uncomment the two required lines and the one key that matches
+your provider:
+
+```bash title=".vio/.env.provider"
 VIORANT_RUNNER_PROVIDER_KIND=openai
-VIORANT_RUNNER_PROVIDER_API_KEY=sk-...
+VIORANT_RUNNER_PROVIDER_MODEL=gpt-4o-mini
+OPENAI_API_KEY=sk-...
 ```
 
 `vio deploy` reads this automatically when run from inside the Space. You do not need
 `--env-file` for a Space's own bundle.
 
+To run on Viorant credits instead, with no provider key at all, change the bundle's model —
+see [Credits or your own key](/cli/deploy#credits-or-your-own-key).
+
 ## Then
+
+`vio init` prints the next steps:
 
 ```bash
 vio validate agent.vio
@@ -84,8 +106,16 @@ vio deploy agent.vio --target viorant_cloud
 ## An existing folder
 
 `vio init` in a folder that already holds a `.vio` file leaves the bundle alone — it will
-not drop a template on top of work you have started. In a folder that is already a Space
-it stops and asks for `--force`.
+not drop a template on top of work you have started.
+
+In a folder that is already a Space it stops. Two ways on:
+
+- **`vio docs agents --refresh`** rewrites only `VIO-AGENTS.md` from the `vio` you have
+  now — the right call after `vio update`.
+- **`--force`** re-scaffolds the Space. It never replaces `.vio/.env.provider`,
+  `.vio/.env.connectors` or `project.vpj`, which carries the Space's identity. If it
+  would replace an `agent.vio` or `.vio/config.json` you have edited, it lists them and
+  asks first; without a terminal to ask on, it refuses and changes nothing.
 
 Your own `AGENTS.md` or `CLAUDE.md` are never replaced either: `vio` adds a short pointer
 block between `<!-- vio:begin -->` markers and leaves the rest of the file untouched.

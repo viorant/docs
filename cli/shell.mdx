@@ -9,8 +9,8 @@ Running `vio` with no arguments opens an interactive shell:
 vio
 ```
 
-This is the CLI's front door. Everything you can do as a subcommand you can also do here,
-as a slash command, without retyping `vio` each time.
+This is the CLI's front door. Most of what you can do as a subcommand you can also do
+here, as a slash command, without retyping `vio` each time.
 
 <Note>
   The shell needs a real terminal. If `vio` is started with its input piped or redirected —
@@ -25,43 +25,46 @@ as a slash command, without retyping `vio` each time.
 /deploy agent.vio --target viorant_cloud
 ```
 
-The same flags work as on the subcommand. `/help` lists everything available in the
-current build:
+Type `/` and the start of a name to pick from the matching commands. `/help` lists every
+command in the build you are running, with its arguments. In `vio` 1.0.0 that is:
 
 | | |
 | --- | --- |
-| `/help` · `/clear` · `/exit` · `/quit` | The shell itself |
-| `/session` · `/tier <low\|mid\|high>` | This session's id, working directory and model tier |
-| `/login` · `/whoami` · `/logout` · `/status` | Your account |
+| `/help` · `/clear` · `/exit` · `/quit` · `/session` | The shell itself |
+| `/login` · `/whoami` · `/logout` · `/status` · `/upgrade` | Your account and plan |
+| `/init [dir]` | Turn a folder into a [Space](/cli/init) |
 | `/validate <path>` · `/digest <path>` | Check a bundle |
 | `/deploy <path>` · `/redeploy <id>` · `/stop <id>` | Deployments |
 | `/list` · `/show <id>` · `/runs <id>` · `/logs <id>` | What's running |
+| `/schedule <id>` | A deployment's [run schedule](/cli/schedule) |
 | `/create space "<name>"` | A local Space the Hub can open |
 
-Some commands are subcommand-only, because they need a terminal of their own or belong to
-setting a machine up: `vio init`, `vio connect`, `vio docs`, `vio providers`,
-`vio connectors` and `vio upgrade`.
+`/sign` also appears in `/help`; it is not implemented yet.
 
-## What it does not do yet
+A slash command takes the arguments and the options that make sense at a prompt — for
+example `/deploy` takes `--target` and `--env-file`, `/logs` takes `--since`, `--limit`
+and `--include-platform`. `--json` output, and a few flags such as `vio deploy --name`,
+belong to the subcommands.
 
-**Typing a question does nothing useful.** Anything that is not a slash command answers:
+These are **subcommand-only** — there is no slash form: `vio update`, `vio connect`,
+`vio docs`, `vio providers` and `vio connectors`.
+
+## Typed prompts are not available in 1.0.0
+
+The shell in `vio` 1.0.0 runs slash commands and nothing else. Anything you type that does
+not start with `/` is not sent anywhere — the shell answers:
 
 ```
-No model connected yet. The metered client lands in PLAN.md T1.6.
+Chat isn't in this release. /help lists every command.
 ```
 
-The shell today is a slash-command surface over the same subcommands — not a
-conversational assistant. The model client, the read-only tools and headless runs are all
-still to come, and this page will change when they land.
-
-If you want an AI agent to drive `vio` now, that works, and it works through the
-subcommands rather than through this shell: see [Use `vio` with AI coding
-agents](/cli/ai-agents).
+If you want an AI agent to drive `vio`, that works, and it works through the subcommands
+rather than through this shell: see [Use `vio` with AI coding agents](/cli/ai-agents).
 
 ## Sessions
 
-Each shell run gets a session, written to `~/.viorant/sessions/`. `/session` prints its id
-and `vio --resume <session-id>` reopens it.
+Each shell run gets a session, written to `~/.viorant/sessions/`. `/session` prints its id,
+working directory and start time, and `vio --resume <session-id>` reopens it.
 
 ## Scripts and CI
 

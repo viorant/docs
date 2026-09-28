@@ -3,66 +3,43 @@ title: "Command reference"
 description: "Every vio command, its exit codes and error codes, and the machine-readable manifest."
 ---
 
+<Note>
+  This page describes `vio` **1.0.0**. Check yours with `vio --version`, and run
+  `vio update` if you are behind.
+</Note>
+
 ## Commands
 
-| Command | What it does | Needs sign-in |
-| --- | --- | --- |
-| `vio init [dir]` | Turn a folder into a Space | — |
-| `vio login` | Sign in with Google in your browser | — |
-| `vio whoami` | Show the signed-in account | Yes |
-| `vio status` | Plan, credits, usage and deploy quota | Yes |
-| `vio logout` | Clear this machine's credentials | — |
-| `vio validate <path>` | Check a `.vio` file, offline | — |
-| `vio digest <path>` | Print a `.vio` file's deployment digest; `--fix` repairs artifact digests | — |
-| `vio deploy <path>` | Deploy a `.vio` to Viorant Cloud | Yes |
-| `vio connect <id> [path]` | Authorise a deployed agent's connectors | Yes |
-| `vio list` | List your deployments | Yes |
-| `vio show <id>` | Show one deployment | Yes |
-| `vio runs <id>` | Recent runs of a deployment | Yes |
-| `vio logs <id>` | Recent logs of a deployment | Yes |
-| `vio redeploy <id>` | Replace a running agent in place | Yes |
-| `vio schedule <id> [action]` | Set, show, turn on/off, or clear a deployment's run schedule | Yes |
-| `vio stop <id>` | Stop a deployment and revoke its credentials | Yes |
-| `vio providers` | Model providers a bundle can run on | — |
-| `vio connectors [term]` | Browse the connector catalogue | — |
-| `vio docs [topic]` | Print embedded documentation, offline | — |
-| `vio upgrade` | Install the current release | — |
+| Command | What it does | In the shell | Needs sign-in |
+| --- | --- | --- | --- |
+| `vio init [dir]` | Turn a folder into a Space | `/init` | — |
+| `vio login` | Sign in with Google in your browser | `/login` | — |
+| `vio whoami` | Show the signed-in account | `/whoami` | Yes |
+| `vio status` | Plan, credits, usage and deploy quota | `/status` | Yes |
+| `vio upgrade` | Show your plan and where to change it | `/upgrade` | — |
+| `vio logout` | Clear this machine's credentials | `/logout` | — |
+| `vio validate <path>` | Check a `.vio` file, offline | `/validate` | — |
+| `vio digest <path>` | Print a `.vio` file's deployment digest; `--fix` repairs artifact digests | `/digest` | — |
+| `vio deploy <path>` | Deploy a `.vio` to Viorant Cloud | `/deploy` | Yes |
+| `vio connect <id> [path]` | Authorise a deployed agent's connectors | — | Yes |
+| `vio list` | List your active deployments; `--all` for every one | `/list` | Yes |
+| `vio show <id>` | Show one deployment | `/show` | Yes |
+| `vio runs <id>` | Recent runs of a deployment | `/runs` | Yes |
+| `vio logs <id>` | Recent logs of a deployment | `/logs` | Yes |
+| `vio schedule <id> [action]` | Set, show, turn on or off, or clear a deployment's run schedule | `/schedule` | Yes |
+| `vio redeploy <id>` | Replace a running agent in place | `/redeploy` | Yes |
+| `vio stop <id>` | Stop a deployment and revoke its credentials | `/stop` | Yes |
+| `vio providers` | Model providers a bundle can run on | — | — |
+| `vio connectors [term]` | Browse the connector catalogue | — | — |
+| `vio docs [topic]` | Print embedded documentation, offline | — | — |
+| `vio update` | Install the current `vio` release | — | — |
+| `vio help` | List commands; `--json` prints the machine-readable manifest | `/help` | — |
 
-Running `vio` with no arguments opens the [interactive shell](/cli/shell), where most of
-these are also available as slash commands.
+Running `vio` with no arguments opens the [interactive shell](/cli/shell). A dash in the
+shell column means the command is subcommand-only.
 
-`vio <command> --help` shows every option. `sign`, `verify` and `assistant` are listed in
-`--help` but not implemented yet.
-
-### `vio schedule`
-
-```bash
-vio schedule <id> --every <interval> [--at <time>] [--tz <iana>] [--input <json|@file>]
-vio schedule <id> [pause | resume | clear]
-```
-
-| Flag | What it does |
-| --- | --- |
-| `--every 20m \| 3h \| 2d` | Sets the cadence: minutes (5–59), hours (1–23) or days (1–30) |
-| `--at :MM \| HH:MM` | Required for an hourly or daily cadence; not used with minutes |
-| `--tz <iana>` | Timezone for `--at`; defaults to this machine's zone |
-| `--input <json\|@file>` | Fixed input each scheduled run gets; omit to keep the existing input |
-| `--json` | Output the raw schedule (or error) as JSON |
-
-| Action | What it does |
-| --- | --- |
-| `pause` (alias `off`) | Turns the schedule off; cadence and input stay saved |
-| `resume` (alias `on`) | Turns it back on and resets the failure count to zero |
-| `clear` | Deletes the schedule |
-
-No argument beyond `<id>` shows the current schedule, or "No schedule." if none is set.
-See [Schedule an agent](/deploy/schedule-an-agent) for cadence limits, billing and
-failure behaviour.
-
-<Note>
-  `vio init`, `vio docs` and `vio digest --fix` need **0.1.4** or newer; `vio providers`
-  and `vio connectors` need **0.1.3**. Check with `vio --version`.
-</Note>
+`vio <command> --help` shows every option. `sign` and `verify` are listed in `--help` but
+not implemented yet.
 
 ## Exit codes
 
@@ -76,20 +53,33 @@ failure behaviour.
 
 ## Error codes
 
-Commands that support `--json` report a failure as `{"error":{"code":"…","message":"…"}}`.
+Commands that take `--json` report most failures as one JSON object:
+
+```json
+{"error":{"code":"bundle.unreadable","message":"Cannot read agent.vio: no such file."}}
+```
+
+Branch on the exit code first — it is always set. A signed-out call exits `3` with a
+one-line message telling you to run `vio login`.
 
 | Code | Meaning |
 | --- | --- |
 | `auth.required` | The command needs a signed-in Viorant account |
 | `wallet.empty` | The wallet has no credits for a metered operation |
-| `bundle.invalid` | A `.vio` failed schema, YAML, I/O or discovery checks |
+| `bundle.invalid` | A `.vio` failed schema, YAML, memory, template-variable or discovery checks |
+| `bundle.unreadable` | The `.vio` file is missing or cannot be read; the bundle itself was never examined |
 | `bundle.digest_mismatch` | An artifact body was edited; run `vio digest --fix` |
 | `bundle.fix_failed` | `digest --fix` could not rewrite the manifest; nothing was written |
 | `deploy.not_available` | Deploy is unavailable for the requested target or state |
 | `usage.invalid` | Arguments or flags are invalid |
 | `cli.not_implemented` | The command is registered but not implemented yet |
-| `space.exists` | `vio init` found an existing Space and was not given `--force` |
+| `space.exists` | `vio init` found an existing Space, or `--force` was refused without confirmation |
 | `space.init_failed` | `vio init` could not write the Space |
+| `schedule.not_found` | The deployment has no schedule |
+| `schedule.interval_below_plan` | The schedule is more frequent than your plan allows |
+| `schedule.invalid_spec` | The schedule's interval, time or time zone was rejected |
+| `schedule.invalid_input` | The schedule's `--input` payload was rejected |
+| `schedule.deployment_not_schedulable` | Only a running deployment on Viorant Cloud can be scheduled |
 | `cli.upgrade_required` | Reserved — your `vio` is too old |
 | `rate_limited` | Reserved — too many requests |
 
@@ -99,7 +89,7 @@ Commands that support `--json` report a failure as `{"error":{"code":"…","mess
 vio help --json
 ```
 
-Prints every command with its arguments and options, whether it needs sign-in or network,
-whether it creates cloud resources, moves credentials or spends credits, and the exit and
-error code tables
-above. Scripts and AI agents should read this instead of parsing `--help`.
+Prints every command with its arguments and options, whether it has a shell form, whether
+it needs sign-in or network, whether it creates cloud resources, moves credentials or
+spends credits, and the exit and error code tables above. Scripts and AI agents should
+read this instead of parsing `--help`.
