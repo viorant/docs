@@ -104,6 +104,7 @@
               "cli/validate",
               "cli/deploy",
               "cli/manage",
+              "cli/schedule",
               "cli/reference",
               "cli/ai-agents"
             ]
