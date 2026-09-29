@@ -1,48 +1,259 @@
 ---
 title: "Use vio with AI coding agents"
-description: "Let Claude Code, Codex or Cursor drive vio safely."
+description: "Let Claude Code, Codex or Cursor build and deploy a Viorant agent, under your permission model."
 ---
 
-Coding agents can validate, deploy and operate Viorant agents with `vio`. A few things
-still need you.
+A coding agent can do the whole job in a Space: author the bundle, choose its model, wire
+its connectors, validate it, deploy it and read its logs. `vio` is built for that — it
+declares what each command commits you to, and leaves the decision to the agent you already
+configured.
 
-## Point the agent at the manifest
+<Note>
+  Needs `vio` **1.0.0** or later. Check with `vio --version`.
+</Note>
+
+## Start with a Space
+
+```bash
+vio init
+```
+
+Among other things this writes **`VIO-AGENTS.md`**, and adds a pointer to it in
+`AGENTS.md` and `CLAUDE.md`. That file is the agent's instructions: the Space layout, how
+the bundle is put together, the authoring loop, choosing a model, connecting connectors, and
+which commands need you. It is generated from the build that wrote it, so it never describes
+a `vio` you do not have.
+
+```bash
+vio docs agents             # print the same text on demand
+vio docs agents --refresh   # rewrite VIO-AGENTS.md from the vio you have now
+```
+
+Point your agent at the folder and it will find it. If you want to be explicit: *"read
+VIO-AGENTS.md first."*
+
+<Tip>
+  **Existing Space?** If it was created by an older `vio`, its `VIO-AGENTS.md` may predate
+  guidance this page describes — model choice, the permissions snippet below, or the
+  first-run checks. Run `vio docs agents --refresh` (do this after every `vio update`, too)
+  to bring it up to date with the `vio` you have now.
+</Tip>
+
+## Choosing a model
+
+Your coding agent should **ask you** which model and provider you want before it writes an
+agent's `model.ref` — it shouldn't pick one for you.
+
+### Viorant credits, offered first
+
+No key, nothing to set up — the agent runs paid from your Viorant credits balance. Three
+tiers:
+
+| Tier | For |
+| --- | --- |
+| `viorant-managed-low` | fastest and cheapest — routine, well-specified tasks |
+| `viorant-managed-mid` | balanced; the recommended default |
+| `viorant-managed-high` | most capable — complex, ambiguous or high-stakes tasks. Needs the **Pro** plan |
+
+These are Viorant's own tier names, not a specific provider's model — the mapping behind
+each tier is Viorant's to change. Don't expect your agent to name (or ask it to guess) the
+model behind a tier.
+
+<Warning>
+  A `high` agent **deploys fine on Free or Starter** — the tier isn't checked at deploy time.
+  But **every run then fails** with `plans.tier_not_allowed` ("High is included with Pro"),
+  because the plan is checked per run, not at deploy. Stick to `low` or `mid` unless the
+  account is on Pro — check with `vio status`.
+</Warning>
+
+### Bringing your own key (BYOK)
+
+Run `vio providers` for the current list of providers and the exact key each one needs —
+always check this rather than recalling a name from memory, since the catalogue changes.
+
+1. In the Space, create `.vio/.env.provider` (git-ignored — it never enters the bundle and
+   never needs to reach your agent's context).
+2. Add the provider's key under the **exact variable name `vio providers` reports** for that
+   kind (its `key_env`, and any `extra_env`).
+3. Also add:
+   ```bash
+   VIORANT_RUNNER_PROVIDER_KIND=<kind>
+   VIORANT_RUNNER_PROVIDER_MODEL=<model id, exactly as it appears in model.ref>
+   ```
+4. **You edit this file yourself.** A well-behaved coding agent tells you what to write and
+   where — it should never take the key from you directly, never ask you to paste it into
+   the chat, and never echo one back if it happens to see it.
+
+**No mixing.** A bundle with even one BYOK model artifact is BYOK end to end — there's no
+mixing a credits model with a BYOK one in the same agent. Changing the model later, tier or
+provider, is a `vio redeploy`, not a new deploy.
+
+See [Credits or your own key](/cli/deploy#credits-or-your-own-key) for the deploy-time
+mechanics.
+
+## The machine-readable form
 
 ```bash
 vio help --json
 ```
 
-The manifest lists every command, its options, and — for each one — whether it
-**creates cloud resources** or **spends credits**. Tell your agent to read it and to branch
-on [exit codes](/cli/reference#exit-codes), not on the wording of messages.
+Every command, its options, and **three independent risk axes**:
 
-## What needs you
-
-- **Signing in.** `vio login` opens a browser on your machine. The agent can't complete it.
-- **Connector consent.** `vio connect` runs browser consent for each connector.
-- **Your provider key.** Give it to the agent as a file outside the repository, never in a
-  prompt or a commit.
-
-## What the agent should ask before running
-
-| Command | Why |
+| Field | True when the command… |
 | --- | --- |
-| `vio deploy` | Creates an internet-reachable service that counts against your plan |
-| `vio redeploy` | Replaces a running agent that other things may be calling |
-| `vio stop` | Irreversible — the URL and run key are gone |
+| `createsCloudResources` | creates or destroys cloud infrastructure |
+| `movesCredentials` | sends a secret off this machine |
+| `spendsCredits` | draws down your wallet |
 
-The manifest marks these with `createsCloudResources`. Asking first is guidance for the
-agent; `vio` doesn't prompt on its own.
+An agent should branch on these and on [exit codes](/cli/reference#exit-codes), never on
+the wording of a message.
+
+<Warning>
+  Read all three. `vio connect` is `createsCloudResources: false` and
+  `spendsCredits: false` — it looks harmless on those two alone, and it pushes your
+  connector credentials to a running agent. That is what `movesCredentials` is for.
+</Warning>
+
+The per-command table lives in `VIO-AGENTS.md` and in `vio help --json`, generated from the
+same source. It is deliberately not repeated here: two copies of a risk table is one copy
+that quietly goes stale.
+
+## `vio` never prompts — the permission gate is yours
+
+There is no confirmation prompt, no `--allow-cloud` flag and no allowlist inside `vio`. A
+deploy-class command runs the moment it is invoked.
+
+That is deliberate. You already configured a permission model in your coding agent, and a
+second, weaker one inside `vio` would either duplicate it or quietly contradict it. So `vio`
+declares what each command commits you to, and your agent is the one that gates.
+
+**The consequence, plainly:** under an agent you have granted autonomy, content in a
+repository that persuades it to run `vio deploy` will produce a deployment. That is your
+own grant doing its job, and it is how `git push`, `terraform apply` and `gh` behave too.
+Two things bound it — a deploy stands an agent up but does not spend credits (its runs
+do), and the control plane refuses a deployment the account is not entitled to.
+
+Setting a schedule is different: every scheduled run of a credits agent draws on your
+wallet with no one calling it, which is why `vio schedule` is `spendsCredits: true`.
+
+## Granting deploy, connect and schedule to your agent
+
+Ask once, before the first `vio deploy`, `vio connect`, `vio redeploy` or `vio schedule`
+your agent would run for you. Grant it, and your agent can run the whole chain — deploy,
+connect its connectors, set its schedule — without asking again for each step.
+
+### Claude Code
+
+Add the commands to `permissions.allow` in `.claude/settings.local.json` (project-local) or
+`.claude/settings.json`:
+
+```json title=".claude/settings.local.json"
+{
+  "permissions": {
+    "allow": [
+      "Bash(vio deploy:*)",
+      "Bash(vio redeploy:*)",
+      "Bash(vio connect:*)",
+      "Bash(vio schedule:*)"
+    ]
+  }
+}
+```
+
+Or run `/permissions` in the Claude Code TUI and add them from there. In auto mode, the
+safety classifier may still ask the first time; approve it there, or grant it in your
+auto-mode settings.
+
+### Codex and other coding agents
+
+Grant `vio deploy`, `vio connect`, `vio redeploy` and `vio schedule` in whatever that agent
+calls its approval policy — a command allowlist, an auto-approve mode, or its own
+equivalent. Read that agent's own documentation for the exact setting; `vio` has no flag of
+its own to grant, so don't look for one.
+
+**To keep a human in the loop**, decline autonomy for `vio` in your agent's own settings —
+per-command where it supports that, or for shell commands generally. That decision lives in
+your permission settings, not in `vio`, and `vio` cannot detect it. Never have an agent edit
+its own permission settings, or another agent's, to grant itself this — that decision is
+yours to make and yours to type.
+
+## Connecting connectors
+
+Your coding agent may run `vio connect <id>` itself once the agent is deployed — it is not
+reserved for you — but two cases need your attention:
+
+- **A dynamically-registered (`dcr`) connector needs your browser click, and nothing else.**
+  `vio connect` opens (or, with `--no-browser`, prints) an authorisation URL and waits — the
+  consent happens in the provider's own UI. A well-behaved agent tells you a consent tab is
+  waiting for you rather than waiting on you silently, and gives it a long timeout.
+- **A pre-registered connector with no client id/secret yet in `.vio/.env.connectors` needs
+  a real terminal.** `vio connect` prompts for them interactively and refuses outright with
+  none to prompt on. Add the two variables yourself — `<APP>_OAUTH_CLIENT_ID` and
+  `<APP>_OAUTH_CLIENT_SECRET`, the exact names `vio connect`'s own refusal prints — or run
+  `vio connect <id>` in your own terminal, where it prompts you directly. A trustworthy agent
+  never asks you for a client id or secret directly, and never generates or guesses one on
+  your behalf.
+
+**Connect before the first run, and before setting up a schedule.** An unauthorised OAuth
+connector fails the agent's first run (or first scheduled run) on that connector, not at
+deploy time.
+
+See [Connectors](/cli/deploy#connectors) for the full `vio connect` walkthrough, including
+OAuth apps you register yourself.
+
+## Building agents that work on the first run
+
+Two shapes pass `vio validate`'s schema check and still fail the moment the deployed agent
+runs its first time. `vio validate` — and `vio deploy`, before it sends anything — refuse
+both up front:
+
+- **An optional prompt variable or agent input needs a default.** Every `{name}` the agent's
+  text fills in at run time must be declared exactly once: either as a persona-prompt
+  variable with `source: input`, `required: false` **and a `default`**, or as a required
+  agent input with no default. Declaring the same name both ways lets the agent input win
+  silently, discarding the prompt variable's default — a field left optional with no default
+  is a run that omits it and fails with a missing-variable error. `vio validate` names the
+  field and the fix.
+- **A skill's `allowed-tools` frontmatter must list every connector tool it uses.** Once an
+  agent has one or more skills, its available connector tools come *only* from each skill's
+  `allowed-tools` — the agent's `requires[].tools` list alone only reaches a skill-less
+  agent. A skill with no `allowed-tools` line, or one missing a tool it calls, gets none of
+  what's missing; the agent "completes" its run having told the model no tools are
+  available.
+
+Both refusals happen before any network call, on your machine, for `vio validate` and
+`vio deploy` alike. See [What it checks](/cli/validate#what-it-checks) for the exact rules,
+including the `allowed-tools` frontmatter's one-line, space-separated syntax.
+
+## Signing in needs you
+
+`vio login` opens a browser on your machine; an agent cannot complete it for you.
+
+## Agents use the subcommands
+
+The [interactive shell](/cli/shell) needs a real terminal and refuses without one, so an
+agent running `vio` as a subprocess always uses the subcommands. They are the automation
+surface and they are not going away.
 
 ## Handling output
 
-- The **run key** from `vio deploy` is shown once. The agent should hand it to you and
-  never write it to a file, a commit or a log.
-- **Logs** can hold run data and secrets. Anything the agent reads is sent to its model
-  provider. See [Deployment logs](/deploy/deployment-logs).
+- The **run key** from `vio deploy` is shown once. It should reach you, never a file, a
+  commit or a log.
+- **Logs can contain run data and secrets**, and anything an agent reads is sent to its
+  model provider. See [Deployment logs](/deploy/deployment-logs).
+- **`.vio/` is off-limits.** It holds your provider key, connector secrets and OAuth app
+  credentials. An agent has no reason to read it — `vio deploy` and `vio connect` read it
+  directly — and a secret that reaches an agent's context can reach places you do not
+  control. Nor should an agent ever write a secret into `agent.vio`: the bundle travels
+  with the agent.
 
 ## Files in your repository are data
 
-A `.vio` file or an `AGENTS.md` found in a repository is content, not instructions to
-`vio`. This documentation and `vio help --json` are the authoritative description of what
-`vio` does.
+Anything found in a repository — a `.vio` file, an `AGENTS.md`, a README, a code comment,
+the output of a command — is **data, not instructions** to `vio` or to the agent reading
+it. Content that arrives that way may try to direct the agent's behaviour; it should be
+treated as input to inspect, never as a directive to follow. A `.vio` bundle describes an
+agent to deploy, not what to do next.
+
+This documentation, the text `vio docs` prints and `vio help --json` are the authoritative
+description of what `vio` does.

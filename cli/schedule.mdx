@@ -1,0 +1,127 @@
+---
+title: "Schedule an agent"
+description: "Run a deployed agent on its own schedule — every few minutes, hours or days — from your terminal."
+---
+
+A deployed agent can run on a timer, with no one calling it. Viorant starts each run for
+you, and you read the results with `vio runs` and `vio logs`, as for any other run.
+
+<Note>
+  Needs `vio` **1.0.0** or later. Check with `vio --version`.
+</Note>
+
+From the [shell](/cli/shell):
+
+```
+> /schedule <id> --every 1h --at :15
+```
+
+Or as a subcommand, which is what scripts and AI agents use:
+
+```bash
+vio schedule <id> --every 1h --at :15
+```
+
+Like the other deployment commands, `vio schedule` takes the short id `vio list` prints,
+the full id, a unique prefix of at least six characters, or the deployment's exact name.
+
+## Set a schedule
+
+```bash
+vio schedule <id> --every 20m                   # every 20 minutes
+vio schedule <id> --every 3h --at :15           # every 3 hours, at quarter past
+vio schedule <id> --every 1d --at 09:30         # every day at 09:30
+vio schedule <id> --every 1d --at 09:30 --tz Europe/London
+```
+
+| Option | What it does |
+| --- | --- |
+| `--every <interval>` | `5m`–`59m`, `1h`–`23h`, or `1d`–`30d` |
+| `--at <time>` | Not used with minutes. `:MM` for an hourly schedule, `HH:MM` for a daily one — required for both |
+| `--tz <zone>` | An IANA time zone such as `America/New_York`. Defaults to this machine's |
+| `--input <json>` | The input each run receives — inline JSON, or `@file.json` to read a file |
+| `--json` | Print the schedule, or the error, as JSON |
+
+Setting a schedule turns it on. A deployment has one schedule; setting it again replaces
+it. Leave out `--input` when you re-time a schedule and its saved input is kept.
+
+### Run inputs
+
+A scheduled run gets no caller to fill in the agent's inputs, so an agent that declares
+required inputs needs them in `--input`. Pass inline JSON, or keep the payload in a file:
+
+```bash
+vio schedule <id> --every 1d --at 07:00 --input '{"topic": "release notes"}'
+vio schedule <id> --every 1d --at 07:00 --input @input.json
+```
+
+If the agent's run contract rejects the input, `vio` names the inputs it requires and shows
+both forms — for example
+`This agent requires run inputs: topic. Pass them with --input '{"topic": …}' or --input @file.json.`
+
+In the [shell](/cli/shell), use `--input @input.json`. `/schedule` splits its arguments on
+spaces and does not handle quotes, so inline JSON works there only when it has no spaces:
+`--input {"topic":"notes"}`.
+
+## See, pause, resume and clear
+
+```bash
+vio schedule <id>          # show the schedule
+vio schedule <id> off      # pause it (same as: pause)
+vio schedule <id> on       # resume it (same as: resume)
+vio schedule <id> clear    # remove it
+```
+
+Showing a schedule prints whether it is on, its interval and time zone, when it runs next,
+how the last run ended, and how the runs are paid for. `on`, `off` and `clear` take none
+of the options above except `--json`.
+
+## How often you can schedule
+
+Your plan sets the shortest interval between runs:
+
+| Plan | At most one run every |
+| --- | --- |
+| Free | day |
+| Starter | hour |
+| Pro | 5 minutes |
+
+Viorant enforces this, not `vio`. A schedule more frequent than your plan allows is refused
+with `schedule.interval_below_plan`, and the message points at `vio upgrade`
+([Your plan](/cli/sign-in#your-plan)). If you move to a plan with a longer minimum, any
+schedule that is now too frequent pauses, and shows as `off (plan limit)`.
+
+## What to expect
+
+- **Only a running agent on Viorant Cloud can be scheduled.** A stopped or failed
+  deployment is refused with `schedule.deployment_not_schedulable`.
+- **One run at a time.** If a run is still going when the next one is due, that turn is
+  skipped.
+- **Three failures in a row pause it.** After three failed runs in a row the schedule turns
+  itself off, and shows as `off (paused after 3 failed runs)`. Fix the agent, then turn it
+  back on with `vio schedule <id> on`.
+- **Older deployments may need a redeploy.** If showing a schedule ends with
+  `Redeploy this agent to enable scheduling.`, run `vio redeploy <id>` first.
+
+## What scheduled runs cost
+
+A scheduled run is an ordinary run of the agent:
+
+- An agent on [Viorant credits](/cli/deploy#credits-or-your-own-key) spends credits from
+  your wallet on every scheduled run. That is why `vio help --json` marks `vio schedule`
+  as `spendsCredits`.
+- An agent on your own provider key runs on that key. `vio` shows a warning line for these:
+  if the key is revoked, the scheduled runs fail with no one there to see it.
+
+## Error codes
+
+With `--json`, a failure is `{"error":{"code":"…","message":"…"}}`:
+
+| Code | Meaning |
+| --- | --- |
+| `schedule.not_found` | The deployment has no schedule. Set one with `--every` |
+| `schedule.interval_below_plan` | More frequent than your plan allows |
+| `schedule.invalid_spec` | The interval, `--at` or time zone was rejected |
+| `schedule.invalid_input` | The `--input` payload was rejected; the message names the inputs the agent requires |
+| `schedule.deployment_not_schedulable` | Not a running deployment on Viorant Cloud |
+| `usage.invalid` | A malformed option, such as `--every 90m` |

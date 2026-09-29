@@ -18,6 +18,8 @@ vio logs <deployment id>
 - Newest lines come first, from the **last day** unless you pass `--since`
   (`--since 2h`, `--since 15m`, or an ISO-8601 time).
 - `--limit` sets how many lines to fetch (default 50, at most 200).
+- You see what your agent printed. `--include-platform` adds Viorant Cloud's own platform
+  and system lines for the service (`vio` 1.0.0 or later).
 - When there are more, the last line is the exact command for the next page. Run it as
   printed — it carries the same start time, which is what keeps the pages consistent.
 - `--json` prints the response as JSON, for scripts.

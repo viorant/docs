@@ -3,18 +3,45 @@ title: "Manage deployments"
 description: "List, inspect, read logs, redeploy and stop agents from your terminal."
 ---
 
+Every command on this page works both ways — in the [shell](/cli/shell) as a slash
+command, and as a subcommand for scripts, CI and AI agents:
+
+```
+> /list
+```
+
+```bash
+vio list
+```
+
+The rest of this page shows the subcommand form. The slash forms take the same arguments;
+`--json` is subcommand-only.
+
+Wherever a command takes an `<id>`, you can give the full deployment id, a unique prefix of
+at least six characters, or the deployment's exact name.
+
+<Note>
+  Needs `vio` **1.0.0** or later for `--json` on `list`, `show` and `runs`, and for
+  `vio logs --include-platform`. Check with `vio --version`.
+</Note>
+
 ## See what's running
 
 ```bash
-vio list          # every deployment you own, with its state and URL
-vio show <id>     # one deployment
+vio list          # your active deployments, with state and URL
+vio list --all    # include stopped, revoked and failed ones
+vio show <id>     # one deployment, including its full id
 ```
+
+`vio list --json` prints **every** deployment you own as a JSON array, whatever its state.
+`vio show <id> --json` prints one.
 
 ## Runs
 
 ```bash
 vio runs <id>              # recent runs: what it was asked and how each ended
 vio runs <id> --limit 100  # up to 200
+vio runs <id> --json       # as JSON, including digests
 ```
 
 ## Logs
@@ -23,14 +50,16 @@ vio runs <id> --limit 100  # up to 200
 vio logs <id>
 ```
 
-Prints the agent's recent logs, newest first, from the last day. When there are more, the
-last line is the exact command for the next page.
+Prints what **your agent** wrote — its own output — newest first, from the last day. When
+there are more, the last line is the exact command for the next page.
 
 | Option | What it does |
 | --- | --- |
 | `--since 2h` | Start further back: `15m`, `2h`, `1d`, or an ISO-8601 time |
 | `--limit 100` | Lines per page (default 50, at most 200) |
-| `--json` | One JSON object, for scripts |
+| `--include-platform` | Also show Viorant Cloud's own platform and system lines for the service |
+| `--page-token <token>` | Continue from a previous page |
+| `--json` | The raw response as one JSON object, for scripts |
 
 Logs can contain sensitive data. Before printing, `vio` strips terminal control sequences
 and redacts common credential shapes. Read [Deployment logs](/deploy/deployment-logs)
@@ -57,7 +86,8 @@ vio redeploy <id>
 ```
 
 Run it from the folder that holds the updated `.vio`. The URL and run key stay the same,
-so anything already calling the agent keeps working.
+so anything already calling the agent keeps working. A redeploy sends only the bundle —
+the agent keeps the credentials it already holds.
 
 ## Stop
 
@@ -67,3 +97,7 @@ vio stop <id>
 
 Stops the agent and revokes its credentials. **A stopped agent can't be restarted** — the
 URL and run key are gone. Deploy again to get a new one.
+
+## Schedule
+
+To run a deployed agent on a timer, see [Schedule an agent](/cli/schedule).

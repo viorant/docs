@@ -1,45 +1,128 @@
 ---
 title: "Deploy an agent"
-description: "Put a .vio agent on Viorant Cloud from your terminal and call it."
+description: "Put a .vio agent on Viorant Cloud from your terminal, on Viorant credits or your own provider key, and call it."
 ---
 
 Deploying gives the agent its own URL on Viorant Cloud. It keeps running whether your
 terminal — or the Hub — is open or not.
 
+<Note>
+  Needs `vio` **1.0.0** or later for credits deploys and the `vio connect` behaviour
+  described here. Check with `vio --version`.
+</Note>
+
 ## Before you deploy
 
 - [Sign in](/cli/sign-in) with `vio login`.
+- Make sure `vio validate agent.vio` passes. A stale digest is refused at deploy —
+  see [Validate a .vio file](/cli/validate).
 - Check you have room: `vio status` shows how many agents your plan still allows.
-- Have your **model provider key** ready. Deployed agents run on your own key today.
+- Decide how the agent pays for its model: **Viorant credits**, or **your own provider
+  key**.
 
-## Create a credentials file
+## Credits or your own key
 
-Put the provider settings in a file **outside your repository**, and never commit it:
+The bundle decides, through its agent's model reference.
 
-```bash title="creds.env"
+### Viorant credits
+
+An agent whose model is one of Viorant's managed models runs on your wallet. There is no
+provider key to find, store or send:
+
+```yaml title="agent.vio (the agent artifact)"
+model:
+  ref: provider://openai-compatible/viorant-managed-mid
+```
+
+Three tiers, all under `provider://openai-compatible/`:
+
+| Tier | For | Plan |
+| --- | --- | --- |
+| `viorant-managed-low` | fastest and cheapest — routine tasks | every plan |
+| `viorant-managed-mid` | balanced; the recommended default | every plan |
+| `viorant-managed-high` | most capable — complex or high-stakes tasks | **Pro** only |
+
+`vio providers` prints this same list, with Viorant credits shown first. A bundle deploys on
+credits only when **every** agent in it uses one of these tiers; anything else — including a
+mix — is treated as your own key.
+
+<Warning>
+  A `high` agent **deploys fine on Free or Starter** — the tier is not checked at deploy
+  time. But **every run then fails** with `plans.tier_not_allowed`, because the plan is
+  checked per run, not at deploy. Use `low` or `mid` unless the account is on Pro — check
+  with `vio status`.
+</Warning>
+
+Changing the model changes the agent's body, so run `vio digest agent.vio --fix` after
+the edit.
+
+Before a credits deploy, `vio` prints one line:
+
+```
+Runs on this agent spend credits from your wallet.
+```
+
+The deploy itself spends nothing. Each run of the deployed agent does. `vio status` shows
+your balance. A credits agent runs on Viorant Cloud only.
+
+### Your own key (BYOK)
+
+Any other model — `provider://openai/gpt-4o-mini`, `provider://gemini/…` and so on — runs
+on your own provider key, which `vio` seals on your machine and delivers straight to the
+deployment.
+
+Inside a [Space](/cli/init), `vio init` creates `.vio/.env.provider`, you fill it in, and
+`vio deploy` reads it. `.vio/` is git-ignored, so the key never reaches a commit.
+
+```bash title=".vio/.env.provider"
 VIORANT_RUNNER_PROVIDER_KIND=gemini
 VIORANT_RUNNER_PROVIDER_MODEL=gemini-2.5-flash
 GOOGLE_GENERATIVE_AI_API_KEY=...
 ```
 
-Use the provider and model your agent is built for. Values in this file win over the same
-variables in your shell.
+`VIORANT_RUNNER_PROVIDER_KIND` must match the bundle's model: a `provider://gemini/…`
+agent needs `gemini`. If they differ, `vio` refuses before anything is sent, names both,
+and says `Nothing was deployed.` — otherwise the agent would wait forever for a key it
+never gets. `vio providers` lists every kind and the key variable it needs.
+
+Outside a Space — a loose `.vio` someone sent you — pass a file explicitly with
+`--env-file`, kept outside the repository and never committed. An `--env-file` always wins
+over the Space's own credentials.
+
+<Note>
+  Credentials are read from the Space that holds **the bundle you are deploying**, not
+  from the folder you happen to be standing in. `vio deploy ../other-agent/agent.vio`
+  uses `../other-agent`'s key, not this one's.
+</Note>
 
 ## Deploy
 
-```bash
-vio deploy agent.vio --target viorant_cloud --env-file ../creds.env
+From the [shell](/cli/shell):
+
+```
+> /deploy agent.vio --target viorant_cloud
 ```
 
-`vio` validates the file on your machine, then asks Viorant Cloud to stand the agent up.
-Your provider key is sealed on your machine and delivered straight to the deployment.
+Or as a subcommand, which is what scripts, CI and AI agents use:
 
-- `--name "My agent"` sets the deployment name (it defaults to the name in the file).
+```bash
+vio deploy agent.vio --target viorant_cloud
+```
+
+`vio` validates the file on your machine — the same checks as `vio validate` — then asks
+Viorant Cloud to stand the agent up.
+
+- `--env-file <file>` names the credentials file (both forms).
+- `--name "My agent"` sets the deployment name; it defaults to the name in the file.
 - `--json` prints one JSON object, for scripts.
+
+`--name` and `--json` are subcommand-only.
 
 <Warning>
   Deploying creates an internet-reachable service that counts against your plan's agent
-  limit. If a coding agent runs `vio` for you, have it ask before it deploys.
+  limit, and — for a BYOK agent — sends your provider key to it. `vio` itself never
+  prompts — if a coding agent runs it for you, whether it asks first is your agent's
+  permission setting, not `vio`'s. See [Use `vio` with AI coding agents](/cli/ai-agents).
 </Warning>
 
 ## Call the agent
@@ -56,25 +139,90 @@ curl -sS -X POST https://<service>.a.run.app/run \
 
 `vio` also prints an example request body built from the inputs your agent declares.
 
+To run it on a timer instead, see [Schedule an agent](/cli/schedule).
+
 ## Connectors
 
-If the agent uses connectors that need sign-in (for example Notion or Atlassian),
-authorise them after deploying:
+If the agent uses connectors that need sign-in (for example Notion or Google Workspace),
+authorise them after deploying. `vio connect` is subcommand-only — there is no
+`/connect` in the shell:
 
 ```bash
-vio connect <deployment id> ./agent.vio --env-file ../creds.env
+vio connect <deployment id>
 ```
+
+Run it from the Space, or pass the bundle as a second argument:
+`vio connect <deployment id> ./agent.vio`. The id can be the full id, a unique prefix of at
+least six characters, or the deployment's exact name.
 
 `vio` runs each connector's consent in your browser, one at a time, then pushes all of the
 agent's credentials to it in one write. No redeploy is needed. Run the same command again
-to re-authorise.
+to re-authorise. `--no-browser` prints each authorisation URL instead of opening it.
 
-- Pass the same `--env-file` you deployed with — the push replaces every credential the
-  agent holds, including its provider key.
-- The file must be the one you deployed. If its digest differs, nothing happens.
+### Connectors that need your own OAuth app
+
+Most connectors register themselves. Some — Google Workspace, GitHub, Slack, HubSpot and
+Asana among them — need an OAuth application you create with the provider. For those,
+`vio connect`:
+
+1. **Shows the redirect URI first**, before it asks for anything:
+
+   ```
+   This connector requires your own OAuth application.
+   Add this exact URL to the provider's Authorized redirect URIs:
+   https://api.viorant.ai/oauth/connector/callback
+   ```
+
+   Add it to your OAuth app, and save the app.
+2. **Asks for the app's client id and secret.** The secret is not echoed. Leave it empty
+   for a public client.
+3. **Offers to save them**, once the authorisation has succeeded:
+   `Save to .vio/.env.connectors? [Y/n]`. Saved credentials are read from there on every
+   later run, so you enter them once.
+
+They are stored as two lines in `.vio/.env.connectors`, named for the app:
+
+```bash title=".vio/.env.connectors"
+GOOGLE_OAUTH_CLIENT_ID=...
+GOOGLE_OAUTH_CLIENT_SECRET=...
+```
+
+Every Google Workspace connector shares the `GOOGLE_` pair. The others use `GITHUB_`,
+`SLACK_`, `HUBSPOT_` or `ASANA_`, and any other host is named after the host itself —
+`mcp.example.com` reads `MCP_EXAMPLE_COM_OAUTH_CLIENT_ID`. You can also write the lines
+yourself before running `vio connect`.
+
+Without a terminal to ask on, `vio connect` can't prompt: it prints the redirect URI and
+stops. Add the two lines to `.vio/.env.connectors`, then run it again.
+
+<Warning>
+  OAuth app credentials belong in `.vio/.env.connectors` only. Never put a client id or
+  secret in `agent.vio` — the bundle travels with the agent.
+</Warning>
+
+### Is the agent ready?
+
+`vio connect` reports what the agent says after the push, not what it hopes:
+
+- `✔ Connectors authorised — the agent is ready` — the agent is serving with nothing
+  pending.
+- `✔ Credentials pushed. The agent still reports <state>` — the push worked and the agent
+  hasn't picked the credentials up yet. It lists what is still pending, and reloads them
+  on its next run or within about a minute. Check with `vio show <id>`.
+
+### Before you run it
+
+- For a BYOK agent, have the same provider key you deployed with — in the Space, or the
+  same `--env-file`. The push replaces every credential the agent holds, including its
+  provider key, and a key of the wrong kind is refused before any consent.
+- A [credits](#viorant-credits) agent needs no provider key for `vio connect` either, and
+  `vio connect` never pushes one to it — even if a key is set in the Space or the
+  `--env-file`.
+- The bundle must be the one you deployed. If its digest differs, nothing happens.
 - Cancelling any consent pushes nothing; the agent keeps what it had.
 - Port `47219` on `127.0.0.1` must be free while it runs.
 
 ## Next
 
 - [Manage deployments](/cli/manage) — list, runs, logs, redeploy and stop.
+- [Schedule an agent](/cli/schedule) — run a deployed agent on a timer.
