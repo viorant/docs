@@ -36,6 +36,18 @@ Logs can contain sensitive data. Before printing, `vio` strips terminal control 
 and redacts common credential shapes. Read [Deployment logs](/deploy/deployment-logs)
 before you share log output or hand it to an AI agent.
 
+## Schedule
+
+Run a deployment on its own cadence instead of triggering it yourself:
+
+```bash
+vio schedule <id> --every 1h --at :15
+vio schedule <id> off   # pause; on resumes
+```
+
+Full flags, actions and plan limits: [Command reference](/cli/reference#vio-schedule) and
+[Schedule an agent](/deploy/schedule-an-agent).
+
 ## Redeploy
 
 Changed the agent? Deploy the new file onto the **same** deployment:
