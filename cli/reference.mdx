@@ -76,7 +76,7 @@ is rejected before any command runs, as one plain-text line (`error: …`) with 
 | --- | --- |
 | `auth.required` | The command needs a signed-in Viorant account |
 | `wallet.empty` | The wallet has no credits for a metered operation |
-| `bundle.invalid` | A `.vio` failed schema, YAML, memory, template-variable or discovery checks |
+| `bundle.invalid` | A `.vio` failed schema, YAML, memory, template-variable, connector-tool or discovery checks |
 | `bundle.unreadable` | The `.vio` file is missing or cannot be read; the bundle itself was never examined |
 | `bundle.digest_mismatch` | An artifact body was edited; run `vio digest --fix` |
 | `bundle.fix_failed` | `digest --fix` could not rewrite the manifest; nothing was written |

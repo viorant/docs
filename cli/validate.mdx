@@ -79,6 +79,38 @@ agent runs. `vio validate` catches those cases here, where they are one edit to 
 
   Declare the input, or remove the placeholder. Literal braces such as a JSON example
   (`{"a": 1}`) are fine.
+- **An optional field with no default.** Every `{name}` must be declared exactly **once** —
+  either as a persona-prompt variable with `source: input`, `required: false` and a
+  `default`, or as an agent input with no default (which must then be `required: true`).
+  Declaring the same name both ways is not redundant: an agent-declared input always wins
+  the collision, which silently discards the prompt variable's `default` — so a field left
+  optional with no default is a run that omits it and fails with a missing-variable error.
+  `vio validate` refuses this and names the fix, which differs by where the field lives:
+
+  ```
+  {date} is optional with no default, so a run that omits it fails with a missing-variable error. Fix: mark it required: true, or add a default to the prompt variable.
+  ```
+
+  If the field is an agent input, the fix instead is to declare it *only* as a prompt
+  variable (`source: input`, `required: false`, `default: …`) and remove it from the
+  agent's `inputs` — an agent input can never carry a `default`.
+- **A connector tool no referenced skill allows.** Once an agent has one or more skills, the
+  runner binds tools **only** from each skill's own `allowed-tools` frontmatter — a
+  connector tool named in `requires[].tools` reaches the agent only if some referenced
+  skill's `allowed-tools` also lists it. `allowed-tools` is one line, space-separated, not a
+  YAML list:
+
+  ```
+  ---
+  name: my-skill
+  allowed-tools: search_docs read_doc
+  ---
+  ```
+
+  A skill with no `allowed-tools` line, or one missing a tool it needs, gets none of what's
+  missing — the deployed agent completes its run having told the model no tools are
+  available. `vio validate` refuses a bundle with an unreachable connector tool and names
+  it.
 
 ## Digest
 
@@ -124,7 +156,7 @@ vio deploy agent.vio --target viorant_cloud
 
 | Code | Meaning |
 | --- | --- |
-| `bundle.invalid` | Schema, YAML, memory, placeholder or discovery problem. Fix it by editing |
+| `bundle.invalid` | Schema, YAML, memory, placeholder, connector-tool or discovery problem. Fix it by editing |
 | `bundle.unreadable` | The file is missing or cannot be read. Check the path, not the bundle |
 | `bundle.digest_mismatch` | A body was edited. Run `vio digest --fix` |
 | `bundle.fix_failed` | `--fix` could not rewrite the manifest; nothing was written |

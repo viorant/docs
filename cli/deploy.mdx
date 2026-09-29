@@ -34,10 +34,24 @@ model:
   ref: provider://openai-compatible/viorant-managed-mid
 ```
 
-The three managed models are `viorant-managed-low`, `viorant-managed-mid` and
-`viorant-managed-high`, all under `provider://openai-compatible/`. A bundle deploys on
-credits only when **every** agent in it uses one of them; anything else — including a
+Three tiers, all under `provider://openai-compatible/`:
+
+| Tier | For | Plan |
+| --- | --- | --- |
+| `viorant-managed-low` | fastest and cheapest — routine tasks | every plan |
+| `viorant-managed-mid` | balanced; the recommended default | every plan |
+| `viorant-managed-high` | most capable — complex or high-stakes tasks | **Pro** only |
+
+`vio providers` prints this same list, with Viorant credits shown first. A bundle deploys on
+credits only when **every** agent in it uses one of these tiers; anything else — including a
 mix — is treated as your own key.
+
+<Warning>
+  A `high` agent **deploys fine on Free or Starter** — the tier is not checked at deploy
+  time. But **every run then fails** with `plans.tier_not_allowed`, because the plan is
+  checked per run, not at deploy. Use `low` or `mid` unless the account is on Pro — check
+  with `vio status`.
+</Warning>
 
 Changing the model changes the agent's body, so run `vio digest agent.vio --fix` after
 the edit.

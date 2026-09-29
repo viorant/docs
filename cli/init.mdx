@@ -76,11 +76,19 @@ Nothing in `.vio/` travels inside the bundle. It is the source credentials are p
   client secret in it.
 </Note>
 
-## Put your provider key in
+## Every template runs on Viorant credits by default
 
-The starter bundle runs on your own provider key. `.vio/.env.provider` is written with
-every line commented out — uncomment the two required lines and the one key that matches
-your provider:
+Every `--template` starts on [Viorant credits](/cli/deploy#credits-or-your-own-key) — the
+bundle's model is already `provider://openai-compatible/viorant-managed-mid`, so there is
+no provider key to find before you can validate and deploy.
+
+`.vio/.env.provider` is written with every line commented out. Leave it alone to stay on
+credits.
+
+### Bringing your own key instead (optional)
+
+To run on your own provider key instead, uncomment the two required lines and the one key
+that matches your provider, and point the bundle's `model.ref` at that provider:
 
 ```bash title=".vio/.env.provider"
 VIORANT_RUNNER_PROVIDER_KIND=openai
@@ -89,10 +97,10 @@ OPENAI_API_KEY=sk-...
 ```
 
 `vio deploy` reads this automatically when run from inside the Space. You do not need
-`--env-file` for a Space's own bundle.
-
-To run on Viorant credits instead, with no provider key at all, change the bundle's model —
-see [Credits or your own key](/cli/deploy#credits-or-your-own-key).
+`--env-file` for a Space's own bundle. Changing the model invalidates its digest — run
+`vio digest agent.vio --fix` after the edit. See
+[Credits or your own key](/cli/deploy#credits-or-your-own-key) for the full picture,
+including why a bundle can't mix the two.
 
 ## Then
 
@@ -102,6 +110,9 @@ see [Credits or your own key](/cli/deploy#credits-or-your-own-key).
 vio validate agent.vio
 vio deploy agent.vio --target viorant_cloud
 ```
+
+Bringing your own provider key, if you want one instead of credits, is listed last and
+marked optional.
 
 ## An existing folder
 
