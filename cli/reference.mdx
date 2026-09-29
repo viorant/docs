@@ -20,10 +20,36 @@ description: "Every vio command, its exit codes and error codes, and the machine
 | `vio runs <id>` | Recent runs of a deployment | Yes |
 | `vio logs <id>` | Recent logs of a deployment | Yes |
 | `vio redeploy <id>` | Replace a running agent in place | Yes |
+| `vio schedule <id> [action]` | Set, show, turn on/off, or clear a deployment's run schedule | Yes |
 | `vio stop <id>` | Stop a deployment and revoke its credentials | Yes |
 
 `vio <command> --help` shows every option. `sign`, `verify` and `assistant` are listed in
 `--help` but not implemented yet.
+
+### `vio schedule`
+
+```bash
+vio schedule <id> --every <interval> [--at <time>] [--tz <iana>] [--input <json|@file>]
+vio schedule <id> [pause | resume | clear]
+```
+
+| Flag | What it does |
+| --- | --- |
+| `--every 20m \| 3h \| 2d` | Sets the cadence: minutes (5–59), hours (1–23) or days (1–30) |
+| `--at :MM \| HH:MM` | Required for an hourly or daily cadence; not used with minutes |
+| `--tz <iana>` | Timezone for `--at`; defaults to this machine's zone |
+| `--input <json\|@file>` | Fixed input each scheduled run gets; omit to keep the existing input |
+| `--json` | Output the raw schedule (or error) as JSON |
+
+| Action | What it does |
+| --- | --- |
+| `pause` (alias `off`) | Turns the schedule off; cadence and input stay saved |
+| `resume` (alias `on`) | Turns it back on and resets the failure count to zero |
+| `clear` | Deletes the schedule |
+
+No argument beyond `<id>` shows the current schedule, or "No schedule." if none is set.
+See [Schedule an agent](/deploy/schedule-an-agent) for cadence limits, billing and
+failure behaviour.
 
 ## Exit codes
 

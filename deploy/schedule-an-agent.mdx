@@ -1,0 +1,113 @@
+---
+title: "Schedule an agent"
+description: "Run a deployed agent on its own cadence, without triggering it yourself."
+---
+
+A **schedule** runs a deployed agent automatically, on a cadence you set, instead of
+waiting for someone to call it. One schedule per deployment.
+
+## What a schedule is
+
+A schedule is a cadence plus a fixed input:
+
+- **Cadence** — a unit (minutes, hours or days), how often (every N of that unit), and
+  for hours and days, a time of day to align to (`:MM`, or `HH:MM`) in a timezone.
+- **Input** — the same input every run gets. It's validated against that deployment's own
+  run inputs when you set it, so a schedule can't be saved with input the agent can't use.
+
+## Plan limits
+
+Each plan has a minimum cadence, enforced on the server — asking for anything faster is
+refused.
+
+| Plan | Minimum interval |
+| --- | --- |
+| Free | once a day |
+| Starter | once an hour |
+| Pro | every 5 minutes |
+
+If your plan changes and an existing schedule no longer fits, it's paused — not deleted —
+until you upgrade or slow it down.
+
+## Setting it in Sentinel
+
+Open the deployment in [Sentinel](https://sentinel.viorant.io) and use its **Schedule**
+panel:
+
+<Steps>
+  <Step title="Pick a cadence">
+    Choose minutes, hours or days, how often, and (for hours and days) a time and
+    timezone.
+  </Step>
+  <Step title="Turn it On">
+    The **On / Off** toggle is the switch. Turning it **Off** keeps the cadence and input
+    saved — turning it back **On** resumes exactly where it left off, with its failure
+    count reset to zero.
+  </Step>
+</Steps>
+
+## Setting it with `vio schedule`
+
+```bash
+vio schedule <id> --every 5m
+vio schedule <id> --every 1h --at :15
+vio schedule <id> --every 1d --at 09:30 --tz Europe/London
+```
+
+- `--every 20m | 3h | 2d` — unit and count. Minutes: 5–59. Hours: 1–23. Days: 1–30.
+- `--at` — required for hours (`:MM`) and days (`HH:MM`), not used for minutes.
+- `--tz <iana>` — defaults to this machine's zone.
+- `--input <json|@file>` — the fixed input each run gets. Leave it off on a re-time
+  (`vio schedule <id> --every 1h`) and the existing input carries forward unchanged.
+
+Turn it on and off, or clear it outright:
+
+```bash
+vio schedule <id> on      # resume
+vio schedule <id> off     # pause — cadence and input stay saved
+vio schedule <id> clear   # delete the schedule
+```
+
+See the full command in the [CLI reference](/cli/reference#vio-schedule).
+
+## Failures and auto-pause
+
+Three consecutive failed runs pause the schedule automatically. Sentinel's Schedule panel
+shows **"Paused after 3 failed runs."** Turning the schedule back on resets the failure
+count to zero — it doesn't need three good runs to trust it again, just one more On.
+
+## The Scheduled badge
+
+A run the schedule triggered is marked apart from a run you started yourself. In
+Sentinel's runs list, look for the **SCHEDULED** badge in the trigger column.
+
+## Redeploy note
+
+Scheduling needs a signed run token that only a deployment made after scheduling shipped
+carries. If yours predates it, Sentinel's Schedule panel shows:
+
+> Redeploy this agent to enable scheduling
+
+One `vio redeploy <id>` (or a redeploy from Sentinel) is enough — every deploy since
+carries the token already, and you'll never see this again for that agent.
+
+## Billing
+
+A scheduled run is billed exactly like any other run of that agent:
+
+- **Viorant credits**, for an agent on the Viorant-managed model (the `vio init`
+  default). Nothing extra to watch here.
+- **Your own provider key**, for a BYOK agent. Sentinel's BYOK warning on the Schedule
+  panel applies only to this case — a revoked key fails those runs silently rather than
+  spending Viorant credits, so it's worth checking the key still works.
+
+## Limits
+
+- A scheduled run gets about 280 seconds to finish.
+- A run still in flight when its next tick comes due is **skipped, not queued**.
+- A missed time — say, if the whole platform was briefly down — is **skipped, not
+  replayed**. The next run is the next one from now, not a backlog of missed ones.
+
+<Card title="Manage deployments" icon="sliders" href="/deploy/manage-deployments">
+  See runs, check status, and stop an agent.
+</Card>
