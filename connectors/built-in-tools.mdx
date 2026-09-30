@@ -3,9 +3,10 @@ title: "Built-in tools"
 description: "web_search, web_fetch, and current_time — the tools every agent can use without a connector."
 ---
 
-**Built-in tools** ship with the Hub. Unlike [connector](/concepts/connectors) tools,
-they need no external service — any skill or agent can use them by name, once you grant
-them.
+**Built-in tools** are available in the Hub, and on an agent deployed from the
+[CLI](/cli/connectors#built-in-tools-on-a-deployed-agent). Unlike [connector](/concepts/connectors)
+tools, they need no external service — any skill or agent can use them by name, once you
+grant them.
 
 | Tool           | What it does                                            | Setup                     |
 | -------------- | ------------------------------------------------------- | ------------------------- |
@@ -58,8 +59,18 @@ needs a key: the Hub calls Tavily **directly** with your key, so you must add on
 <Note>
   Your Tavily key is stored in your **OS credential store** and is **never sent to Viorant's
   servers** — and it's never shown again after saving. To rotate it, save a new key; to
-  turn off web search, remove the key with **Remove key**.
+  turn off web search, remove the key with **Remove key**. This is true for the Hub's local
+  runs. A **deployed** agent works differently — see below.
 </Note>
+
+## On a deployed agent
+
+A `.vio` agent deployed with the [CLI](/cli/deploy) has no Hub credential store to read
+from. Its Tavily key lives in the Space's `.vio/.env.connectors` and is sent to the
+deployment as a **sealed secret** at `vio deploy` time — never inside the bundle, but no
+longer kept only on your machine either, unlike the Hub's local runs above. See
+[Connectors and tools](/cli/connectors#tavily-web_search) for the full setup, including how
+to add or rotate the key once the agent is already deployed.
 
 ## Web fetch
 

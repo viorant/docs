@@ -21,7 +21,7 @@ description: "Every vio command, its exit codes and error codes, and the machine
 | `vio validate <path>` | Check a `.vio` file, offline | `/validate` | — |
 | `vio digest <path>` | Print a `.vio` file's deployment digest; `--fix` repairs artifact digests | `/digest` | — |
 | `vio deploy <path>` | Deploy a `.vio` to Viorant Cloud | `/deploy` | Yes |
-| `vio connect <id> [path]` | Authorise a deployed agent's connectors | — | Yes |
+| [`vio connect <id> \[path\]`](/cli/connectors#vio-connect) | Authorise a deployed agent's connectors | — | Yes |
 | `vio list` | List your active deployments; `--all` for every one | `/list` | Yes |
 | `vio show <id>` | Show one deployment | `/show` | Yes |
 | `vio runs <id>` | Recent runs of a deployment | `/runs` | Yes |
@@ -30,7 +30,7 @@ description: "Every vio command, its exit codes and error codes, and the machine
 | `vio redeploy <id>` | Replace a running agent in place | `/redeploy` | Yes |
 | `vio stop <id>` | Stop a deployment and revoke its credentials | `/stop` | Yes |
 | `vio providers` | Model providers a bundle can run on | — | — |
-| `vio connectors [term]` | Browse the connector catalogue | — | — |
+| [`vio connectors \[term\]`](/cli/connectors#browse-the-connector-catalogue) | Browse the connector catalogue | — | — |
 | `vio docs [topic]` | Print embedded documentation, offline | — | — |
 | `vio update` | Install the current `vio` release | — | — |
 | `vio help` | List commands; `--json` prints the machine-readable manifest | `/help` | — |
