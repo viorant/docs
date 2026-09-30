@@ -143,86 +143,13 @@ To run it on a timer instead, see [Schedule an agent](/cli/schedule).
 
 ## Connectors
 
-If the agent uses connectors that need sign-in (for example Notion or Google Workspace),
-authorise them after deploying. `vio connect` is subcommand-only — there is no
-`/connect` in the shell:
-
-```bash
-vio connect <deployment id>
-```
-
-Run it from the Space, or pass the bundle as a second argument:
-`vio connect <deployment id> ./agent.vio`. The id can be the full id, a unique prefix of at
-least six characters, or the deployment's exact name.
-
-`vio` runs each connector's consent in your browser, one at a time, then pushes all of the
-agent's credentials to it in one write. No redeploy is needed. Run the same command again
-to re-authorise. `--no-browser` prints each authorisation URL instead of opening it.
-
-### Connectors that need your own OAuth app
-
-Most connectors register themselves. Some — Google Workspace, GitHub, Slack, HubSpot and
-Asana among them — need an OAuth application you create with the provider. For those,
-`vio connect`:
-
-1. **Shows the redirect URI first**, before it asks for anything:
-
-   ```
-   This connector requires your own OAuth application.
-   Add this exact URL to the provider's Authorized redirect URIs:
-   https://api.viorant.ai/oauth/connector/callback
-   ```
-
-   Add it to your OAuth app, and save the app.
-2. **Asks for the app's client id and secret.** The secret is not echoed. Leave it empty
-   for a public client.
-3. **Offers to save them**, once the authorisation has succeeded:
-   `Save to .vio/.env.connectors? [Y/n]`. Saved credentials are read from there on every
-   later run, so you enter them once.
-
-They are stored as two lines in `.vio/.env.connectors`, named for the app:
-
-```bash title=".vio/.env.connectors"
-GOOGLE_OAUTH_CLIENT_ID=...
-GOOGLE_OAUTH_CLIENT_SECRET=...
-```
-
-Every Google Workspace connector shares the `GOOGLE_` pair. The others use `GITHUB_`,
-`SLACK_`, `HUBSPOT_` or `ASANA_`, and any other host is named after the host itself —
-`mcp.example.com` reads `MCP_EXAMPLE_COM_OAUTH_CLIENT_ID`. You can also write the lines
-yourself before running `vio connect`.
-
-Without a terminal to ask on, `vio connect` can't prompt: it prints the redirect URI and
-stops. Add the two lines to `.vio/.env.connectors`, then run it again.
-
-<Warning>
-  OAuth app credentials belong in `.vio/.env.connectors` only. Never put a client id or
-  secret in `agent.vio` — the bundle travels with the agent.
-</Warning>
-
-### Is the agent ready?
-
-`vio connect` reports what the agent says after the push, not what it hopes:
-
-- `✔ Connectors authorised — the agent is ready` — the agent is serving with nothing
-  pending.
-- `✔ Credentials pushed. The agent still reports <state>` — the push worked and the agent
-  hasn't picked the credentials up yet. It lists what is still pending, and reloads them
-  on its next run or within about a minute. Check with `vio show <id>`.
-
-### Before you run it
-
-- For a BYOK agent, have the same provider key you deployed with — in the Space, or the
-  same `--env-file`. The push replaces every credential the agent holds, including its
-  provider key, and a key of the wrong kind is refused before any consent.
-- A [credits](#viorant-credits) agent needs no provider key for `vio connect` either, and
-  `vio connect` never pushes one to it — even if a key is set in the Space or the
-  `--env-file`.
-- The bundle must be the one you deployed. If its digest differs, nothing happens.
-- Cancelling any consent pushes nothing; the agent keeps what it had.
-- Port `47219` on `127.0.0.1` must be free while it runs.
+Authorising a deployed agent's connectors — including ones that need your own OAuth app —
+and the built-in tools every agent can use (`web_fetch`, `current_time`, and `web_search`
+with its Tavily key) now have their own page: see
+[Connectors and tools](/cli/connectors).
 
 ## Next
 
+- [Connectors and tools](/cli/connectors) — `vio connect`, and setting up `web_search`.
 - [Manage deployments](/cli/manage) — list, runs, logs, redeploy and stop.
 - [Schedule an agent](/cli/schedule) — run a deployed agent on a timer.

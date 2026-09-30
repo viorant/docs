@@ -20,11 +20,17 @@ description: "Fixes for common issues with the Viorant Hub."
     disable, or remove a connector from the Connectors surface.
   </Accordion>
   <Accordion title="Web search isn't working / web_search is disabled">
-    `web_search` needs a **Tavily API key**. Open **Viorant Tools** on the Connectors
-    surface and save your key in the **Tool keys** panel — the `web_search` toggle stays
-    disabled until a valid key is saved. See
+    `web_search` needs a **Tavily API key**. In the Hub, open **Viorant Tools** on the
+    Connectors surface and save your key in the **Tool keys** panel — the `web_search`
+    toggle stays disabled until a valid key is saved. See
     [Built-in tools](/connectors/built-in-tools). Also confirm `web_search` is in the
     skill or agent's allowed tools.
+
+    On a **CLI-deployed** agent, the same symptom means `VIORANT_RUNNER_SEARCH_API_KEY`
+    was never set in `.vio/.env.connectors` before `vio deploy`, or wasn't pushed to an
+    already-deployed agent. `vio show <deployment id>` lists `web_search` as pending when
+    the key is missing. See [Connectors and tools](/cli/connectors#tavily-web_search) for
+    how to set or rotate it.
   </Accordion>
   <Accordion title="An agent run failed to start">
     Make sure the agent has a [model](/masters/model) selected, and either a valid

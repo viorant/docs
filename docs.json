@@ -103,6 +103,7 @@
               "cli/sign-in",
               "cli/validate",
               "cli/deploy",
+              "cli/connectors",
               "cli/manage",
               "cli/schedule",
               "cli/reference",
