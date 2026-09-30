@@ -95,11 +95,10 @@ to it in one write. Run the same command again to re-authorise. `--no-browser` p
 authorisation URL instead of opening it.
 
 <Note>
-  `vio connect` needs the bundle to declare **at least one OAuth connector** — that is what
-  it authorises. On a bundle with none, it refuses with "This bundle declares no OAuth
-  connectors, so there is nothing to authorise," and pushes nothing. See [Tavily
-  (`web_search`)](#tavily-web_search) below for what that means for an agent whose only
-  external dependency is Tavily.
+  `vio connect` needs something to push. On a bundle with no OAuth connector it refuses with
+  "This bundle declares no OAuth connectors, so there is nothing to authorise" — unless the
+  bundle uses `web_search`, in which case (`vio` **1.0.1** or later) it skips consent and
+  pushes the [Tavily key](#tavily-web_search) on its own.
 </Note>
 
 ### Connectors that need your own OAuth app
@@ -213,18 +212,17 @@ declares:
 - **The agent also has an OAuth connector.** `vio connect <deployment id>` pushes the whole
   credentials document on every run, Tavily key included — update
   `.vio/.env.connectors` and run `vio connect <deployment id>` again.
-- **Tavily is the agent's only external dependency.** `vio connect` has nothing to
-  authorise and refuses outright (see the note above), and `vio redeploy` replaces the
-  running bundle only — it does not read `.vio/.env.connectors` or resend any credential.
-  There is no in-place way to add or rotate the key on that deployment. Stop it and deploy
-  again:
+- **Tavily is the agent's only external dependency.** With `vio` **1.0.1** or later, the
+  same command works: update `.vio/.env.connectors` and run `vio connect <deployment id>`.
+  There is no consent step — it pushes the key and reports whether the agent is ready. If
+  no key is set, it refuses and pushes nothing.
 
-  ```bash
-  vio stop <deployment id>
-  vio deploy agent.vio --target viorant_cloud
-  ```
+  On `vio` 1.0.0, `vio connect` refuses a bundle with no OAuth connector, so the only way to
+  add the key there is to stop the agent and deploy again (a new id, URL and run key) — or
+  run `vio update` first.
 
-  This is a **new deployment** — a new id, URL and run key, not an update to the old one.
+`vio redeploy` never sets or rotates a key: it replaces the running bundle only and does not
+read `.vio/.env.connectors`.
 
 Without a key, every call to `web_search` fails — the run itself still starts and the
 agent still reports ready; only that one tool is unavailable. `vio show` does not flag the
