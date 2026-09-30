@@ -226,8 +226,10 @@ declares:
 
   This is a **new deployment** — a new id, URL and run key, not an update to the old one.
 
-Without a key, `web_search` reports as pending (`vio show <deployment id>` lists it) and
-every call to it fails — the run itself still starts; only that one tool is unavailable.
+Without a key, every call to `web_search` fails — the run itself still starts and the
+agent still reports ready; only that one tool is unavailable. `vio show` does not flag the
+missing key, so if a search-using agent's answers show no web results, check
+`.vio/.env.connectors` first.
 
 ## Next
 
