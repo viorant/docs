@@ -1,0 +1,230 @@
+---
+title: "Jev"
+description: "TypeSafe's guardrail model, hosted by Viorant — claim verification, content screening, and calibrated-probability checks for any MCP client."
+---
+
+<Warning>
+  **Launching soon.** This page is live before Jev's public go-live. Today, signing in
+  works, but Jev currently accepts only tester accounts — so outside of a tester
+  account, sign-in completes and the first call then fails.
+</Warning>
+
+## What Jev is
+
+Jev is TypeSafe's guardrail model, hosted by Viorant and served to any MCP client as a
+remote connector at `https://jev.viorant.io/mcp`. It gives an agent six tools it can call
+mid-run:
+
+- `jev_verify` — checks claims against evidence text and returns a verdict per claim
+  (verified / contradicted / unsupported) with a confidence.
+- `jev_screen` — screens fetched or external text before an agent reads it, for prompt
+  injection and substance, and (with a stated purpose) task relevance.
+- `jev_find` — ranks candidates against a plain-language query; semantic search, no
+  embeddings needed.
+- `jev_noul` — returns a calibrated probability for each of a batch of stated
+  propositions.
+- `jev_choice` — asks one caller-authored multiple-choice question and returns the
+  chosen option with a probability per option.
+- `jev_score` — asks one caller-authored question scored against an ordered rubric and
+  returns the expected score with a probability per level.
+
+Sign-in uses your existing Viorant account — there is no separate Jev account.
+
+## Connect from an MCP client
+
+Jev is a standard remote MCP server with OAuth. Each client below gets its own config.
+**Tested** means a run against that exact config, on this page, by a Viorant tester, is
+on record. Everything else is **Untested** — the config is correct per that client's own
+documented remote-MCP format, but no one has run it against Jev yet.
+
+### Claude Code — Untested
+
+```bash
+claude mcp add --transport http jev https://jev.viorant.io/mcp
+```
+
+Then in a Claude Code session, run `/mcp` and choose **Authenticate** for `jev`.
+
+<Note>
+  A Jev sign-in was run from Claude Code on 2026-10-05, but with a hand-built PKCE client
+  and `claude -p` — not the `claude mcp add` / `/mcp` → Authenticate commands shown above.
+  Since that isn't a run of what this page publishes, it's marked Untested rather than
+  claimed on mismatched evidence.
+</Note>
+
+### Cursor — Untested
+
+```json title=".cursor/mcp.json"
+{
+  "mcpServers": {
+    "jev": {
+      "url": "https://jev.viorant.io/mcp"
+    }
+  }
+}
+```
+
+### VS Code — Untested
+
+```json title=".vscode/mcp.json"
+{
+  "servers": {
+    "jev": {
+      "type": "http",
+      "url": "https://jev.viorant.io/mcp"
+    }
+  }
+}
+```
+
+### Windsurf — Untested
+
+```json title="mcp_config.json"
+{
+  "mcpServers": {
+    "jev": {
+      "serverUrl": "https://jev.viorant.io/mcp"
+    }
+  }
+}
+```
+
+### Codex CLI — Untested
+
+```toml title="config.toml"
+[mcp_servers.jev]
+url = "https://jev.viorant.io/mcp"
+```
+
+### Gemini CLI — Untested
+
+```json title="settings.json"
+{
+  "mcpServers": {
+    "jev": {
+      "httpUrl": "https://jev.viorant.io/mcp"
+    }
+  }
+}
+```
+
+### Any other MCP client — Untested
+
+Jev follows the standard remote-MCP discovery and dynamic client registration flow, so
+any compliant client can add it from the URL alone. As supporting evidence that the
+endpoints are live (not a tested marker — no client's exact config has been run against
+them), here is discovery, DCR metadata, and an unauthenticated call, each run fresh
+against `https://jev.viorant.io`:
+
+```bash
+$ curl -i https://jev.viorant.io/.well-known/oauth-protected-resource/mcp
+HTTP/2 200
+content-type: application/json
+
+{"resource":"https://jev.viorant.io/mcp","authorization_servers":["https://jev.viorant.io"],"scopes_supported":["jev:verify","jev:screen","jev:find"],"bearer_methods_supported":["header"],"resource_name":"Viorant Jev"}
+```
+
+```bash
+$ curl -i https://jev.viorant.io/.well-known/oauth-authorization-server
+HTTP/2 200
+content-type: application/json
+
+{"issuer":"https://jev.viorant.io","authorization_endpoint":"https://jev.viorant.io/authorize","token_endpoint":"https://jev.viorant.io/token","protected_resources":["https://jev.viorant.io/mcp"],"registration_endpoint":"https://jev.viorant.io/register", ...}
+```
+
+```bash
+$ curl -i -X POST https://jev.viorant.io/mcp -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}'
+HTTP/2 401
+www-authenticate: Bearer realm="OAuth", resource_metadata="https://jev.viorant.io/.well-known/oauth-protected-resource/mcp", scope="jev:verify jev:screen jev:find"
+```
+
+A client that supports dynamic client registration can `POST` to `registration_endpoint`
+and complete the standard authorization-code + PKCE flow from there with no manual app
+setup.
+
+## From a deployed `vio` agent
+
+Declare Jev like any other OAuth connector, with all six tools:
+
+```yaml
+requires:
+  - connector: https://jev.viorant.io/mcp
+    scopes: []
+    auth: oauth
+    kind: connector
+    tools:
+      - jev_verify
+      - jev_screen
+      - jev_find
+      - jev_noul
+      - jev_choice
+      - jev_score
+```
+
+Then:
+
+```bash
+vio deploy --target viorant_cloud
+vio connect <id> .
+```
+
+`vio connect` opens a browser for sign-in, then pushes the credentials.
+
+<Check>
+  **Tested** (prod, by a tester account, 2026-10-06). This exact recipe ran end to end: a
+  deploy with the connector block above, `vio connect <id> .` → sign-in → `Credentials
+  pushed`, then one `jev_verify` call returning `ok: true` in 2344 ms, with the run
+  reaching `run.completed` at 12.6 s.
+
+  Two caveats carried over from that run: it was **unmetered**, since it ran on a tester
+  account — a non-tester, paid-fallback run is still needed after go-live — and it used a
+  hand-wired recipe rather than a built-in one, because `vio` **1.0.2**, which bakes a
+  Jev recipe in, is unpublished as of this run. The commands above are written to work on
+  the released `vio` **1.0.1**.
+</Check>
+
+## Cost
+
+At launch, **10M free Jev tokens for the first 1,000 users, valid for 90 days, then
+100 credits per 1M Jev tokens.**
+
+Every Jev tool result carries its remaining allowance in a top-level
+`allowance_remaining` field (not nested under `usage`); a grant balance is shown in
+Viorant credits:
+
+- `"unlimited (tester)"` — your account is a Jev tester; nothing is metered.
+- A credits figure — you're drawing down a free grant.
+- `"<n> credits (Viorant credits)"` — the grant is exhausted and paid usage (from your
+  wallet) is on.
+
+## Limits and errors
+
+Jev returns these as **MCP tool-error text** — never as an HTTP status code. Each comes
+back with one of these exact messages:
+
+| Case | Message |
+| --- | --- |
+| No allowance for your account | `No Jev allowance is available for your account right now.` |
+| Grant used up | `Your Jev credits are used up.` |
+| Grant expired | `Your Jev allowance expired on <date>.` |
+| Account disabled | `This Viorant account cannot use Jev.` |
+| Rate limit (120 calls/60s) | `Too many Jev calls. Retry after 60 seconds.` |
+| Daily cap (20,000 calls/day) | `Too many Jev calls today. Retry after 24 hours.` |
+| Input over the per-call limit (24,000 tokens) | `Input is over the 24,000-token limit for one Jev call.` |
+| Jev paused for maintenance | `Jev is paused for maintenance. Try again later.` |
+| Jev's overall budget reached | `Jev has reached its budget. Try again later.` |
+| Wallet balance too low | `Your Viorant credits are too low for this Jev call. Top up in Viorant Hub.` |
+| Paid fallback unavailable | `Viorant credits are unavailable right now` |
+| Free accounts at capacity | `Jev is full for free accounts right now. Upgrade to a paid plan to use it.` |
+| Jev at capacity | `Jev is full right now.` |
+
+<Note>
+  **After the grant expires:** once paid fallback is on for your account, an expired
+  grant doesn't block a call — Jev charges your Viorant credit wallet instead. The
+  `Your Jev allowance expired on <date>.` message above shows only while paid fallback
+  is off.
+</Note>
+
+## Terms
+
+Using Jev is covered by Viorant's [Terms of Service](https://viorant.ai/terms).

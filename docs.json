@@ -64,6 +64,7 @@
             "pages": [
               "connectors/built-in-tools",
               "connectors/remote-mcp-oauth",
+              "connectors/jev",
               "connectors/oauth-apps",
               "connectors/github",
               "connectors/slack",
