@@ -5,8 +5,8 @@ description: "TypeSafe's guardrail model, hosted by Viorant — claim verificati
 
 <Warning>
   **Launching soon.** This page is live before Jev's public go-live. Today, signing in
-  works, but the control plane refuses accounts that aren't on the tester allowlist — so
-  outside of a tester account, sign-in completes and the first call then fails.
+  works, but Jev currently accepts only tester accounts — so outside of a tester
+  account, sign-in completes and the first call then fails.
 </Warning>
 
 ## What Jev is
@@ -185,8 +185,8 @@ vio connect <id> .
 
 ## Cost
 
-At launch, the first 1,000 users get 10M free Jev tokens. After that, Jev is paid from
-your Viorant credit wallet at **100 credits per 1 million tokens**.
+At launch, **10M free Jev tokens for the first 1,000 users, valid for 90 days, then
+100 credits per 1M Jev tokens.**
 
 Every Jev tool result carries its remaining allowance in a top-level
 `allowance_remaining` field (not nested under `usage`); a grant balance is shown in
@@ -194,8 +194,8 @@ Viorant credits:
 
 - `"unlimited (tester)"` — your account is a Jev tester; nothing is metered.
 - A credits figure — you're drawing down a free grant.
-- `"<n> (Viorant credits)"` — the grant is exhausted and paid usage (from your wallet) is
-  on.
+- `"<n> credits (Viorant credits)"` — the grant is exhausted and paid usage (from your
+  wallet) is on.
 
 ## Limits and errors
 
@@ -217,6 +217,13 @@ back with one of these exact messages:
 | Paid fallback unavailable | `Viorant credits are unavailable right now` |
 | Free accounts at capacity | `Jev is full for free accounts right now. Upgrade to a paid plan to use it.` |
 | Jev at capacity | `Jev is full right now.` |
+
+<Note>
+  **After the grant expires:** once paid fallback is on for your account, an expired
+  grant doesn't block a call — Jev charges your Viorant credit wallet instead. The
+  `Your Jev allowance expired on <date>.` message above shows only while paid fallback
+  is off.
+</Note>
 
 ## Terms
 
