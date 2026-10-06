@@ -185,13 +185,12 @@ vio connect <id> .
 
 ## Cost
 
-The first wave of users get a free launch allowance of Jev usage — the exact figure
-isn't published here yet; it's still unsettled internally between two different shapes of
-grant. Once that allowance is used, Jev is paid from your Viorant credit wallet at **100
-credits per 1 million tokens**.
+At launch, the first 1,000 users get 10M free Jev tokens. After that, Jev is paid from
+your Viorant credit wallet at **100 credits per 1 million tokens**.
 
-Every Jev tool result carries its remaining allowance in its `usage.allowance_remaining`
-field:
+Every Jev tool result carries its remaining allowance in a top-level
+`allowance_remaining` field (not nested under `usage`); a grant balance is shown in
+Viorant credits:
 
 - `"unlimited (tester)"` — your account is a Jev tester; nothing is metered.
 - A credits figure — you're drawing down a free grant.
