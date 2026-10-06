@@ -77,6 +77,7 @@
             "group": "Providers & models",
             "pages": [
               "providers/credits",
+              "providers/plans",
               "providers/byok"
             ]
           },
