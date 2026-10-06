@@ -185,17 +185,18 @@ vio connect <id> .
 
 ## Cost
 
-At launch, **10M free Jev tokens for the first 1,000 users, valid for 90 days, then
-100 credits per 1M Jev tokens.**
+Jev is paid from your Viorant credits: **100 credits per 1M Jev tokens** (input
+tokens). There's no separate Jev allowance.
 
-Every Jev tool result carries its remaining allowance in a top-level
-`allowance_remaining` field (not nested under `usage`); a grant balance is shown in
-Viorant credits:
+Every new Viorant account starts with **2,500 free credits**, enough for **up to 25M Jev
+tokens** if you spend them only on Jev. It's one balance: credits you spend on agents or
+models elsewhere in Viorant come out of the same 2,500.
 
-- `"unlimited (tester)"` — your account is a Jev tester; nothing is metered.
-- A credits figure — you're drawing down a free grant.
-- `"<n> credits (Viorant credits)"` — the grant is exhausted and paid usage (from your
-  wallet) is on.
+Every Jev tool result carries your remaining balance in a top-level
+`allowance_remaining` field (not nested under `usage`):
+
+- `"unlimited (tester)"`: your account is a Jev tester, and nothing is metered.
+- `"<n> credits (Viorant credits)"`: your Viorant credit balance after the call.
 
 ## Limits and errors
 
@@ -204,9 +205,6 @@ back with one of these exact messages:
 
 | Case | Message |
 | --- | --- |
-| No allowance for your account | `No Jev allowance is available for your account right now.` |
-| Grant used up | `Your Jev credits are used up.` |
-| Grant expired | `Your Jev allowance expired on <date>.` |
 | Account disabled | `This Viorant account cannot use Jev.` |
 | Rate limit (120 calls/60s) | `Too many Jev calls. Retry after 60 seconds.` |
 | Daily cap (20,000 calls/day) | `Too many Jev calls today. Retry after 24 hours.` |
@@ -217,13 +215,6 @@ back with one of these exact messages:
 | Paid fallback unavailable | `Viorant credits are unavailable right now` |
 | Free accounts at capacity | `Jev is full for free accounts right now. Upgrade to a paid plan to use it.` |
 | Jev at capacity | `Jev is full right now.` |
-
-<Note>
-  **After the grant expires:** once paid fallback is on for your account, an expired
-  grant doesn't block a call — Jev charges your Viorant credit wallet instead. The
-  `Your Jev allowance expired on <date>.` message above shows only while paid fallback
-  is off.
-</Note>
 
 ## Terms
 
