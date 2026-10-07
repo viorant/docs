@@ -3,12 +3,6 @@ title: "Jev"
 description: "TypeSafe's guardrail model, hosted by Viorant — claim verification, content screening, and calibrated-probability checks for any MCP client."
 ---
 
-<Warning>
-  **Launching soon.** This page is live before Jev's public go-live. Today, signing in
-  works, but Jev currently accepts only tester accounts — so outside of a tester
-  account, sign-in completes and the first call then fails.
-</Warning>
-
 ## What Jev is
 
 Jev is TypeSafe's guardrail model, hosted by Viorant and served to any MCP client as a
@@ -33,11 +27,8 @@ Sign-in uses your existing Viorant account — there is no separate Jev account.
 ## Connect from an MCP client
 
 Jev is a standard remote MCP server with OAuth. Each client below gets its own config.
-**Tested** means a run against that exact config, on this page, by a Viorant tester, is
-on record. Everything else is **Untested** — the config is correct per that client's own
-documented remote-MCP format, but no one has run it against Jev yet.
 
-### Claude Code — Untested
+### Claude Code
 
 ```bash
 claude mcp add --transport http jev https://jev.viorant.io/mcp
@@ -45,14 +36,7 @@ claude mcp add --transport http jev https://jev.viorant.io/mcp
 
 Then in a Claude Code session, run `/mcp` and choose **Authenticate** for `jev`.
 
-<Note>
-  A Jev sign-in was run from Claude Code on 2026-10-05, but with a hand-built PKCE client
-  and `claude -p` — not the `claude mcp add` / `/mcp` → Authenticate commands shown above.
-  Since that isn't a run of what this page publishes, it's marked Untested rather than
-  claimed on mismatched evidence.
-</Note>
-
-### Cursor — Untested
+### Cursor
 
 ```json title=".cursor/mcp.json"
 {
@@ -64,7 +48,7 @@ Then in a Claude Code session, run `/mcp` and choose **Authenticate** for `jev`.
 }
 ```
 
-### VS Code — Untested
+### VS Code
 
 ```json title=".vscode/mcp.json"
 {
@@ -77,7 +61,7 @@ Then in a Claude Code session, run `/mcp` and choose **Authenticate** for `jev`.
 }
 ```
 
-### Windsurf — Untested
+### Windsurf
 
 ```json title="mcp_config.json"
 {
@@ -89,14 +73,14 @@ Then in a Claude Code session, run `/mcp` and choose **Authenticate** for `jev`.
 }
 ```
 
-### Codex CLI — Untested
+### Codex CLI
 
 ```toml title="config.toml"
 [mcp_servers.jev]
 url = "https://jev.viorant.io/mcp"
 ```
 
-### Gemini CLI — Untested
+### Gemini CLI
 
 ```json title="settings.json"
 {
@@ -108,13 +92,11 @@ url = "https://jev.viorant.io/mcp"
 }
 ```
 
-### Any other MCP client — Untested
+### Any other MCP client
 
 Jev follows the standard remote-MCP discovery and dynamic client registration flow, so
-any compliant client can add it from the URL alone. As supporting evidence that the
-endpoints are live (not a tested marker — no client's exact config has been run against
-them), here is discovery, DCR metadata, and an unauthenticated call, each run fresh
-against `https://jev.viorant.io`:
+any compliant client can add it from the URL alone. Here is discovery, DCR metadata, and an
+unauthenticated call against `https://jev.viorant.io`:
 
 ```bash
 $ curl -i https://jev.viorant.io/.well-known/oauth-protected-resource/mcp
@@ -170,18 +152,7 @@ vio connect <id> .
 
 `vio connect` opens a browser for sign-in, then pushes the credentials.
 
-<Check>
-  **Tested** (prod, by a tester account, 2026-10-06). This exact recipe ran end to end: a
-  deploy with the connector block above, `vio connect <id> .` → sign-in → `Credentials
-  pushed`, then one `jev_verify` call returning `ok: true` in 2344 ms, with the run
-  reaching `run.completed` at 12.6 s.
-
-  Two caveats carried over from that run: it was **unmetered**, since it ran on a tester
-  account — a non-tester, paid-fallback run is still needed after go-live — and it used a
-  hand-wired recipe rather than a built-in one, because `vio` **1.0.2**, which bakes a
-  Jev recipe in, is unpublished as of this run. The commands above are written to work on
-  the released `vio` **1.0.1**.
-</Check>
+`vio docs agents` prints this recipe (`vio` 1.0.2 and later).
 
 ## Cost
 
