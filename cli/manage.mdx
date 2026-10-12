@@ -22,7 +22,8 @@ at least six characters, or the deployment's exact name.
 
 <Note>
   Needs `vio` **1.0.0** or later for `--json` on `list`, `show` and `runs`, and for
-  `vio logs --include-platform`. Check with `vio --version`.
+  `vio logs --include-platform`. `vio run` and `vio logs --run` need **1.0.4** or later.
+  Check with `vio --version`.
 </Note>
 
 ## See what's running
@@ -44,6 +45,27 @@ vio runs <id> --limit 100  # up to 200
 vio runs <id> --json       # as JSON, including digests
 ```
 
+`vio runs` prints an 8-character id for each run. That short id works as `--run` on
+[`vio logs`](#logs).
+
+To call a deployed agent once and watch the run, use `vio run`:
+
+```bash
+vio run <deployment> --task "Summarise the last three commits"
+vio run <deployment> --input '{"repo": "viorant/docs"}'
+vio run <deployment> --input @input.json
+```
+
+Give it either `--task "<text>"`, for an agent with a single string input, or
+`--input <json|@file>`, a JSON object inline or from a file. They cannot be combined.
+`vio run` uses the run key `vio deploy` saved on this machine, so you do not pass one. A run
+spends credits from your wallet. `--json` prints each run event as its own JSON line.
+
+If the agent has connectors still awaiting authorisation, `vio run` refuses and tells you
+to run [`vio connect`](/cli/connectors#vio-connect) first. If no run key is saved for the
+deployment — it was deployed before this version, or from another machine — `vio run` says
+so and stops. The `curl` command `vio deploy` printed still works if you kept it.
+
 ## Logs
 
 ```bash
@@ -57,9 +79,18 @@ there are more, the last line is the exact command for the next page.
 | --- | --- |
 | `--since 2h` | Start further back: `15m`, `2h`, `1d`, or an ISO-8601 time |
 | `--limit 100` | Lines per page (default 50, at most 200) |
+| `--run <run id>` | Show only one run's logs. Use the 8-character id from `vio runs`, or any longer prefix of the run id |
 | `--include-platform` | Also show Viorant Cloud's own platform and system lines for the service |
 | `--page-token <token>` | Continue from a previous page |
 | `--json` | The raw response as one JSON object, for scripts |
+
+To read what one run did, find its id with `vio runs`, then:
+
+```bash
+vio logs <id> --run 1a2b3c4d
+```
+
+`--run` cannot be combined with `--include-platform`.
 
 Logs can contain sensitive data. Before printing, `vio` strips terminal control sequences
 and redacts common credential shapes. Read [Deployment logs](/deploy/deployment-logs)

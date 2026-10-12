@@ -4,7 +4,7 @@ description: "Every vio command, its exit codes and error codes, and the machine
 ---
 
 <Note>
-  This page describes `vio` **1.0.0**. Check yours with `vio --version`, and run
+  This page describes `vio` **1.0.4**. Check yours with `vio --version`, and run
   `vio update` if you are behind.
 </Note>
 
@@ -21,14 +21,17 @@ description: "Every vio command, its exit codes and error codes, and the machine
 | `vio validate <path>` | Check a `.vio` file, offline | `/validate` | — |
 | `vio digest <path>` | Print a `.vio` file's deployment digest; `--fix` repairs artifact digests | `/digest` | — |
 | `vio deploy <path>` | Deploy a `.vio` to Viorant Cloud | `/deploy` | Yes |
-| [`vio connect <id> \[path\]`](/cli/connectors#vio-connect) | Authorise a deployed agent's connectors | — | Yes |
+| [`vio connect <connector…>`](/cli/connectors#vio-connect) | Authorise connectors ahead of a deploy, staged in `.vio/`; `--forget` removes them | — | Yes |
+| [`vio connect <id> \[path\]`](/cli/connectors#vio-connect) | Finish or re-authorise a deployed agent's connectors | — | Yes |
 | `vio list` | List your active deployments; `--all` for every one | `/list` | Yes |
 | `vio show <id>` | Show one deployment | `/show` | Yes |
 | `vio runs <id>` | Recent runs of a deployment | `/runs` | Yes |
-| `vio logs <id>` | Recent logs of a deployment | `/logs` | Yes |
+| `vio logs <id>` | Recent logs of a deployment; `--run <run id>` shows one run | `/logs` | Yes |
+| [`vio run <deployment>`](/cli/manage#runs) | Call a deployed agent once, with `--task "<text>"` or `--input <json\|@file>` | — | Yes |
 | `vio schedule <id> [action]` | Set, show, turn on or off, or clear a deployment's run schedule | `/schedule` | Yes |
 | `vio redeploy <id>` | Replace a running agent in place | `/redeploy` | Yes |
 | `vio stop <id>` | Stop a deployment and revoke its credentials | `/stop` | Yes |
+| [`vio agents install`](/cli/ai-agents#start-with-a-space) | Write the `vio` skill for Claude Code, Codex or Cursor; `--agent`, `--dry-run`, `--force` | — | — |
 | `vio providers` | Model providers a bundle can run on | — | — |
 | [`vio connectors \[term\]`](/cli/connectors#browse-the-connector-catalogue) | Browse the connector catalogue | — | — |
 | `vio docs [topic]` | Print embedded documentation, offline | — | — |
@@ -85,6 +88,12 @@ is rejected before any command runs, as one plain-text line (`error: …`) with 
 | `cli.not_implemented` | The command is registered but not implemented yet |
 | `space.exists` | `vio init` found an existing Space, or `--force` was refused without confirmation |
 | `space.init_failed` | `vio init` could not write the Space |
+| `network.unreachable` | No network reached the control plane, the connector catalogue or a connector, usually because a coding agent's sandbox has network access off |
+| `run.no_key` | No run key is saved on this machine for the deployment |
+| `run.auth_pending` | The deployment has connectors awaiting authorisation; run `vio connect` first |
+| `run.invalid_input` | The runner rejected the run's input |
+| `run.rejected` | The runner rejected the run before the agent started |
+| `run.failed` | The run did not complete: the runner reported an error, or the connection ended before a result arrived |
 | `schedule.not_found` | The deployment has no schedule |
 | `schedule.interval_below_plan` | The schedule is more frequent than your plan allows |
 | `schedule.invalid_spec` | The schedule's interval, time or time zone was rejected |

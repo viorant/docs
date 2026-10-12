@@ -9,10 +9,63 @@ declares what each command commits you to, and leaves the decision to the agent 
 configured.
 
 <Note>
-  Needs `vio` **1.0.0** or later. Check with `vio --version`.
+  Needs `vio` **1.0.0** or later, and **1.0.4** or later for `agents install` and
+  `vio connect` before a deploy. Check with `vio --version`.
 </Note>
 
 ## Start with a Space
+
+**Set up your coding agent in one line.** `vio agents install` writes the `vio` skill into
+the coding agents on your machine, so they know how to build, connect, deploy and test a
+Viorant agent. You do not need `vio` installed first:
+
+```bash
+npx -y @viorant/cli agents install
+```
+
+It works without signing in. Choose one agent, preview without writing, or overwrite an
+existing skill:
+
+```bash
+npx -y @viorant/cli agents install --agent claude-code   # or codex, or cursor
+npx -y @viorant/cli agents install --agent codex --dry-run
+npx -y @viorant/cli agents install --agent cursor --force
+```
+
+- `--agent claude-code|codex|cursor` installs for that agent only.
+- `--dry-run` shows where the skill would go and writes nothing.
+- `--force` overwrites a file at the target path even if `vio` did not write it.
+- `--json` prints one JSON object, for scripts.
+
+Where the skill lands:
+
+| Agent | Skill file |
+| --- | --- |
+| Claude Code | `$CLAUDE_CONFIG_DIR/skills/vio/SKILL.md`, which defaults to `~/.claude/skills/vio/SKILL.md` |
+| Codex and Cursor | the shared `~/.agents/skills/vio/SKILL.md` |
+
+Then ask your coding agent for the agent you want. The skill walks it through eight steps,
+in order:
+
+1. **Sign in.** It runs `vio whoami`. If you are not signed in it asks you to run
+   `vio login` in your own terminal; it never signs in for you.
+2. **Understand the ask.** It asks clarifying questions before it writes any file.
+3. **Plan, approved.** It shows you what the agent will do, which connectors and model it
+   uses, and what each connector needs from you. Nothing is built until you approve.
+4. **Connect.** It runs `vio connect` for every connector in the plan, before the agent is
+   written. See [Connecting connectors](#connecting-connectors).
+5. **Build the `.vio`.**
+6. **Validate and deploy.** The staged connections are pushed with the deploy, so the agent
+   comes up connected.
+7. **Test with one run**, with [`vio run`](/cli/manage#runs).
+8. **Read that run's logs**, tweak the agent and redeploy.
+   See [Logs](/cli/manage#logs).
+
+**Running Codex?** Its sandbox blocks the network by default, and `vio` will say it cannot
+reach the network. Set `sandbox_workspace_write.network_access = true` in
+`~/.codex/config.toml`, or run Codex with network access. `vio` never edits that file.
+
+Inside a Space, `vio init` gives your agent a second, per-Space set of instructions:
 
 ```bash
 vio init
@@ -179,8 +232,22 @@ yours to make and yours to type.
 
 ## Connecting connectors
 
-Your coding agent may run `vio connect <id>` itself once the agent is deployed — it is not
-reserved for you — but two cases need your attention:
+**Connect before you build.** Your coding agent runs `vio connect <connector…>` for every
+connector in the plan you approved, before it writes `agent.vio`. It needs a Space, but not
+a deployment:
+
+```bash
+vio connect github slack
+```
+
+Each token is saved as soon as it succeeds, and `vio deploy` then pushes the set, so the
+agent comes up connected and a connector that will not authorise surfaces before the
+build, not after it. See [Connect before you deploy](/cli/connectors#vio-connect) for the
+details.
+
+To finish or re-authorise a connector on a deployed agent, your coding agent runs
+`vio connect <deployment id>` itself — it is not reserved for you. Either way, two cases
+need your attention:
 
 - **A dynamically-registered (`dcr`) connector needs your browser click, and nothing else.**
   `vio connect` opens (or, with `--no-browser`, prints) an authorisation URL and waits — the

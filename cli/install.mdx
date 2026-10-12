@@ -8,15 +8,34 @@ a Space, validates a `.vio` file, stands the agent up on Viorant Cloud and hands
 URL — the same deploy pipeline as the Hub, without opening it.
 
 <Note>
-  These pages describe `vio` **1.0.0 or later**. Check with `vio --version`, and run
+  These pages describe `vio` **1.0.0 or later**. Running without installing, the
+  one-line coding-agent setup, connecting before you deploy, `vio run` and
+  `vio logs --run` need **1.0.4 or later**. Check with `vio --version`, and run
   `vio update` if you are behind.
 </Note>
 
-`vio` ships as one self-contained JavaScript file. It needs **Node 22**:
+`vio` ships as one self-contained JavaScript file. It needs **Node 22 or 24**:
 
 ```bash
-node --version   # v22.x
+node --version   # v22.x or v24.x
 ```
+
+You can also run it without installing anything. `npx` fetches the current release from
+npm and runs it, so any `vio` command works with `npx -y @viorant/cli` in front of it:
+
+```bash
+npx -y @viorant/cli --version
+```
+
+To put `vio` on your `PATH` with npm instead:
+
+```bash
+npm i -g @viorant/cli
+```
+
+The signed installer below stays the verified path: it checks a signature on the release
+([How releases are verified](#how-releases-are-verified)) and is what `vio update` keeps
+current.
 
 ## macOS and Linux
 
@@ -79,8 +98,9 @@ Invoke-WebRequest "https://dl.viorant.ai/cli/vio-$v.js.sha256" -OutFile vio.js.s
 node vio.js --version
 ```
 
-Run commands as `node vio.js <command>`. To update on Windows, repeat these steps:
-`vio update` runs the shell installer, which Windows does not have.
+Run commands as `node vio.js <command>`. To update on Windows, repeat these steps, or run
+`node vio.js update`: with no `install.sh` to run, it downloads the release, checks the
+sha256 checksum and replaces `vio.js`.
 
 ## Update
 
@@ -88,8 +108,8 @@ Run commands as `node vio.js <command>`. To update on Windows, repeat these step
 vio update
 ```
 
-`vio update` installs the current release in place. It runs the same installer as above,
-so the same checksum and signature checks apply. When you are already current it says so
+`vio update` installs the current release in place. On macOS and Linux it runs the same
+installer as above, so the same checksum and signature checks apply. When you are already current it says so
 and changes nothing. It is subcommand-only — there is no `/update` in the
 [shell](/cli/shell).
 
@@ -106,6 +126,16 @@ there:
 curl -fsSL https://dl.viorant.ai/cli/install.sh | VIO_VERSION=1.0.0 sh
 ```
 
+**Under `npx`**, there is nothing installed for `vio update` to replace, so it explains
+instead of updating: it prints `npx -y @viorant/cli@<version> <command>` to pin a version,
+and the installer line above for a permanent install. Pin a version yourself by adding it
+after the package name, for example `npx -y @viorant/cli@1.0.4 --version`. The next
+release, while it is still being tested, is published under the `beta` dist-tag:
+
+```bash
+npx -y @viorant/cli@beta --version
+```
+
 About once a day `vio` checks for a newer release and, if there is one, prints a one-line
 notice to stderr naming `vio update`. The notice never installs anything, never touches
 stdout, and is skipped entirely on a `--json` run, so it cannot break a script.
@@ -120,14 +150,33 @@ that says to run `vio update`.
 
 ## How releases are verified
 
-Every release is built and signed by Viorant's GitHub release workflow, using keyless
-[Sigstore](https://www.sigstore.dev/) signing recorded in the public Rekor transparency
-log.
+On macOS and Linux the installer checks every release twice, with no extra tool to install
+and no way to opt out:
 
-- The installer **always** checks the sha256 checksum before writing anything.
-- If [`cosign`](https://docs.sigstore.dev/cosign/system_config/installation/) is installed,
-  the installer also verifies the signature and refuses a bad one.
-- Without `cosign`, it prints `signature NOT verified` and the command to check by hand:
+- **The sha256 checksum**, before anything is written. It must match the checksum
+  published beside the file.
+- **A Cloud KMS signature.** Viorant's release workflow signs each release with a Cloud
+  KMS key. The installer verifies that signature with Node's own `crypto.verify`, against
+  a public key pinned inside the installer script.
+
+A bad or missing signature installs nothing, exactly as a bad checksum does: the installer
+stops with "Nothing was installed."
+
+A checksum proves the file arrived intact. The signature proves it came from Viorant's
+release workflow, which a checksum served from the same place as the file cannot.
+
+To confirm the key pinned in the installer is the one you expect, compare its fingerprint
+(the SHA-256 of the DER-encoded public key):
+
+```
+e9743c18617112150e1222332c9d37cfc34d3908af1928e4d5ddd727e75290a3
+```
+
+Every release is also signed with keyless [Sigstore](https://www.sigstore.dev/) signing,
+from the release workflow's GitHub identity, and recorded in the public Rekor transparency
+log. The installer does not run this check. It is an optional, independent second check
+you can run by hand with
+[`cosign`](https://docs.sigstore.dev/cosign/system_config/installation/):
 
 ```bash
 cosign verify-blob --bundle vio-<version>.js.sigstore.json \
@@ -136,8 +185,8 @@ cosign verify-blob --bundle vio-<version>.js.sigstore.json \
   vio-<version>.js
 ```
 
-A checksum proves the file arrived intact. The signature proves it came from Viorant's
-release workflow.
+**Windows checks the checksum only**, not the signature: the PowerShell steps above and
+`vio update` on Windows both stop at the sha256.
 
 ## Then
 

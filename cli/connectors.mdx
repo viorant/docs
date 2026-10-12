@@ -1,10 +1,11 @@
 ---
 title: "Connectors and tools"
-description: "Browse and declare connectors, authorise a deployed agent with vio connect, and set up the built-in tools — including the Tavily key web_search needs."
+description: "Browse and declare connectors, authorise them with vio connect before or after a deploy, and set up the built-in tools — including the Tavily key web_search needs."
 ---
 
 <Note>
-  Needs `vio` **1.0.0** or later. Check with `vio --version`.
+  Needs `vio` **1.0.0** or later, and **1.0.4** or later to connect before you deploy.
+  Check with `vio --version`.
 </Note>
 
 ## Browse the connector catalogue
@@ -77,9 +78,54 @@ not resolve.
 
 ## `vio connect`
 
-If the agent uses connectors that need sign-in (for example Notion or Google Workspace),
-authorise them after deploying. `vio connect` is subcommand-only — there is no
-`/connect` in the shell:
+`vio connect` is subcommand-only — there is no `/connect` in the shell. It has two forms:
+connect **before** you deploy, which is the order a coding agent follows, and finish or
+re-authorise a connector on a deployed agent.
+
+**Connect before you deploy.** Name the connectors — catalogue ids from `vio connectors`,
+or MCP server URLs — and `vio connect` authorises them with no deployment at all:
+
+```bash
+vio connect github slack
+```
+
+Run it from a Space (`vio init` first), signed in. Each connector's consent runs in your
+browser, one at a time, and **each token is saved as soon as it succeeds**, so a later
+connector failing never loses an earlier one. Tokens are staged in
+`.vio/connector-tokens.json`, a file only you can read (mode `0600`), inside the git-ignored
+`.vio/`. `vio connect` refuses to stage anything where git could commit it: if the Space is
+a git repository and `.vio/` is not ignored, it stops before any consent and tells you to
+add `.vio/` to `.gitignore`.
+
+Then `vio deploy` pushes the staged set in the same request as the deploy, so **the agent
+comes up connected**. The deploy report says which connectors were pushed from the staged
+set and which are still not connected; for those, run `vio connect <deployment id>`.
+
+As soon as a push succeeds, `vio` deletes the staged entries it pushed. From then on the
+agent holds the credentials, and a kept copy could re-send a refresh token the agent has
+already rotated. A failed push keeps them. Running `vio connect` again for a connector
+that is already staged reuses it, refreshing an expired token where it can, instead of
+asking you to consent again.
+
+```bash
+vio connect github --no-browser   # print the authorisation link instead of opening a browser
+vio connect --forget github       # remove one staged connector
+vio connect --forget              # remove every staged connector
+```
+
+- `--no-browser` prints each authorisation URL instead of opening it.
+- `--forget` removes staged tokens: the connectors you name, or every one with none named.
+  It deletes the file once nothing is left. `vio logout` also clears the staged tokens in
+  the Space you run it from.
+- If a provider refuses, `vio connect` explains the refusal in plain words and what to
+  change, rather than printing the provider's raw response.
+
+Connectors that need your own OAuth app work the same way before a deploy. See
+[Connectors that need your own OAuth app](#connectors-that-need-your-own-oauth-app).
+
+**Finish or re-authorise a deployed agent.** If the agent uses connectors that need
+sign-in (for example Notion or Google Workspace) and any are not connected yet, or you
+want to authorise them again, give `vio connect` the deployment:
 
 ```bash
 vio connect <deployment id>
