@@ -17,9 +17,30 @@ Connector URL: `https://mcp.slack.com/mcp`
 ## Create the Slack app
 
 <Steps>
-  <Step title="Create an app">
+  <Step title="Create the app from the manifest">
     Go to [api.slack.com/apps](https://api.slack.com/apps), click **Create New App →
-    From scratch**, name it, and pick your workspace.
+    From a manifest**, pick your workspace, and paste this YAML. Its user scopes are
+    the ones Viorant asks for at connect.
+
+    ```yaml
+    display_information:
+      name: Viorant Slack
+    oauth_config:
+      scopes:
+        user:
+          - chat:write
+          - im:write
+          - im:read
+          - im:history
+          - users:read
+          - channels:read
+          - channels:history
+          - search:read.public
+    settings:
+      org_deploy_enabled: false
+      socket_mode_enabled: false
+      token_rotation_enabled: false
+    ```
   </Step>
   <Step title="Get the credentials">
     Under **Basic Information → App Credentials**, copy the **Client ID** and **Client
@@ -28,11 +49,6 @@ Connector URL: `https://mcp.slack.com/mcp`
   <Step title="Add the redirect URL">
     Under **OAuth & Permissions → Redirect URLs**, add the **redirect URI** the Hub
     shows you. Match it exactly, with no trailing slash.
-  </Step>
-  <Step title="Add scopes">
-    Under **OAuth & Permissions**, add the bot and user token scopes for the tools you
-    need — for example `channels:read`, `channels:history`, `users:read`, and
-    `search:read`.
   </Step>
   <Step title="Enable MCP">
     Under **Agents & AI Apps**, find **Model Context Protocol** and turn it on.
