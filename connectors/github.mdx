@@ -22,8 +22,16 @@ Connector URL: `https://api.githubcopilot.com/mcp`
     OAuth App**.
   </Step>
   <Step title="Set the callback URL">
-    Give the app a name and a homepage URL. For **Authorization callback URL**, paste
-    the **redirect URI** the Hub shows you in the connector setup.
+    Give the app a name and a homepage URL. For **Authorization callback URL**, paste:
+
+    ```
+    https://api.viorant.ai/oauth/connector/callback
+    ```
+
+    That is the production redirect. `vio connect` prints the URL it will actually
+    send, under "Add this exact URL to the provider's Authorized redirect URIs:".
+    The printed line matches the URL above unless this machine's `control_url` is
+    overridden. The Hub shows the same URL in connector setup.
   </Step>
   <Step title="Get the credentials">
     Register the app, then copy the **Client ID** and generate a **Client Secret**.
@@ -32,8 +40,17 @@ Connector URL: `https://api.githubcopilot.com/mcp`
 
 <Note>
   GitHub OAuth apps don't set scopes up front — you approve the access the connector
-  requests when you sign in.
+  requests when you sign in. When the bundle does not declare `requires[].scopes`,
+  `vio connect` asks for `repo`. GitHub has no read-only form of that scope. Org or
+  team tools need `read:org`, which you add on the bundle's `requires[].scopes` (or
+  pass with `--scopes`).
 </Note>
+
+<Warning>
+  If the OAuth app is owned by a GitHub organization, the organization can require
+  an org owner to approve it before anyone else can authorize it. Until that
+  approval, sign-in fails even when the client id and secret are right.
+</Warning>
 
 ## Connect in the Hub
 
@@ -46,3 +63,16 @@ Connector URL: `https://api.githubcopilot.com/mcp`
     access in your browser.
   </Step>
 </Steps>
+
+## From the CLI
+
+Add these to `.vio/.env.connectors`, then run `vio connect`. Leave the secret out of
+`agent.vio`.
+
+```
+GITHUB_OAUTH_CLIENT_ID=
+GITHUB_OAUTH_CLIENT_SECRET=
+```
+
+`vio docs connectors github` prints this guide. `vio connectors github` and the
+`vio connect` prompt point here.

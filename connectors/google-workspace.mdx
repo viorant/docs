@@ -8,22 +8,30 @@ Google hosts official remote MCP servers for Workspace. **Gmail**, **Drive**, an
 OAuth app so the Hub talks to Google directly under your account.
 
 <Note>
-  This guide is for **Google Workspace** accounts (your organization's Google). Set
-  your OAuth app's user type to **Internal** — an internal app only your organization
-  can use, which skips Google's app-verification review entirely.
+  This guide is for **Google Workspace** accounts (your organization's Google). In
+  **Google Auth Platform**, set the user type to **Internal** — an internal app only
+  your organization can use, which skips Google's app-verification review entirely.
 </Note>
+
+<Warning>
+  Do not leave an **External** app in **Testing**. An External app left in Testing
+  silently expires sign-in after 7 days.
+</Warning>
 
 ## Connector URLs
 
 Add each service you want as its own connector, using these URLs:
 
-| Service  | Connector URL                             |
-| -------- | ----------------------------------------- |
-| Gmail    | `https://gmailmcp.googleapis.com/mcp/v1`  |
-| Drive    | `https://drivemcp.googleapis.com/mcp/v1`  |
-| Calendar | `https://calendarmcp.googleapis.com/mcp/v1` |
+| Service  | Catalogue id       | Connector URL                              |
+| -------- | ------------------ | ------------------------------------------ |
+| Gmail    | `gmail`            | `https://gmailmcp.googleapis.com/mcp/v1`   |
+| Drive    | `google-drive`     | `https://drivemcp.googleapis.com/mcp/v1`   |
+| Calendar | `google-calendar`  | `https://calendarmcp.googleapis.com/mcp/v1` |
+| Chat     | `google-chat`      | `https://chatmcp.googleapis.com/mcp/v1`    |
+| Contacts | `google-contacts`  | `https://people.googleapis.com/mcp/v1`     |
 
-You can use the **same** Client ID and Secret for all three.
+You can use the **same** Client ID and Secret for all of them. There is no catalogue
+id `gcp`; that is the id of this guide in the CLI (`vio docs connectors gcp`).
 
 ## Create the OAuth app
 
@@ -34,17 +42,29 @@ You can use the **same** Client ID and Secret for all three.
   </Step>
   <Step title="Enable the Workspace MCP APIs">
     Under **APIs & Services → Library**, enable the APIs for the services you want:
-    `gmailmcp.googleapis.com`, `drivemcp.googleapis.com`, and
-    `calendarmcp.googleapis.com`.
+    `gmailmcp.googleapis.com`, `drivemcp.googleapis.com`, `calendarmcp.googleapis.com`,
+    and `chatmcp.googleapis.com`. Contacts uses `people.googleapis.com`.
   </Step>
-  <Step title="Configure the consent screen as Internal">
-    Under **APIs & Services → OAuth consent screen**, choose **Internal** as the user
-    type and fill in the basic app details.
+  <Step title="Set Google Auth Platform to Internal">
+    Open **Google Auth Platform** and choose **Internal** as the user type. Fill in
+    the basic app details. Internal is available only inside a Workspace organization.
+
+    An **External** app left in **Testing** silently expires sign-in after 7 days.
+    Publishing an External app, or switching it to Internal, is what avoids that.
   </Step>
   <Step title="Create an OAuth client">
-    Under **APIs & Services → Credentials**, create an **OAuth client ID**. Add the
-    **redirect URI** the Hub shows you in the connector setup to the client's
-    authorized redirect URIs. Save, then copy the **Client ID** and **Client Secret**.
+    Create an **OAuth client ID** (Web application). Add this exact URL to
+    **Authorized redirect URIs**:
+
+    ```
+    https://api.viorant.ai/oauth/connector/callback
+    ```
+
+    That is the production redirect. `vio connect` prints the URL it will actually
+    send, under "Add this exact URL to the provider's Authorized redirect URIs:".
+    The printed line matches the URL above unless this machine's `control_url` is
+    overridden. The Hub shows the same URL as **Copy callback URL**. Save, then copy
+    the **Client ID** and **Client Secret**.
   </Step>
 </Steps>
 
@@ -65,9 +85,38 @@ You can use the **same** Client ID and Secret for all three.
 </Steps>
 
 <Tip>
-  Add Gmail, Drive, and Calendar as separate connectors, reusing the same Client ID
-  and Secret. Each shows up with its own tools.
+  Add each service as its own connector, reusing the same Client ID and Secret.
+  Each shows up with its own tools.
 </Tip>
 
-For the general flow and where your Client Secret is stored, see
+## Scopes
+
+When a bundle does not declare `requires[].scopes` for that connector, `vio connect`
+asks for these. A non-empty `requires[].scopes`, or `--scopes`, replaces the default
+for that connect.
+
+| Service  | Scopes |
+| -------- | ------ |
+| Gmail    | `https://www.googleapis.com/auth/gmail.readonly` `https://www.googleapis.com/auth/gmail.compose` |
+| Drive    | `https://www.googleapis.com/auth/drive.readonly` |
+| Calendar | `https://www.googleapis.com/auth/calendar.readonly` |
+| Chat     | `https://www.googleapis.com/auth/chat.messages.readonly` |
+| Contacts | `https://www.googleapis.com/auth/contacts.readonly` |
+
+## From the CLI
+
+Add the same pair to `.vio/.env.connectors`, then run `vio connect`. Leave the secret
+out of `agent.vio`.
+
+```
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+```
+
+`vio docs connectors gcp` prints this guide. The catalogue ids `gmail`,
+`google-drive`, `google-calendar`, `google-chat`, and `google-contacts` print it too.
+`vio connectors <id>` and the `vio connect` prompt point here when the connector
+needs this app.
+
+For the general flow and where the Hub stores your Client Secret, see
 [Bring your own OAuth app](/connectors/oauth-apps).
