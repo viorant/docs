@@ -1,0 +1,83 @@
+---
+title: "Plans"
+description: "Free, Starter and Pro — what each includes, and how to subscribe, change or cancel."
+---
+
+Every account is on a **plan**. Your plan sets how many [credits](/providers/credits)
+you're granted, which model tiers you can use, and how many agents you can have
+deployed at once.
+
+## Compare plans
+
+| | **Free** | **Starter** | **Pro** |
+| --- | --- | --- | --- |
+| Price | $0 | $15 / month | $50 / month |
+| Credits | 2,500, once | 10,000 every month | 60,000 every month |
+| Model tiers | Low, Medium | Low, Medium | Low, Medium, **High** |
+| Deployed agents | 3 | 5 | 10 |
+
+New accounts start on **Free**. There's no card required and nothing to cancel.
+
+[Top-up packs](/providers/credits#buying-more-credits) work on every plan, including
+Free. Purchased credits add to your balance and never expire.
+
+## Subscribe or upgrade
+
+Plans are managed in Sentinel, Viorant's web dashboard.
+
+<Steps>
+  <Step title="Open the plans page">
+    Go to [sentinel.viorant.io/plans](https://sentinel.viorant.io/plans) and sign in with
+    the same account you use in the Hub.
+  </Step>
+  <Step title="Choose a plan">
+    Pick **Starter** or **Pro**. You pay on a secure Stripe checkout page — Viorant never
+    sees your card details.
+  </Step>
+  <Step title="Wait for the grant">
+    Your plan's credits are added once the payment clears. Until then the plans page
+    shows the subscription as pending rather than guessing.
+  </Step>
+</Steps>
+
+{/* TODO(screenshot): the Sentinel plans page at sentinel.viorant.io/plans showing Free / Starter / Pro — prod Sentinel */}
+
+## Change or cancel
+
+Once you're subscribed, choose **Manage subscription** on the
+[plans page](https://sentinel.viorant.io/plans). It opens the Stripe customer portal,
+where you change plan, update your card, see invoices, or cancel.
+
+- **Upgrades take effect immediately.** You're invoiced for the change straight away,
+  and your balance gets the difference between the two plans' monthly credits.
+- **Downgrades and cancellations take effect at the end of the current period.** You
+  keep your current plan until then. Cancelling returns you to Free.
+- If a payment fails, you keep your plan's features while it's retried, but no new
+  monthly credits are granted until an invoice is paid.
+
+If you have more agents deployed than a lower plan allows, the ones already running keep
+running — you just can't deploy another until you're under the limit.
+
+## Where you see your plan
+
+**In the Hub:**
+
+- **Profile** shows your plan and its credit allowance.
+- **Usage** shows your plan, its allowance, and when it renews.
+- **Deployments** shows how many agents you have deployed against your plan's limit —
+  for example *2 of 3 · Free*.
+
+**In Sentinel**, [the plans page](https://sentinel.viorant.io/plans) shows your current
+plan and when it renews or ends.
+
+Requests for a model tier your plan doesn't include are refused. Most tier pickers in
+the Hub show such a tier as locked, with an **Upgrade** link.
+
+<CardGroup cols={2}>
+  <Card title="Credits & the Viorant provider" icon="coins" href="/providers/credits">
+    What spends credits, tiers, and top-up packs.
+  </Card>
+  <Card title="Deploy an agent" icon="rocket" href="/deploy/deploy-an-agent">
+    Put an agent on Viorant Cloud — each one counts toward your plan's limit.
+  </Card>
+</CardGroup>
