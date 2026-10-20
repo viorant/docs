@@ -76,6 +76,27 @@ scopes, and you can revoke access at any time from the service.
   credentials, the Hub tells you what's missing and links back to the guide.
 </Tip>
 
+## From the CLI
+
+`vio connect` reads the client id and secret from `.vio/.env.connectors`, not from
+the Hub's credential store. The names are `<APP>_OAUTH_CLIENT_ID` and
+`<APP>_OAUTH_CLIENT_SECRET`. The production redirect to register is:
+
+```
+https://api.viorant.ai/oauth/connector/callback
+```
+
+`vio connect` prints the URL it will actually send. That line matches the URL above
+unless this machine's `control_url` is overridden.
+
+`vio docs connectors` prints the setup guide. `vio connectors <id>` and the connect
+prompt each add one line, `Setup guide: vio docs connectors <id> · https://docs.viorant.ai/connectors/<page>`,
+when a guide exists.
+
+- [Google](/connectors/google-workspace) — `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET`. CLI guide id: `gcp`.
+- [GitHub](/connectors/github) — `GITHUB_OAUTH_CLIENT_ID` and `GITHUB_OAUTH_CLIENT_SECRET`.
+- [Slack](/connectors/slack) — `SLACK_OAUTH_CLIENT_ID` and `SLACK_OAUTH_CLIENT_SECRET`.
+
 ## Examples
 
 Worked guides for services that need their own OAuth app. We keep adding more — if
