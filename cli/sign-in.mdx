@@ -1,6 +1,6 @@
 ---
 title: "Sign in"
-description: "Connect vio to your Viorant account, check your plan and sign out."
+description: "Sign in to vio with Google, GitHub, or email. Check your account and plan, or sign out."
 ---
 
 Validating a `.vio` file works offline with no account. Everything that talks to Viorant
@@ -14,25 +14,82 @@ From the [shell](/cli/shell):
 > /login
 ```
 
-Or as a subcommand, which is what scripts and AI agents use:
+Or from your terminal:
 
 ```bash
 vio login
 ```
 
-`vio` opens Google sign-in in your browser and waits for it on your own machine. It also
-prints the sign-in URL straight away, in case the browser doesn't open.
+In an interactive terminal, `vio login` shows a picker: **Google**, **GitHub**, or **Email**.
+Choose one method, or pass its flag to skip the picker:
+
+```bash
+vio login --google
+vio login --github
+vio login --email
+```
+
+The shell accepts the same flags: `/login --github`, for example.
+Pass only one of `--google`, `--github`, or `--email`.
+
+Google and GitHub open your browser to sign in. GitHub needs a verified email address.
+Without an interactive terminal, bare `vio login` uses Google without a picker.
+Browser approval still needs you.
+
+### Sign in with email
+
+Email sign-in needs an existing Viorant account. To create an account with email,
+use [Sentinel](/getting-started/sign-in#create-an-account-with-email) and confirm your email first.
+
+1. Run `vio login --email` in an interactive terminal.
+2. At **Email:**, enter your address.
+3. At **Password:**, enter your password.
+4. Complete the quick check in the browser that opens.
+5. Return to your terminal for the **Signed in as** message and credit balance.
+
+Password characters do not appear in the terminal. In the shell, `/login --email`
+shows a masked password field. Password entry stays out of command history and saved conversations.
+
+<Warning>
+  Enter the password only at the password prompt. Never put it in a command, environment
+  variable, file, or message to an AI agent.
+</Warning>
+
+Press **Ctrl+C** to cancel. In the shell, **Esc** also cancels sign-in.
+
+### Open the browser link yourself
+
+`vio` prints the browser link. If the browser does not open, open the link yourself.
+To print the link without a browser launch, add `--no-browser`:
+
+```bash
+vio login --github --no-browser
+vio login --email --no-browser
+```
+
+For email, enter your email and password first. Then open the printed browser-check link.
 
 <Note>
   Sign in on the same machine that runs `vio`. The sign-in hands back to a local address
   on that machine, so a browser on another computer can't complete it.
 </Note>
 
-On a machine without a browser launcher, print the URL instead:
+`--no-browser` does not skip browser approval or make email sign-in work without a terminal.
+The shell also accepts it, for example `/login --email --no-browser`.
 
-```bash
-vio login --no-browser
-```
+### If sign-in fails
+
+| Message | What to do |
+| --- | --- |
+| `Wrong email or password. No account yet? Create one at https://sentinel.viorant.io.` | Try your account email again. [Reset your password](/getting-started/sign-in#reset-your-password), or create an account on Sentinel. |
+| `Confirm your email first. Check your inbox, or resend at https://sentinel.viorant.io/signin.` | Open your confirmation email. If it did not arrive, [request another email](/getting-started/sign-in#if-the-confirmation-email-does-not-arrive) on Sentinel. |
+| `The browser check failed. Run vio login --email again.` | Run the command again and complete the new browser check. |
+| `The browser check timed out. Run vio login --email again.` | Run the command again. Complete the browser check within five minutes. |
+| `Too many attempts. Wait a few minutes and try again.` | Wait a few minutes before you try again. |
+| `Viorant sign-in is unavailable right now. Try again shortly.` | Wait, then try again. |
+| `Email sign-in needs an interactive terminal.` | Run `vio login --email` in your own terminal, with input and output attached to it. This refusal exits with code `2`. |
+
+If your CLI does not recognize a sign-in flag, [update it](/cli/install#update).
 
 ## Check who you are
 

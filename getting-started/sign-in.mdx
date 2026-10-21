@@ -1,12 +1,90 @@
 ---
 title: "Sign in"
-description: "Sign in to the Viorant Hub with Google."
+description: "Choose Google, GitHub, or email for Sentinel and vio. The Hub uses Google for now."
 ---
 
-The Hub signs you in with **Google**. Sign-in happens in your real browser — never
-in an embedded window — so it's the same secure flow you use everywhere else.
+Choose a sign-in method for the Viorant app you use:
 
-## Sign in with Google
+| App | Sign-in methods |
+| --- | --- |
+| [Sentinel](https://sentinel.viorant.io/signin), your account website | Google, GitHub, or email and password |
+| [`vio`, the CLI](/cli/sign-in) | Google, GitHub, or email and password |
+| Viorant Hub, the desktop app | Google for now |
+
+## Sign in to Sentinel
+
+Open [Sentinel](https://sentinel.viorant.io/signin). Choose how to sign in:
+
+- **Google or GitHub:** Select the matching button and sign in through your provider.
+- **Email:** Enter your email and password. Complete the browser check. Click **Sign in**.
+
+GitHub sign-in needs a verified email address on your GitHub account. If GitHub has
+no verified email, verify an address in GitHub or choose another sign-in method.
+
+### Create an account with email
+
+Email account creation happens on Sentinel. The CLI signs in to an existing account.
+
+<Steps>
+  <Step title="Open the account form">
+    On [Sentinel's sign-in page](https://sentinel.viorant.io/signin), click **Create an account**.
+  </Step>
+  <Step title="Enter your details">
+    Enter your email and a password with at least 12 characters.
+    Complete the browser check. Click **Create account**.
+  </Step>
+  <Step title="Confirm your email">
+    Open the confirmation link in the same browser and profile where you created the account.
+    The link confirms your email and returns you to Sentinel.
+  </Step>
+</Steps>
+
+### If the confirmation email does not arrive
+
+Look in your spam folder and make sure that you entered the correct address.
+On the **Check your inbox** page, complete the browser check. Click **Resend email**.
+After a resend, wait for the countdown before you request another email.
+
+If you left that page, sign in with your email and password again.
+If a confirmation link expires or was already used, sign in the same way.
+An unconfirmed account returns to the confirmation page, where you can request another email.
+If your email is already confirmed, you can continue without another confirmation.
+
+### Reset your password
+
+<Steps>
+  <Step title="Request a reset link">
+    On [Sentinel's sign-in page](https://sentinel.viorant.io/signin), click **Forgot password?**
+    Enter your email. Complete the browser check. Click **Send reset link**.
+  </Step>
+  <Step title="Choose a new password">
+    Open the email link in the same browser and profile where you requested it.
+    Enter a new password with at least 12 characters. Click **Update password**.
+  </Step>
+  <Step title="Sign in again">
+    Use your email and new password on Sentinel or with `vio login --email`.
+  </Step>
+</Steps>
+
+<Note>
+  Keep the browser window open until you finish. If an email link opens in another browser,
+  copy the link into the browser that requested it. If that link fails, request a fresh link there.
+  Keep confirmation and reset links private.
+</Note>
+
+The reset page shows the same response whether an account exists for that email or not.
+If no email arrives, make sure that you entered the address for your Viorant account.
+If a reset link expires or was already used, request a new link through **Forgot password?**
+
+<Card title="Sign in from the CLI" icon="terminal" href="/cli/sign-in">
+  Choose a method. For email, enter your password privately and complete the browser check.
+</Card>
+
+## Sign in to the Hub
+
+The Hub uses **Google** for now. Sign-in happens in your browser, which returns you to the desktop app.
+
+### Sign in with Google
 
 <Steps>
   <Step title="Click “Sign in with Google”">
@@ -26,7 +104,7 @@ in an embedded window — so it's the same secure flow you use everywhere else.
   bringing you back into the Hub.
 </Note>
 
-## Multiple accounts on one Mac
+### Multiple accounts on one Mac
 
 Each signed-in user gets their own private workspace on the device — your agents,
 prompts, and settings are isolated per account. Signing out keeps your data on disk;
