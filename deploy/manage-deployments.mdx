@@ -38,6 +38,10 @@ masked by default.
 Changed the agent? Update its `.vio`, then redeploy onto the **same** deployment. The URL
 and the run key survive, so anything already calling it keeps working.
 
+**From a terminal**, `vio redeploy <id>` does the same. If the agent was deployed by an
+older `vio`, `vio show <id>` warns that it is stale and says what a redeploy would bring.
+See [Manage deployments from the CLI](/cli/manage#stale-deployments).
+
 ## Stopping
 
 **Stop** tears the agent down and frees its slot against your limit.
@@ -58,6 +62,10 @@ Want an agent to run on its own, on a cadence, instead of only when called? See
 **Runs fail with an authorisation error** — a connector's access expired or was revoked.
 Use **Reconnect** on the deployment to re-authorise; the agent picks it up without
 redeploying.
+
+**From a terminal**, you can re-authorise a single connector and leave the others as they
+are: `vio connect <connector> --deployment <id>`. See
+[Connectors and tools](/cli/connectors#authorise-one-connector-on-a-deployed-agent).
 
 **Runs fail immediately on a tool** — an API key the agent's tools need wasn't supplied at
 deploy time. The deployment reports which one.

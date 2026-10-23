@@ -23,11 +23,46 @@ vio logs <deployment id>
 - When there are more, the last line is the exact command for the next page. Run it as
   printed — it carries the same start time, which is what keeps the pages consistent.
 - `--json` prints the response as JSON, for scripts.
+- `--run <run id>` shows one run's logs. Find the id with `vio runs <id>`.
 
 Only the deployment's **owner** can read its logs. Asking for a deployment you don't own
 looks exactly like asking for one that doesn't exist.
 
 Viorant doesn't keep a copy: logs are read through from Cloud Run each time you ask.
+
+## Verbose logs
+
+By default the logs say what a run did, not what each tool was given and what it returned.
+To record that, turn on **verbose logs** when you deploy or redeploy (`vio` 1.0.6 or later):
+
+```bash
+vio deploy agent.vio --target viorant_cloud --verbose-logs
+vio redeploy <deployment id> --verbose-logs      # turn it on for a running agent
+vio redeploy <deployment id> --no-verbose-logs   # turn it off again
+```
+
+From then on, the agent writes one entry per tool call with its arguments and its result.
+Each is **redacted** with the same credential patterns as everything else, and **capped** at
+4 KB, with a truncated marker when it was cut. A run started before you turned it on has no
+entries, and turning it on doesn't recover them.
+
+Read them for one run:
+
+```bash
+vio logs <deployment id> --run <run id> --verbose
+```
+
+They are hidden by default, in text and in `--json`. When a page had some, the last line
+tells you: `N tool I/O lines hidden; add --verbose`. Sentinel's run logs show the same
+entries: the tool, its arguments, its result, and a truncated marker.
+
+<Warning>
+  Verbose logs hold **connector data**. A tool result can be the email, ticket, document or
+  chat message the agent read, and the arguments can quote what it was working on. Redaction
+  is best-effort. Turn verbose logs on to debug a run, read what you need, and turn them off
+  again with `--no-verbose-logs`. Everything in
+  [What logs can contain](#what-logs-can-contain) applies with more force.
+</Warning>
 
 ## What logs can contain
 

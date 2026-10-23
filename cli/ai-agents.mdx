@@ -10,7 +10,8 @@ configured.
 
 <Note>
   Needs `vio` **1.0.0** or later, and **1.0.4** or later for `agents install` and
-  `vio connect` before a deploy. Check with `vio --version`.
+  `vio connect` before a deploy. `vio update --check`, `--deployment`, the saved run key and
+  the stale-deployment check need **1.0.6**. Check with `vio --version`.
 </Note>
 
 ## Start with a Space
@@ -44,22 +45,31 @@ Where the skill lands:
 | Claude Code | `$CLAUDE_CONFIG_DIR/skills/vio/SKILL.md`, which defaults to `~/.claude/skills/vio/SKILL.md` |
 | Codex and Cursor | the shared `~/.agents/skills/vio/SKILL.md` |
 
-Then ask your coding agent for the agent you want. The skill walks it through eight steps,
+Then ask your coding agent for the agent you want. The skill walks it through nine steps,
 in order:
 
+0. **Update first.** It runs `vio update --check --json`, which prints
+   `{current, latest, channel, updateAvailable, install, command}` and installs nothing. If
+   `updateAvailable` is true, it runs the `command` that output gives, then
+   `vio docs agents --refresh` and `vio agents install`, so the instructions it reads match
+   the `vio` it is about to drive. It does not update without that check.
 1. **Sign in.** It runs `vio whoami`. If you are not signed in it asks you to run
    `vio login` in your own terminal; it never signs in for you.
 2. **Understand the ask.** It asks clarifying questions before it writes any file.
 3. **Plan, approved.** It shows you what the agent will do, which connectors and model it
    uses, and what each connector needs from you. Nothing is built until you approve.
-4. **Connect.** It runs `vio connect` for every connector in the plan, before the agent is
-   written. See [Connecting connectors](#connecting-connectors).
+4. **Connect.** It runs `vio connect` for every connector in the plan, one connector per
+   call, with `--scopes` when the plan lists scopes for it, before the agent is written. See
+   [Connecting connectors](#connecting-connectors).
 5. **Build the `.vio`.**
 6. **Validate and deploy.** The staged connections are pushed with the deploy, so the agent
    comes up connected.
-7. **Test with one run**, with [`vio run`](/cli/manage#runs).
-8. **Read that run's logs**, tweak the agent and redeploy.
-   See [Logs](/cli/manage#logs).
+7. **Test with one run.** It checks `vio show <id> --json` first. If the output has a
+   `staleness` field, an older `vio` made the deployment, so it runs `vio redeploy <id>`.
+   Then it runs [`vio run`](/cli/manage#runs).
+8. **Read that run's logs**, tweak the agent and redeploy. For what each tool call was given
+   and returned, it deploys with `--verbose-logs` and reads `vio logs <id> --run <run id>
+   --verbose`. See [Logs](/cli/manage#logs).
 
 **Running Codex?** Its sandbox blocks the network by default, and `vio` will say it cannot
 reach the network. Set `sandbox_workspace_write.network_access = true` in
@@ -167,9 +177,15 @@ the wording of a message.
   connector credentials to a running agent. That is what `movesCredentials` is for.
 </Warning>
 
-The per-command table lives in `VIO-AGENTS.md` and in `vio help --json`, generated from the
-same source. It is deliberately not repeated here: two copies of a risk table is one copy
-that quietly goes stale.
+Each command also carries a `humanStep`: the one step only you can take. It is either
+`browser_consent` (a click in your browser, as `vio login` and `vio connect` need) or
+`tty_prompt` (an answer at a terminal prompt), or `null` when the command never stops on
+you, and its `when` says in which case. It is not a risk axis. A coding agent can still run
+a command that has one, and hand that step to you.
+
+The per-command table lives in `VIO-AGENTS.md`, with a "Needs the human" column, and in
+`vio help --json`, generated from the same source. It is deliberately not repeated here: two
+copies of a risk table is one copy that quietly goes stale.
 
 ## `vio` never prompts — the permission gate is yours
 
@@ -242,12 +258,20 @@ vio connect github slack
 
 Each token is saved as soon as it succeeds, and `vio deploy` then pushes the set, so the
 agent comes up connected and a connector that will not authorise surfaces before the
-build, not after it. See [Connect before you deploy](/cli/connectors#vio-connect) for the
+build, not after it. A push keeps what it pushed, frozen, so a later push can send the same
+document again. See [Connect before you deploy](/cli/connectors#vio-connect) for the
 details.
 
-To finish or re-authorise a connector on a deployed agent, your coding agent runs
-`vio connect <deployment id>` itself — it is not reserved for you. Either way, two cases
-need your attention:
+To finish or re-authorise connectors on a deployed agent, your coding agent runs
+`vio connect <deployment id>` itself — it is not reserved for you. To change **one**
+connector and leave the others as they are, it runs
+[`vio connect <connector> --deployment <deployment id>`](/cli/connectors#authorise-one-connector-on-a-deployed-agent).
+After any connector push, `vio` checks the agent's heartbeat for up to about 90 seconds and
+reports each connector as picked up, still pending or errored. It exits `1` with the next
+step when the agent did not get there, so the agent branches on the exit code and does not
+pipe `vio connect` through another command.
+
+Either way, two cases need your attention:
 
 - **A dynamically-registered (`dcr`) connector needs your browser click, and nothing else.**
   `vio connect` opens (or, with `--no-browser`, prints) an authorisation URL and waits — the
@@ -299,13 +323,16 @@ including the `allowed-tools` frontmatter's one-line, space-separated syntax.
 ## Agents use the subcommands
 
 The [interactive shell](/cli/shell) needs a real terminal and refuses without one, so an
-agent running `vio` as a subprocess always uses the subcommands. They are the automation
+agent running `vio` as a subprocess always uses the subcommands. The shell's own Assistant
+is for you, and it spends credits. Coding agents drive the subcommands. They are the automation
 surface and they are not going away.
 
 ## Handling output
 
-- The **run key** from `vio deploy` is shown once. It should reach you, never a file, a
-  commit or a log.
+- The **run key** is saved to `~/.viorant/run-keys.json` for `vio run` and is hidden by
+  default, so an agent never needs to see it. Only `--show-run-key` prints it. It should
+  never reach a chat, a commit or a log. To replace a lost or leaked one, run
+  `vio run-key <id> --rotate`.
 - **Logs can contain run data and secrets**, and anything an agent reads is sent to its
   model provider. See [Deployment logs](/deploy/deployment-logs).
 - **`.vio/` is off-limits.** It holds your provider key, connector secrets and OAuth app

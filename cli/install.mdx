@@ -10,8 +10,9 @@ URL — the same deploy pipeline as the Hub, without opening it.
 <Note>
   These pages describe `vio` **1.0.0 or later**. Running without installing, the
   one-line coding-agent setup, connecting before you deploy, `vio run` and
-  `vio logs --run` need **1.0.4 or later**. Check with `vio --version`, and run
-  `vio update` if you are behind.
+  `vio logs --run` need **1.0.4 or later**. `vio update --check` and the npm-global update
+  message need **1.0.6 or later**. Check with `vio --version`, and run `vio update` if you
+  are behind.
 </Note>
 
 `vio` ships as one self-contained JavaScript file. It needs **Node 22 or 24**:
@@ -159,6 +160,23 @@ To install a specific version, including an older one:
 ```bash
 vio update --version 1.0.0
 ```
+
+**To check without installing**, add `--check`:
+
+```bash
+vio update --check
+vio update --check --json
+```
+
+It reports the installed version and the latest release, and installs nothing. With
+`--json` it prints one object on stdout:
+`{current, latest, channel, updateAvailable, install, command}`. `install` is how this copy
+was installed (`installer`, `npm-global` or `npx`), and `command` is the command that would
+update it. A coding agent runs this before it starts work. If it can't reach the release
+server, it exits `1` with the reason on stderr.
+
+**Installed with `npm i -g`?** Then npm owns that copy, so `vio update` does not run the
+installer or touch it. It prints `npm i -g @viorant/cli@latest` for you to run instead.
 
 Running the install command again does the same thing, and `VIO_VERSION` pins a version
 there:

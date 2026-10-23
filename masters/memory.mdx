@@ -60,6 +60,31 @@ that wrote it and never travels back into your Space.
 So a deployed agent begins with the memory you curated, accumulates its own on top, and
 your authored file stays exactly as you left it.
 
+## Memory in the CLI
+
+In a Space on the command line, `vio memory add <name>` creates a seed memory for you:
+
+```bash
+vio memory add customer-preferences --description "How this customer likes to be contacted" --text "Prefers email over calls."
+vio memory add house-style --from notes/house-style.md
+```
+
+| Option | What it does |
+| --- | --- |
+| `--description <text>` | The frontmatter description. Defaults to the memory's name |
+| `--text <body>` | The memory's starting text |
+| `--from <file>` | Read the text from a file inside the Space. It can't be used with `--text` |
+| `--json` | Print one JSON object with the new memory's `id` and `path` |
+
+It writes `memory/<slug>.memory.md` with the frontmatter the runtime reads, including a
+`meta.id` it mints for you, so you don't write that by hand. It refuses to overwrite a file
+that already exists. In the [shell](/cli/shell) it is `/memory add`.
+
+Then run `vio build`. The compile binds the new seed memory into the agent's `memory.read`.
+That is where the binding lives: on the agent itself, as a `read` list and at most one
+`write` id. It isn't set in a skill, and a skill's own `memory` frontmatter is ignored,
+which `vio validate` warns about.
+
 ## Watching an agent use its memory
 
 When an agent runs, the trace shows memory being read at the start and each `remember`
