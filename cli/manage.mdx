@@ -14,8 +14,9 @@ command, and as a subcommand for scripts, CI and AI agents:
 vio list
 ```
 
-The rest of this page shows the subcommand form. The slash forms take the same arguments;
-`--json` is subcommand-only.
+The rest of this page shows the subcommand form. The slash forms take the same arguments
+and options, `--json` included, except `vio run`, `vio run-key` and `vio update`, which have
+no slash form.
 
 Wherever a command takes an `<id>`, you can give the full deployment id, a unique prefix of
 at least six characters, or the deployment's exact name.
@@ -23,7 +24,8 @@ at least six characters, or the deployment's exact name.
 <Note>
   Needs `vio` **1.0.0** or later for `--json` on `list`, `show` and `runs`, and for
   `vio logs --include-platform`. `vio run` and `vio logs --run` need **1.0.4** or later.
-  Check with `vio --version`.
+  `vio run-key`, `vio logs --verbose`, the stale-deployment warning and `vio redeploy
+  --verbose-logs` need **1.0.6**. Check with `vio --version`.
 </Note>
 
 ## See what's running
@@ -36,6 +38,31 @@ vio show <id>     # one deployment, including its full id
 
 `vio list --json` prints **every** deployment you own as a JSON array, whatever its state.
 `vio show <id> --json` prints one.
+
+If connectors are still waiting for authorisation, `vio show` names each pending connector
+by its server URL, so you can run `vio connect <that URL> --deployment <id>` without
+decoding anything. With `--json`, the URLs are in `pendingConnectorUrls`, in the same order
+as `pendingConnectors`.
+
+### Stale deployments
+
+An agent keeps the runner image and the settings it was deployed with. If it was deployed by
+an older `vio`, `vio` tells you, and says what a redeploy would bring:
+
+```
+deployed with vio 1.0.3; redeploy to get the current runner image: vio redeploy <id>
+```
+
+- `vio show` and `vio connect` print the warning on stderr.
+- `vio runs` prints it on stderr too. With `--json`, it prints one JSON line with a
+  `warning` object on stderr and leaves stdout unchanged.
+- `vio show --json` adds a `staleness` field to its object. The field is absent when the
+  deployment is current, so a script can test for it.
+
+The warning appears when the deployment was made by a `vio` older than **1.0.4**, or by an
+unknown client. A redeploy brings the current runner image and scheduled runs. If the
+deployment also has no run key saved on this machine, the warning says so and points at
+[`vio run-key <id> --rotate`](#run-keys). It only warns. Nothing is redeployed for you.
 
 ## Runs
 
@@ -63,8 +90,23 @@ spends credits from your wallet. `--json` prints each run event as its own JSON 
 
 If the agent has connectors still awaiting authorisation, `vio run` refuses and tells you
 to run [`vio connect`](/cli/connectors#vio-connect) first. If no run key is saved for the
-deployment — it was deployed before this version, or from another machine — `vio run` says
-so and stops. The `curl` command `vio deploy` printed still works if you kept it.
+deployment — it was deployed before this version, or from another machine — `vio run` stops
+with `run.no_key` and tells you to issue a new one. A redeploy will not add one.
+
+### Run keys
+
+```bash
+vio run-key <id> --rotate
+```
+
+Issues a new run key for the deployment. `--rotate` is required, because an existing key
+can't be recovered. **The old key stops working at once**, so anything still using it breaks
+until you give it the new one.
+
+Like a deploy, `run-key` saves the new key to `~/.viorant/run-keys.json` for `vio run` and
+does not print it. Pass `--show-run-key` to print it, which you need to call the agent from
+another machine. `vio` also prints the key if it could not save it. With `--json`, a saved
+key reads `[redacted]` unless you pass `--show-run-key`. `vio run-key` has no slash form.
 
 ## Logs
 
@@ -81,6 +123,7 @@ there are more, the last line is the exact command for the next page.
 | `--limit 100` | Lines per page (default 50, at most 200) |
 | `--run <run id>` | Show only one run's logs. Use the 8-character id from `vio runs`, or any longer prefix of the run id |
 | `--include-platform` | Also show Viorant Cloud's own platform and system lines for the service |
+| `--verbose` | Include each tool call's arguments and result, for agents deployed with `--verbose-logs` |
 | `--page-token <token>` | Continue from a previous page |
 | `--json` | The raw response as one JSON object, for scripts |
 
@@ -91,6 +134,11 @@ vio logs <id> --run 1a2b3c4d
 ```
 
 `--run` cannot be combined with `--include-platform`.
+
+By default, tool arguments and results are hidden, in text and in `--json`. When the page
+had some, the last line says `N tool I/O lines hidden; add --verbose`. They exist only for
+agents deployed with `--verbose-logs`. See
+[Deployment logs](/deploy/deployment-logs#verbose-logs).
 
 Logs can contain sensitive data. Before printing, `vio` strips terminal control sequences
 and redacts common credential shapes. Read [Deployment logs](/deploy/deployment-logs)
@@ -113,12 +161,30 @@ Full flags, actions and plan limits: [Command reference](/cli/reference#vio-sche
 Changed the agent? Deploy the new file onto the **same** deployment:
 
 ```bash
-vio redeploy <id>
+vio redeploy <id> [path]
 ```
 
-Run it from the folder that holds the updated `.vio`. The URL and run key stay the same,
-so anything already calling the agent keeps working. A redeploy sends only the bundle —
-the agent keeps the credentials it already holds.
+Run it from the folder that holds the updated `.vio`, or pass the file or folder as `path`.
+The URL and run key stay the same, so anything already calling the agent keeps working.
+
+A redeploy sends the bundle and the agent's **run contract**, the inputs it declares. That
+refreshes what `vio run` and [`vio schedule --input`](/cli/schedule) are checked against, so
+a new required input is enforced without a fresh deploy. A `.vio` that now declares no
+inputs clears the old contract.
+
+A redeploy does not touch credentials. The agent keeps the ones it holds, and `vio` does not
+push any staged connector. After the redeploy, it prints
+`vio connect <connector> --deployment <id>` for each connector you have staged, so you can
+push them one at a time.
+
+| Option | What it does |
+| --- | --- |
+| `--verbose-logs` | Start recording each tool call's arguments and result in the run logs |
+| `--no-verbose-logs` | Stop recording them |
+
+With neither option, the agent keeps its current setting. Only `--no-verbose-logs` turns
+recording off. Redeploy replaces a hosted agent that is deployed, waiting for a connector, or blocked, and
+that has a URL. It can't revive a stopped, revoked or failed one.
 
 ## Stop
 

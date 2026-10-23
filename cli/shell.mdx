@@ -1,6 +1,6 @@
 ---
 title: "The interactive shell"
-description: "Run vio with no arguments to get a shell with slash commands."
+description: "Run vio with no arguments to get a shell with slash commands and the Viorant Assistant."
 ---
 
 Running `vio` with no arguments opens an interactive shell:
@@ -21,43 +21,97 @@ here, as a slash command, without retyping `vio` each time.
 
 ## What you can type
 
+Type a sentence and it goes to the [Viorant Assistant](#the-assistant). Start a line with
+`/` and it is a command instead:
+
 ```
 /deploy agent.vio --target viorant_cloud
 ```
 
 Type `/` and the start of a name to pick from the matching commands. `/help` lists every
-command in the build you are running, with its arguments. In `vio` 1.0.0 that is:
+command in the build you are running, with its arguments. In `vio` 1.0.6 that is:
 
 | | |
 | --- | --- |
 | `/help` · `/clear` · `/exit` · `/quit` · `/session` | The shell itself |
+| `/tier <low\|mid\|high>` | The Assistant's model [tier](/providers/credits#tiers) for this session |
 | `/login` · `/whoami` · `/logout` · `/status` · `/upgrade` | Your account and plan |
 | `/init [dir]` | Turn a folder into a [Space](/cli/init) |
+| `/build [path]` | Compile a Space and write `agent.vio` |
 | `/validate <path>` · `/digest <path>` | Check a bundle |
-| `/deploy <path>` · `/redeploy <id>` · `/stop <id>` | Deployments |
+| `/providers` · `/connectors [term]` | What a bundle can run on and connect to |
+| `/deploy <path>` · `/redeploy <id> [path]` · `/stop <id>` | Deployments |
+| `/connect <connector…>` | [Authorise connectors](/cli/connectors#vio-connect) |
 | `/list` · `/show <id>` · `/runs <id>` · `/logs <id>` | What's running |
 | `/schedule <id>` | A deployment's [run schedule](/cli/schedule) |
+| `/memory add <name>` | A seed [memory](/masters/memory#memory-in-the-cli) for the agent |
+| `/agents install` | Write the `vio` skill for a [coding agent](/cli/ai-agents) |
+| `/docs [topic]` | The documentation `vio` ships with |
 | `/create space "<name>"` | A local Space the Hub can open |
 
-A slash command takes the arguments and the options that make sense at a prompt — for
-example `/deploy` takes `--target` and `--env-file`, `/logs` takes `--since`, `--limit`
-and `--include-platform`. `--json` output, and a few flags such as `vio deploy --name`,
-belong to the subcommands.
+A slash command takes the same options as its subcommand, `--json` included. `/deploy`, for
+example, takes `--target`, `--env-file`, `--name`, `--verbose-logs`, `--json` and
+`--show-run-key`.
 
-These are **subcommand-only** — there is no slash form: `vio update`, `vio connect`,
-`vio docs`, `vio providers` and `vio connectors`.
+Three commands have **no slash form**: `vio run`, `vio run-key` and `vio update`. Run them
+as subcommands. `/clear`, `/exit`, `/quit`, `/session`, `/tier` and `/create` exist only in
+the shell.
 
-## Typed prompts are not available in 1.0.0
+## The Assistant
 
-The shell in `vio` 1.0.0 runs slash commands and nothing else. Anything you type that does
-not start with `/` is not sent anywhere — the shell answers:
+Anything you type that does not start with `/` goes to the **Assistant**: an agent loop that
+reads your Space, edits it, and runs `vio` for you. It runs on Viorant credits through the
+credits gateway, so every turn **spends credits** from your wallet, at the tier you set
+with `/tier`. See [Credits](/providers/credits).
 
-```
-Chat isn't in this release. /help lists every command.
-```
+<Note>
+  The Assistant is on by default in `vio` 1.0.6. To go back to the earlier plan-and-approve
+  Assistant, set `VIORANT_FLAG_ASSISTANT_AGENT=0` in the environment before you start
+  `vio`. The earlier one proposes a plan and waits for your approval before it writes
+  anything.
+</Note>
 
-If you want an AI agent to drive `vio`, that works, and it works through the subcommands
-rather than through this shell: see [Use `vio` with AI coding agents](/cli/ai-agents).
+### What it can change
+
+In your Space, the Assistant reads and lists files, and writes or edits them. It can also
+create prompt, skill and memory assets. **A write lands at once**, and the transcript shows
+the diff, so read it as it scrolls past. There is no approval step before a file is
+written.
+
+It stays inside the Space. It never reads or writes `.vio/`, which holds your keys and
+connector tokens, or `.git/`, or anything outside the Space. A request to do so is refused,
+and nothing from that path reaches the model. A turn stops after 12 rounds of tool calls.
+
+### What it runs for you
+
+The Assistant runs read-only commands on its own: `help`, `docs`, `validate`, `providers`,
+`connectors`, `whoami`, `status`, `list`, `show`, `runs` and `logs`. A few forms stop being
+automatic, because they write a file, read credentials, or use a staged connector token:
+`docs --refresh`, any `--fix`, any `--env-file`, `validate --check-tools` and
+`connectors tools`. Those become cards too.
+
+Everything else becomes a **command card**. A card shows the command, why it matters and
+what you are approving:
+
+- **Enter** runs it.
+- **Esc** dismisses it.
+
+Cards cover deploys, redeploys, connects, stops and the rest, so the Assistant can't deploy,
+connect or stop anything unless you press Enter. A card for `vio run`, `vio run-key` or
+`vio update` has no slash form to run, so it is shown to copy into your own terminal, and
+**Enter** then means you did it ("Enter when done").
+
+### The status line
+
+A line under the composer shows where you are: the Space, whether `agent.vio` is valid
+(`✓` or `✗`), the deployment and its state, any pending connectors, and the last run. It
+refreshes about every 60 seconds, and straight after a deploy, redeploy, connect, stop,
+schedule, init or create. The Assistant sees the same line.
+
+**Esc** stops a turn that is still running.
+
+If you want an AI coding agent to drive `vio`, that works through the subcommands, not this
+shell. See [Use `vio` with AI coding agents](/cli/ai-agents).
 
 ## Sessions
 
