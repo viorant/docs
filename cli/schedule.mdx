@@ -7,7 +7,8 @@ A deployed agent can run on a timer, with no one calling it. Viorant starts each
 you, and you read the results with `vio runs` and `vio logs`, as for any other run.
 
 <Note>
-  Needs `vio` **1.0.0** or later. Check with `vio --version`.
+  Needs `vio` **1.0.0** or later. `vio redeploy` refreshing the run-input contract needs
+  **1.0.6**. Check with `vio --version`.
 </Note>
 
 From the [shell](/cli/shell):
@@ -45,6 +46,9 @@ vio schedule <id> --every 1d --at 09:30 --tz Europe/London
 Setting a schedule turns it on. A deployment has one schedule; setting it again replaces
 it. Leave out `--input` when you re-time a schedule and its saved input is kept.
 
+`--at`, `--tz` and `--input` only work together with `--every`. On their own they are
+refused with `usage.invalid`.
+
 ### Run inputs
 
 A scheduled run gets no caller to fill in the agent's inputs, so an agent that declares
@@ -58,6 +62,10 @@ vio schedule <id> --every 1d --at 07:00 --input @input.json
 If the agent's run contract rejects the input, `vio` names the inputs it requires and shows
 both forms — for example
 `This agent requires run inputs: topic. Pass them with --input '{"topic": …}' or --input @file.json.`
+
+The run contract is the list of inputs the deployed agent declares. `vio redeploy` refreshes
+it from your current `.vio`, so after you add or change an input, redeploy before you set
+the schedule's `--input`. See [Manage deployments](/cli/manage#redeploy).
 
 In the [shell](/cli/shell), use `--input @input.json`. `/schedule` splits its arguments on
 spaces and does not handle quotes, so inline JSON works there only when it has no spaces:
@@ -74,7 +82,7 @@ vio schedule <id> clear    # remove it
 
 Showing a schedule prints whether it is on, its interval and time zone, when it runs next,
 how the last run ended, and how the runs are paid for. `on`, `off` and `clear` take none
-of the options above except `--json`.
+of the options above except `--json`. Pass one and `vio` refuses with `usage.invalid`.
 
 ## How often you can schedule
 

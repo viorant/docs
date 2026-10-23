@@ -7,8 +7,8 @@ Deploying gives the agent its own URL on Viorant Cloud. It keeps running whether
 terminal — or the Hub — is open or not.
 
 <Note>
-  Needs `vio` **1.0.0** or later for credits deploys and the `vio connect` behaviour
-  described here. Check with `vio --version`.
+  Needs `vio` **1.0.0** or later for credits deploys. The saved run key, `--show-run-key`
+  and `--verbose-logs` need **1.0.6**. Check with `vio --version`.
 </Note>
 
 ## Before you deploy
@@ -112,11 +112,24 @@ vio deploy agent.vio --target viorant_cloud
 `vio` validates the file on your machine — the same checks as `vio validate` — then asks
 Viorant Cloud to stand the agent up.
 
-- `--env-file <file>` names the credentials file (both forms).
+- `--env-file <file>` names the credentials file.
 - `--name "My agent"` sets the deployment name; it defaults to the name in the file.
+- `--verbose-logs` records each tool call's arguments and result in the agent's run logs.
+  See [Deployment logs](/deploy/deployment-logs#verbose-logs). It works with
+  `--target viorant_cloud` only; a local container refuses it, because its logs are on your
+  machine.
+- `--show-run-key` prints the run key. See [Call the agent](#call-the-agent).
 - `--json` prints one JSON object, for scripts.
 
-`--name` and `--json` are subcommand-only.
+All of these work in both forms, in the shell and as a subcommand.
+
+If you ran [`vio connect`](/cli/connectors#vio-connect) first, `vio deploy` pushes the
+staged connectors in the same request, and the agent comes up connected. Before it creates
+anything, it also checks the tool names your bundle declares against what each staged
+connector offers. A name the server does not offer stops the deploy. If the agent has OAuth
+connectors that are still not connected after a Viorant Cloud deploy, an interactive
+terminal asks `Authorise them now? [Y/n]`, which opens the same consent as `vio connect`.
+Without a terminal, `vio` prints the `vio connect` follow-up instead.
 
 <Warning>
   Deploying creates an internet-reachable service that counts against your plan's agent
@@ -127,8 +140,26 @@ Viorant Cloud to stand the agent up.
 
 ## Call the agent
 
-On success, `vio` prints the deployment id, its URL and a **run key**. The run key is shown
-**once** — `vio` never writes it to disk. Store it somewhere safe.
+On success, `vio` prints the deployment id and its URL. It also mints a **run key**, the
+bearer secret that lets something call the agent. For a Viorant Cloud deploy, `vio` saves
+the key to `~/.viorant/run-keys.json`, keyed by the deployment, and does **not** print it:
+
+```
+Run key saved to ~/.viorant/run-keys.json (not shown)
+```
+
+That saved key is what [`vio run`](/cli/manage#runs) uses, so for a call from your own
+machine you never need to handle the key. To call the agent from somewhere else, ask for
+the key:
+
+```bash
+vio deploy agent.vio --target viorant_cloud --show-run-key
+```
+
+`--show-run-key` prints the key and a paste-ready request. `vio` also prints the key if it
+could not save it, because that is the only copy. A local container (`--target
+local_docker`) always prints its key. In `--json`, a saved key reads `[redacted]` unless you
+pass `--show-run-key`. Never paste a run key into chat or a commit.
 
 ```bash
 curl -sS -X POST https://<service>.a.run.app/run \
@@ -137,7 +168,10 @@ curl -sS -X POST https://<service>.a.run.app/run \
   -d '{"task":"..."}'
 ```
 
-`vio` also prints an example request body built from the inputs your agent declares.
+The printed request has an example body built from the inputs your agent declares.
+
+Lost the key, or deployed from another machine? You can't recover it. Issue a new one with
+[`vio run-key <id> --rotate`](/cli/manage#run-keys), which kills the old key at once.
 
 To run it on a timer instead, see [Schedule an agent](/cli/schedule).
 

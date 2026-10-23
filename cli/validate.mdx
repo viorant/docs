@@ -8,7 +8,8 @@ connectors and memory — in one YAML file. Everything the agent is made of is i
 file, so you can deploy a `.vio` someone sent you without any other assets.
 
 <Note>
-  Needs `vio` **1.0.0** or later for every check on this page. Check with `vio --version`.
+  Needs `vio` **1.0.0** or later for the checks on this page. `--check-tools`, the connector
+  URL check and the warnings need **1.0.6**. Check with `vio --version`.
 </Note>
 
 ## Validate
@@ -25,7 +26,8 @@ Or as a subcommand, which is what scripts, CI and AI agents use:
 vio validate agent.vio
 ```
 
-Validation is local: no sign-in and no network. A valid file prints a summary of what it
+Validation is local: no sign-in and no network, unless you opt in to
+[`--check-tools`](#check-tool-names-against-the-live-server). A valid file prints a summary of what it
 contains. An invalid one exits `1` and names each field that's wrong.
 
 Point `vio` at a folder and it looks for the `.vio` inside it (one level deep, not
@@ -94,6 +96,8 @@ agent runs. `vio validate` catches those cases here, where they are one edit to 
   If the field is an agent input, the fix instead is to declare it *only* as a prompt
   variable (`source: input`, `required: false`, `default: …`) and remove it from the
   agent's `inputs` — an agent input can never carry a `default`.
+- **A connector given as an `https://` URL.** In `requires[].connector`, a catalogue id
+  such as `github` is refused. The error prints the MCP URL to use instead.
 - **A connector tool no referenced skill allows.** Once an agent has one or more skills, the
   runner binds tools **only** from each skill's own `allowed-tools` frontmatter — a
   connector tool named in `requires[].tools` reaches the agent only if some referenced
@@ -111,6 +115,45 @@ agent runs. `vio validate` catches those cases here, where they are one edit to 
   missing — the deployed agent completes its run having told the model no tools are
   available. `vio validate` refuses a bundle with an unreachable connector tool and names
   it.
+
+### Check tool names against the live server
+
+Plain `vio validate` never touches the network, so it can't tell you that a tool name is
+wrong. A name the connector doesn't offer is skipped at run time with no error. To check:
+
+```bash
+vio validate agent.vio --check-tools
+```
+
+`--check-tools` runs the normal checks first. Then it asks each OAuth connector which tools
+it offers and compares every tool your bundle names, in `requires[].tools` and in each
+skill's `allowed-tools`. It needs the network, and an authorisation that
+[`vio connect`](/cli/connectors#vio-connect) staged in the bundle's Space. It's opt-in, and
+in the shell it's `/validate agent.vio --check-tools`.
+
+- A tool the server doesn't offer fails the bundle with `bundle.invalid` and exit `1`. The
+  error names the closest real tools, for example `Did you mean search_docs?`.
+- A connector that can't be asked is only a **warning**, and never changes the exit code. That
+  covers one that isn't staged, is unreachable, or refuses the check. If the provider says
+  the authorisation lacks a scope (`insufficient_scope`), the message names the connector and
+  the `vio connect <connector> --scopes …` command that fixes it.
+- To see a connector's tools yourself, run
+  [`vio connectors tools <connector>`](/cli/connectors#list-a-connectors-tools).
+
+`vio deploy` runs the same check on staged connectors before it creates anything, so you
+only need `--check-tools` to find out earlier.
+
+### Warnings
+
+Some problems don't stop a deploy but probably aren't what you meant. `vio validate` prints
+them as warnings and the exit code stays `0`:
+
+- **A skill-less agent with no input named `task`.** Without skills, an agent only gets its
+  task from an input named `task`. Rename the input to `task`, or give the agent a skill.
+- **`memory` in a skill's frontmatter.** The runner ignores it. Memory is bound on the
+  agent, in its `memory` block. See [Memory](/masters/memory#memory-in-the-cli).
+- **A skill's `tools` field.** The runner never reads it. List the tools in the skill's
+  `allowed-tools` frontmatter instead.
 
 ## Digest
 
