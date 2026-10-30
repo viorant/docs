@@ -1,0 +1,145 @@
+---
+title: "Telemetry"
+description: "What vio, Sentinel and Viorant's servers collect, what they never collect, and how to turn each one off."
+---
+
+## Summary
+
+Viorant collects anonymous usage signals so we can see which features are used and where things fail.
+We record identifiers, enums, counts and durations only — never prompts, file paths, agent names or command arguments.
+Each product below has its own rules; you can turn off `vio` at any time, and Sentinel loads nothing until you accept its banner.
+
+## `vio` (the CLI)
+
+`vio` sends usage telemetry **on by default** (opt-out). Each finished command produces one event, batched to the control plane at `POST /telemetry/events` after `vio` exits.
+
+### Events
+
+| Event | Property | Type | What it means |
+| --- | --- | --- | --- |
+| `cli.command_completed` | `command` | string | The command and at most one subcommand from `vio`'s fixed list (for example `deploy`, `connectors tools`), never text you typed. Unknown commands are `unknown`; the bare shell is `shell`. |
+| `cli.command_completed` | `exit_code` | integer | The process exit code when the command finished. |
+| `cli.command_completed` | `duration_ms` | number | How long the run took, in milliseconds. |
+| `cli.command_completed` | `interactive` | boolean | Whether a person was at an interactive terminal. Scripts and coding agents send `false`. |
+| `cli.command_completed` | `error_class` | string (optional) | Present only when the run failed with one of `vio`'s own error codes (for example `auth.required`), never a free-text message. |
+| `cli.telemetry_notice_shown` | — | — | Fired once on the run that printed the first-run notice. No extra properties. |
+
+### Every `vio` event also includes
+
+| Property | Type | What it means |
+| --- | --- | --- |
+| `ts` | integer | Unix time in milliseconds when the event was recorded. |
+| `anonymous_device_id` | UUID | A random install id created on first use and stored in `~/.viorant/cli/telemetry.json`. It is not derived from your machine name or folders. |
+| `user_id` | UUID (optional) | Your Viorant account id when you are signed in. |
+| `client` | `"cli"` | Marks the sender as the CLI. |
+| `client_version` | string | The installed `vio` version. |
+
+<Note>
+  The first-run notice appears once in an interactive terminal. It is **not** printed for
+  `--json`, `-p` / `--print`, or when stdin or stderr is not a TTY. Coding agents and other
+  non-interactive runs still send events with `interactive: false` unless telemetry is off.
+</Note>
+
+## Turning `vio` telemetry off
+
+```bash
+vio telemetry off
+```
+
+You can also set either environment variable:
+
+```bash
+export DO_NOT_TRACK=1
+export VIORANT_TELEMETRY=0
+```
+
+Telemetry is **always off when `CI` is set** (any non-empty value). `vio telemetry status` shows whether it is on and which switch decided. When it is off, **`vio` sends no events** — not even the notice event.
+
+`vio telemetry on` turns it back on. Environment switches beat the saved setting in `~/.viorant/cli/config.json`.
+
+## Sentinel (the web dashboard)
+
+Sentinel does **not** load analytics until you accept the consent banner. Autocapture, session replay and automatic pageviews are off; only the events below are sent manually.
+
+### Events
+
+| Event | Property | Type | What it means |
+| --- | --- | --- | --- |
+| `$pageview` | `$current_url` | string | The page **type** as a route template (for example `/agents/:slug`), prefixed with the site origin. It never includes an agent name, query string or hash. Unknown routes are sent as `/404`. |
+| `$pageview` | `$pathname` | string | The same route template without the origin (for example `/agents/:slug`). |
+| `agent_viewed` | — | — | Fired when an agent detail page is opened. No properties. |
+| `agent_logs_opened` | — | — | Fired when deployment logs are opened. No properties. |
+| `credits_topup_started` | `product_id` | string | Fired when a credit top-up checkout starts. The product id only — not an amount you typed. |
+| `plan_checkout_started` | `plan` | string | Fired when a plan subscription checkout starts. The plan id enum only. |
+
+### Every Sentinel event also includes
+
+PostHog's browser library attaches coarse device and session metadata. Sentinel allows only this fixed list through its scrubber; everything else is dropped.
+
+| Property | Type | What it means |
+| --- | --- | --- |
+| `$os` | string | Operating system name. |
+| `$os_version` | string | Operating system version. |
+| `$browser` | string | Browser name. |
+| `$browser_version` | string | Browser version. |
+| `$device_type` | string | Device category (for example desktop or mobile). |
+| `$screen_height` | number | Screen height in pixels. |
+| `$screen_width` | number | Screen width in pixels. |
+| `$viewport_height` | number | Viewport height in pixels. |
+| `$viewport_width` | number | Viewport width in pixels. |
+| `$timezone` | string | IANA timezone name. |
+| `$timezone_offset` | number | Offset from UTC in minutes. |
+| `$browser_language` | string | Browser language tag. |
+| `$lib` | string | PostHog client library name. |
+| `$lib_version` | string | PostHog client library version. |
+| `$device_id` | string | Random device id assigned by PostHog for this browser. |
+| `$session_id` | string | Random session id for this visit. |
+| `$window_id` | string | Random id for this browser tab or window. |
+
+Before any event is sent, a scrubber removes referrer fields and rewrites URL-shaped properties to the template form.
+
+To change your choice after accepting or declining, open **Account** → **Privacy settings** and use the banner again.
+
+## Server-side events (control)
+
+These events are captured on Viorant's servers when you use the product. They are not controlled by a switch on your device.
+
+| Event | Property | Type | What it means |
+| --- | --- | --- | --- |
+| `account.signed_up` | `method` | enum | How the account was created: `google`, `github`, or `email`. |
+| `account.signed_in` | `method` | enum | How the session started: `google`, `github`, or `email`. |
+| `deploy.completed` | `outcome` | enum | Whether the deploy finished successfully: `ok` or `failed`. |
+| `deploy.completed` | `error_class` | string (optional) | Present when `outcome` is `failed`; a short error slug, not a message. |
+| `deployment.first_run` | — | — | The first run recorded for a deployment, whatever its outcome. No extra properties. |
+| `schedule.created` | — | — | A run schedule was created for a deployment. No extra properties. |
+| `credits.spent` | `micro_usd` | integer | Credits consumed, in micro-USD (millionths of a dollar). |
+| `credits.spent` | `source` | enum | Which surface spent the credits: `run`, `assistant`, or `gateway`. |
+
+We process these on **legitimate interest** so we can operate billing, quotas and reliability. See the [privacy policy](https://viorant.ai/privacy) for the full basis and your rights.
+
+## What is never sent
+
+Across `vio`, Sentinel and server-side capture, we do **not** send:
+
+- Prompts, agent output, or the content of runs or logs
+- Agent names, slugs or deployment titles used as identifiers in URLs
+- File paths, workspace folders or host names
+- Command arguments, flag names or flag values
+- Email addresses, display names or other contact fields
+- Full page URLs with query strings or hashes, referrers, or arbitrary free text
+- Secrets, API keys, tokens or connector credentials
+
+## Where it goes
+
+Events go to **PostHog** in the **US** region (`https://us.i.posthog.com`).
+
+| Source | PostHog project |
+| --- | --- |
+| `vio` CLI and control server events | One shared product project |
+| Sentinel (browser) | A separate Sentinel project |
+
+Dev and production use different project keys; the split is the same.
+
+## The Hub
+
+The Viorant Hub keeps its own **opt-in** usage analytics under **Settings**; it is off until you turn it on there, and it is not covered by the tables above.
