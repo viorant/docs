@@ -25,6 +25,9 @@ refused.
 | Free | once a day |
 | Starter | once an hour |
 | Pro | every 5 minutes |
+| Max | every minute |
+
+See [Plans and limits](/plans) for prices, credit allowances, and deployment caps.
 
 If your plan changes and an existing schedule no longer fits, it's paused — not deleted —
 until you upgrade or slow it down.
@@ -60,6 +63,11 @@ vio schedule <id> --every 1d --at 09:30 --tz Europe/London
 - `--input <json|@file>` — the fixed input each run gets. Leave it off on a re-time
   (`vio schedule <id> --every 1h`) and the existing input carries forward unchanged.
 
+<Note>
+  Max allows a one-minute schedule on the server. The CLI in `vio` 1.0.7 accepts
+  minute intervals from `5m` to `59m`, so that version cannot set a one-minute schedule.
+</Note>
+
 Turn it on and off, or clear it outright:
 
 ```bash
@@ -68,7 +76,7 @@ vio schedule <id> off     # pause — cadence and input stay saved
 vio schedule <id> clear   # delete the schedule
 ```
 
-See the full command in the [CLI reference](/cli/reference#vio-schedule).
+See the full command in [CLI schedule options](/cli/schedule#set-a-schedule).
 
 ## Failures and auto-pause
 

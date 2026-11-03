@@ -1,0 +1,48 @@
+---
+title: "Plans and limits"
+description: "Compare plan prices, credit allowances, model tiers, schedules, and deployed-agent limits."
+---
+
+Your plan sets your credit allowance, managed model tiers, minimum schedule interval,
+and deployed-agent limits. Prices below are in USD.
+
+| Plan allowance | Free | Starter | Pro | Max |
+| --- | --- | --- | --- | --- |
+| Price | $0 | $15/month | $50/month | $200/month |
+| Credit allowance | 2,500 once | 10,000/month | 60,000/month | 350,000/month |
+| Managed model tiers | Low, Medium | Low, Medium | Low, Medium, High | Low, Medium, High |
+| Minimum schedule interval | 1 day | 1 hour | 5 minutes | 1 minute |
+| Deployed agents on Viorant | 3 | 5 | 10 | 25 |
+| Deployed agents on your infrastructure | — | — | 15 | 100 |
+
+The dash means that deployment on your infrastructure is not included in that plan.
+The two deployment limits are separate.
+
+## Credits and model tiers
+
+Free includes a one-time grant of 2,500 credits. Starter, Pro, and Max include a
+monthly credit allowance. [One-time credit packs](/providers/credits#buying-more-credits)
+are separate purchases and do not change your plan or its limits.
+
+Low and Medium are available on every plan. High is available on Pro and Max.
+The CLI calls Medium `mid`. See [managed model tiers](/providers/credits#tiers).
+
+## Schedules
+
+The minimum interval applies to scheduled runs and is enforced by Viorant.
+A schedule that is too frequent for your plan is refused. If a plan change makes
+an existing schedule too frequent, Viorant pauses it.
+
+Max allows schedules every minute. The CLI in `vio` 1.0.7 accepts minute intervals
+from `5m` to `59m`, so that version cannot set a one-minute schedule.
+See [CLI schedule options](/cli/schedule#set-a-schedule).
+
+## View or change your plan
+
+Your current plan is shown in [Sentinel](https://sentinel.viorant.io/plans).
+[`vio upgrade`](/cli/sign-in#your-plan) opens that page from the terminal.
+
+<Note>
+  `vio` 1.0.7 can display Max as Pro for compatibility. Your Max allowances still
+  apply. Check Sentinel for your current plan.
+</Note>

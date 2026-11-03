@@ -93,6 +93,14 @@ Your plan sets the shortest interval between runs:
 | Free | day |
 | Starter | hour |
 | Pro | 5 minutes |
+| Max | minute |
+
+<Note>
+  Max's one-minute allowance is a server limit. The CLI in `vio` 1.0.7 accepts
+  minute intervals from `5m` to `59m`, so `--every 1m` is refused with `usage.invalid`.
+</Note>
+
+See [Plans and limits](/plans) for all plan allowances and deployment caps.
 
 Viorant enforces this, not `vio`. A schedule more frequent than your plan allows is refused
 with `schedule.interval_below_plan`, and the message points at `vio upgrade`
