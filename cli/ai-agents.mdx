@@ -116,7 +116,7 @@ tiers:
 | --- | --- |
 | `viorant-managed-low` | fastest and cheapest — routine, well-specified tasks |
 | `viorant-managed-mid` | balanced; the recommended default |
-| `viorant-managed-high` | most capable — complex, ambiguous or high-stakes tasks. Needs the **Pro** plan |
+| `viorant-managed-high` | most capable — complex, ambiguous or high-stakes tasks. Needs **Pro** or **Max** |
 
 These are Viorant's own tier names, not a specific provider's model — the mapping behind
 each tier is Viorant's to change. Don't expect your agent to name (or ask it to guess) the
@@ -126,7 +126,7 @@ model behind a tier.
   A `high` agent **deploys fine on Free or Starter** — the tier isn't checked at deploy time.
   But **every run then fails** with `plans.tier_not_allowed` ("High is included with Pro"),
   because the plan is checked per run, not at deploy. Stick to `low` or `mid` unless the
-  account is on Pro — check with `vio status`.
+  account is on Pro or Max. Check with `vio status` or see [Plans and limits](/plans).
 </Warning>
 
 ### Bringing your own key (BYOK)
