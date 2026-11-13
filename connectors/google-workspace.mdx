@@ -1,10 +1,10 @@
 ---
 title: "Google Workspace"
-description: "Connect Gmail, Drive, and Calendar with your own Google OAuth app."
+description: "Connect Gmail, Drive, Docs, Sheets, Slides, and Calendar with your own Google OAuth app."
 ---
 
-Google hosts official remote MCP servers for Workspace. **Gmail**, **Drive**, and
-**Calendar** are each a separate connector, and you connect them with your own Google
+Google hosts official remote MCP servers for Workspace. **Gmail**, **Drive**,
+**Docs**, **Sheets**, **Slides**, and **Calendar** are each a separate connector, and you connect them with your own Google
 OAuth app so the Hub talks to Google directly under your account.
 
 <Note>
@@ -26,6 +26,9 @@ Add each service you want as its own connector, using these URLs:
 | -------- | ------------------ | ------------------------------------------ |
 | Gmail    | `gmail`            | `https://gmailmcp.googleapis.com/mcp/v1`   |
 | Drive    | `google-drive`     | `https://drivemcp.googleapis.com/mcp/v1`   |
+| Docs     | `google-docs`      | `https://docsmcp.googleapis.com/mcp/v1`    |
+| Sheets   | `google-sheets`    | `https://sheetsmcp.googleapis.com/mcp/v1`  |
+| Slides   | `google-slides`    | `https://slidesmcp.googleapis.com/mcp/v1`  |
 | Calendar | `google-calendar`  | `https://calendarmcp.googleapis.com/mcp/v1` |
 | Chat     | `google-chat`      | `https://chatmcp.googleapis.com/mcp/v1`    |
 | Contacts | `google-contacts`  | `https://people.googleapis.com/mcp/v1`     |
@@ -42,7 +45,8 @@ id `gcp`; that is the id of this guide in the CLI (`vio docs connectors gcp`).
   </Step>
   <Step title="Enable the Workspace MCP APIs">
     Under **APIs & Services → Library**, enable the APIs for the services you want:
-    `gmailmcp.googleapis.com`, `drivemcp.googleapis.com`, `calendarmcp.googleapis.com`,
+    `gmailmcp.googleapis.com`, `drivemcp.googleapis.com`, `docsmcp.googleapis.com`,
+    `sheetsmcp.googleapis.com`, `slidesmcp.googleapis.com`, `calendarmcp.googleapis.com`,
     and `chatmcp.googleapis.com`. Contacts uses `people.googleapis.com`.
   </Step>
   <Step title="Set Google Auth Platform to Internal">
@@ -72,7 +76,7 @@ id `gcp`; that is the id of this guide in the CLI (`vio docs connectors gcp`).
 
 <Steps>
   <Step title="Add the connector">
-    Add a connector using the URL for the service you want (Gmail, Drive, or Calendar).
+    Add a connector using the URL for the service you want.
   </Step>
   <Step title="Paste your credentials">
     Enter your **Client ID** and **Client Secret** in the connector's settings, then
@@ -93,14 +97,18 @@ id `gcp`; that is the id of this guide in the CLI (`vio docs connectors gcp`).
 
 When a bundle does not declare `requires[].scopes` for that connector, `vio connect`
 asks for these. A non-empty `requires[].scopes`, or `--scopes`, replaces the default
-for that connect.
+for that connect. Add these same scopes to your own OAuth app's consent screen. The
+app stays **Internal**, so adding them does not start Google's verification review.
 
 | Service  | Scopes |
 | -------- | ------ |
 | Gmail    | `https://www.googleapis.com/auth/gmail.readonly` `https://www.googleapis.com/auth/gmail.compose` |
-| Drive    | `https://www.googleapis.com/auth/drive.readonly` |
-| Calendar | `https://www.googleapis.com/auth/calendar.readonly` |
-| Chat     | `https://www.googleapis.com/auth/chat.messages.readonly` |
+| Drive    | `https://www.googleapis.com/auth/drive.readonly` `https://www.googleapis.com/auth/drive.file` |
+| Docs     | `https://www.googleapis.com/auth/documents.readonly` `https://www.googleapis.com/auth/documents` |
+| Sheets   | `https://www.googleapis.com/auth/spreadsheets.readonly` `https://www.googleapis.com/auth/spreadsheets` |
+| Slides   | `https://www.googleapis.com/auth/presentations.readonly` |
+| Calendar | `https://www.googleapis.com/auth/calendar.readonly` `https://www.googleapis.com/auth/calendar.events` |
+| Chat     | `https://www.googleapis.com/auth/chat.messages.readonly` `https://www.googleapis.com/auth/chat.messages.create` |
 | Contacts | `https://www.googleapis.com/auth/contacts.readonly` |
 
 ## From the CLI
@@ -114,7 +122,8 @@ GOOGLE_OAUTH_CLIENT_SECRET=
 ```
 
 `vio docs connectors gcp` prints this guide. The catalogue ids `gmail`,
-`google-drive`, `google-calendar`, `google-chat`, and `google-contacts` print it too.
+`google-drive`, `google-docs`, `google-sheets`, `google-slides`, `google-calendar`,
+`google-chat`, and `google-contacts` print it too.
 `vio connectors <id>` and the `vio connect` prompt point here when the connector
 needs this app.
 
