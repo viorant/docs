@@ -53,8 +53,15 @@ Everything is created from templates built into the binary, so `vio init` works 
 | --- | --- |
 | `--name <name>` | Space name. Defaults to the folder's name |
 | `--template <name>` | `minimal-prompt-agent` (default), `oauth-connector-agent`, `skill-agent` |
+| `--framework <name>` | `crewai` (default) or `langchain`. See [Frameworks](/concepts/frameworks) |
 | `--force` | Re-scaffold an existing Space — see below |
 | `--json` | One JSON object, for scripts |
+
+To start a LangChain Space:
+
+```bash
+vio init --framework langchain
+```
 
 ## `.vio/` holds your secrets, and is git-ignored
 
