@@ -1,0 +1,34 @@
+---
+title: "Frameworks"
+description: "A vio agent runs on CrewAI or LangChain. You choose when you create the Space."
+---
+
+A `vio` agent runs on **CrewAI** (the default) or **LangChain**. You choose the
+framework when you create the Space.
+
+Both support the same things:
+
+- prompts, inputs, and skills,
+- memory you can read, and memory the agent can add to with `remember`
+  ([Memory](/masters/memory)),
+- built-in tools and connectors,
+- deploy to Viorant Cloud, schedules, logs, and per-run credits.
+
+## How to choose
+
+Pass the framework to [`vio init`](/cli/init):
+
+```bash
+vio init --framework langchain
+```
+
+`crewai` is the default, so `vio init` with no `--framework` still writes a CrewAI
+Space. You can also ask the [`vio` Assistant](/concepts/assistant) for a LangChain
+agent.
+
+## What isn't supported yet
+
+The [Hub](/spaces/create-a-space) creates CrewAI Spaces only. For LangChain, create
+the Space with `vio init --framework langchain`.
+
+LangChain agents can't yet be deployed to your own infrastructure.
